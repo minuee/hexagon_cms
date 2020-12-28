@@ -1,4 +1,6 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
+
 import { makeStyles, Avatar, Box, Container, TextField, InputAdornment } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
 import { PersonOutline, LockOutlined } from "@material-ui/icons";
@@ -29,6 +31,7 @@ const useStyles = makeStyles({
 
 export const SignIn = ({}) => {
   const classes = useStyles();
+  const history = useHistory();
   const { register, errors, handleSubmit } = useForm();
 
   function handleSignin(data) {
@@ -53,7 +56,7 @@ export const SignIn = ({}) => {
               </InputAdornment>
             ),
           }}
-          error={errors?.email}
+          error={!!errors?.email}
         />
         <TextField
           className={classes.input}
@@ -68,13 +71,17 @@ export const SignIn = ({}) => {
               </InputAdornment>
             ),
           }}
-          error={errors?.password}
+          error={!!errors?.password}
         />
 
         <Box display="flex" alignItems="center" mt={2} mb={6}>
-          <Button variant="text">아이디/패스워드 찾기</Button>
+          <Button variant="text" onClick={() => history.push("/finduserinfo")}>
+            아이디/패스워드 찾기
+          </Button>
           &#x0007C;
-          <Button variant="text">회원가입</Button>
+          <Button variant="text" onClick={() => history.push("/signup")}>
+            회원가입
+          </Button>
         </Box>
 
         <Button variant="contained" color="primary" px={18} py={2} onClick={handleSubmit(handleSignin)}>

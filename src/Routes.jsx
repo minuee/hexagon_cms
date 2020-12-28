@@ -2,15 +2,24 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 
-import Auth from "./pages/Auth";
+import { SignIn, SignUp, FindUserInfo } from "./pages/Auth";
 
 const Routes = () => {
   return (
     <BrowserRouter>
-      <Switch>
-        <Auth />
-      </Switch>
+      <AuthRoutes />
     </BrowserRouter>
+  );
+};
+
+const AuthRoutes = () => {
+  return (
+    <Switch>
+      <Route path="/signin" component={SignIn} />
+      <Route path="/signup" component={SignUp} />
+      <Route path="/finduserinfo" component={FindUserInfo} />
+      <Redirect to="/signin" />
+    </Switch>
   );
 };
 

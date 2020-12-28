@@ -1,4 +1,6 @@
 import React, { useEffect } from "react";
+import { useHistory } from "react-router-dom";
+
 import {
   makeStyles,
   Avatar,
@@ -53,6 +55,7 @@ const useStyles = makeStyles({
 
 export const SignUp = ({}) => {
   const classes = useStyles();
+  const history = useHistory();
   const { register, control, errors, setValue, watch, handleSubmit } = useForm();
 
   function handleWholeTermCheck(e) {
@@ -62,6 +65,10 @@ export const SignUp = ({}) => {
 
   function handleSignUp(data) {
     console.log(data);
+
+    alert("회원가입 신청 완료!");
+
+    history.push("/");
   }
 
   return (

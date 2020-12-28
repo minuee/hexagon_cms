@@ -1,8 +1,9 @@
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
+
 import { makeStyles, Avatar, Box, Container, TextField, InputAdornment } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
 import { PhoneOutlined, LockOutlined } from "@material-ui/icons";
-import { useForm } from "react-hook-form";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -59,6 +60,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const FindUserInfo = ({}) => {
   const classes = useStyles();
+  const history = useHistory();
 
   const [phoneNumber, setPhoneNumber] = useState("");
   const [certificationNumber, setCertificationNumber] = useState("");
@@ -144,7 +146,7 @@ export const FindUserInfo = ({}) => {
           </Box>
         </Box>
 
-        <Button variant="contained" color="primary" px={14} py={2} onClick={() => {}}>
+        <Button variant="contained" color="primary" px={14} py={2} onClick={() => history.push("signin")}>
           로그인페이지 이동
         </Button>
       </Box>
