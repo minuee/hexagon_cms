@@ -1,8 +1,9 @@
 import React from "react";
 
-import { Signin } from "./Signin";
+import { SignIn } from "./SignIn";
+import { SignUp } from "./SignUp";
 
 const Auth = ({}) => {
-  return <Signin />;
+  return <SignUp />;
 };
 export default Auth;

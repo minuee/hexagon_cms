@@ -27,7 +27,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const Signin = ({}) => {
+export const SignIn = ({}) => {
   const classes = useStyles();
   const { register, errors, handleSubmit } = useForm();
 
