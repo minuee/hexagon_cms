@@ -1,4 +1,5 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
 import { Grid, Box, Avatar, makeStyles } from "@material-ui/core";
@@ -21,8 +22,10 @@ const useStyles = makeStyles((theme) => ({
     height: "100%",
 
     "& > *": {
-      width: "100%",
+      width: "10rem",
       height: "60%",
+      cursor: "pointer",
+
       "& > img": {
         objectFit: "contain",
       },
@@ -42,6 +45,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Header = () => {
   const classes = useStyles();
+  const history = useHistory();
   const dispatch = useDispatch();
 
   function handleSignOut() {
@@ -53,7 +57,7 @@ const Header = () => {
   return (
     <Grid container className={classes.container}>
       <Box bgcolor="secondary.main" className={classes.logo_box}>
-        <Avatar variant="square" src="/image/logo_white.png" />
+        <Avatar variant="square" src="/image/logo_white.png" onClick={() => history.push("/")} />
       </Box>
 
       <Box display="flex" alignItems="stretch" mr={2}>

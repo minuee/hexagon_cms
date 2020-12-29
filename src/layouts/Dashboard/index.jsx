@@ -9,7 +9,7 @@ export const Layout = ({ children, ...props }) => {
       <Header />
       <Box display="flex" minHeight="calc(100vh - 6rem)">
         <Sidebar />
-        <Box p={4} width="calc(100% - 20rem)">
+        <Box p={4} width="calc(100% - 20rem)" bgcolor="rgba(223, 223, 223, 0.2)">
           {children}
         </Box>
       </Box>
