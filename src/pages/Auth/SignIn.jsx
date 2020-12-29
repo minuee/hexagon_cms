@@ -1,5 +1,6 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 import { makeStyles, Avatar, Box, Container, TextField, InputAdornment } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
@@ -32,10 +33,14 @@ const useStyles = makeStyles({
 export const SignIn = ({}) => {
   const classes = useStyles();
   const history = useHistory();
+  const dispatch = useDispatch();
   const { register, errors, handleSubmit } = useForm();
 
   function handleSignin(data) {
     console.log(data);
+    dispatch({
+      type: "SIGN_IN",
+    });
   }
 
   return (
