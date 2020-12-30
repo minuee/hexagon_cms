@@ -64,7 +64,7 @@ const Sidebar = () => {
       {page.map((nav) => {
         let isCur = nav.path.substring(1) === location.pathname.split("/")[1];
         return (
-          <NavLink to={nav.path} activeClassName={classes.nav_selected} exact>
+          <NavLink to={nav.path} activeClassName={classes.nav_selected} exact key={nav.label}>
             <Box display="flex" justifyContent="space-between" alignItems="center" px={5} py={3}>
               <Typography variant="h6" display="inline">
                 {nav.label}

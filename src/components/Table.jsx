@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Table = ({ columns, data, onRowClick = () => {} }) => {
+export const Table = ({ columns, data = [], onRowClick = () => {} }) => {
   const classes = useStyles();
   return (
     <Box className={classes.table_wrapper}>
