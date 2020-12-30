@@ -3,6 +3,8 @@ import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import dayjs from "dayjs";
 
+import { price } from "common";
+
 import { Grid, Box, Avatar, makeStyles } from "@material-ui/core";
 import { KeyboardArrowRight } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
@@ -95,7 +97,7 @@ export const Home = () => {
 
         <Box my={2}>
           <Typography variant="h5" textAlign="right">
-            <span>{2122332}</span> 원
+            <span>{price(2122332)}</span> 원
           </Typography>
         </Box>
       </Box>
@@ -107,10 +109,10 @@ export const Home = () => {
         <Typography color="secondary">{dayjs().format("YYYY.MM.DD hh:mm")} 기준</Typography>
 
         <Box my={2}>
-          <Table columns={user_reward_columns} data={userRewardData || []} />
+          <Table columns={user_reward_columns} data={userRewardData} />
         </Box>
 
-        <Button variant="text">
+        <Button>
           <Typography>더보기</Typography>
           <KeyboardArrowRight />
         </Button>
