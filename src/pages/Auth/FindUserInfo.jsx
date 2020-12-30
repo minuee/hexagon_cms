@@ -90,6 +90,7 @@ export const FindUserInfo = ({}) => {
             placeholder="휴대폰번호"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSendCertificateNum()}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -115,6 +116,7 @@ export const FindUserInfo = ({}) => {
             placeholder="인증번호 4자리"
             value={certificationNumber}
             onChange={(e) => setCertificationNumber(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleCheckCertificateNum()}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">

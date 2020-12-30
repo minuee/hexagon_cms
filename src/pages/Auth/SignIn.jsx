@@ -76,17 +76,14 @@ export const SignIn = ({}) => {
               </InputAdornment>
             ),
           }}
+          onKeyDown={(e) => e.key === "Enter" && handleSubmit(handleSignin)()}
           error={!!errors?.password}
         />
 
         <Box display="flex" alignItems="center" mt={2} mb={6}>
-          <Button variant="text" onClick={() => history.push("/finduserinfo")}>
-            아이디/패스워드 찾기
-          </Button>
+          <Button onClick={() => history.push("/finduserinfo")}>아이디/패스워드 찾기</Button>
           &#x0007C;
-          <Button variant="text" onClick={() => history.push("/signup")}>
-            회원가입
-          </Button>
+          <Button onClick={() => history.push("/signup")}>회원가입</Button>
         </Box>
 
         <Button variant="contained" color="primary" px={18} py={2} onClick={handleSubmit(handleSignin)}>

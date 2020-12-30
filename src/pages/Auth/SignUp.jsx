@@ -191,10 +191,10 @@ export const SignUp = ({}) => {
               label="필수 항목에 동의합니다."
             />
 
-            <Button className={classes.flex} variant="text" color="secondary" ml={3}>
+            <Button className={classes.flex} color="secondary" ml={3}>
               <u>등록 업체 이용약관</u>
             </Button>
-            <Button className={classes.flex} variant="text" color="secondary" ml={3}>
+            <Button className={classes.flex} color="secondary" ml={3}>
               <u>개인정보 수집이용 동의</u>
             </Button>
           </Box>
