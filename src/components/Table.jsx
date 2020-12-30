@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Table = ({ columns, data = [], onRowClick = () => {} }) => {
+export const Table = ({ columns, data = [], onRowClick = () => {}, selection, ...props }) => {
   const classes = useStyles();
   return (
     <Box className={classes.table_wrapper}>
@@ -31,7 +31,10 @@ export const Table = ({ columns, data = [], onRowClick = () => {} }) => {
           sorting: false,
 
           paging: false,
+
+          selection: !!selection || false,
         }}
+        {...props}
       />
     </Box>
   );
