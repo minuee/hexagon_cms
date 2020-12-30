@@ -6,7 +6,7 @@ import { SignIn, SignUp, FindUserInfo } from "./pages/Auth";
 
 import { Layout } from "./layouts";
 import { Home } from "./pages/Home";
-import { User } from "./pages/User";
+import { UserList, UserDetail } from "./pages/User";
 
 const Routes = () => {
   const { userState } = useSelector((state) => state.reducer);
@@ -30,7 +30,10 @@ const MainRoutes = () => {
     <Layout>
       <Switch>
         <Route exact path="/" component={Home} />
-        <Route exact path="/user" component={User} />
+
+        <Route exact path="/user/:user_no" component={UserDetail} />
+        <Route path="/user" component={UserList} />
+
         <Redirect to="/" />
       </Switch>
     </Layout>

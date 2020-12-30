@@ -112,8 +112,9 @@ const user_list_rows = [
   },
 ];
 
-export const User = () => {
+export const UserList = () => {
   const classes = useStyles();
+  const history = useHistory();
 
   const [userList, setUserList] = useState();
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -166,7 +167,13 @@ export const User = () => {
       </Grid>
 
       <Box mt={2} mb={3}>
-        <Table columns={user_list_columns} data={userList} selection onSelectionChange={setSelectedUsers} />
+        <Table
+          columns={user_list_columns}
+          data={userList}
+          onRowClick={(row) => history.push(`/user/${row.user_no || 1}`)}
+          selection
+          onSelectionChange={setSelectedUsers}
+        />
       </Box>
 
       <Grid container className={classes.table_footer}>
