@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import { Grid, Box, makeStyles, TextField, InputAdornment } from "@material-ui/core";
 import { DescriptionOutlined, Search } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { Table, Pagination } from "components";
+import { ColumnTable, Pagination } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header_buttons: {
@@ -167,7 +167,7 @@ export const UserList = () => {
       </Grid>
 
       <Box mt={2} mb={3}>
-        <Table
+        <ColumnTable
           columns={user_list_columns}
           data={userList}
           onRowClick={(row) => history.push(`/user/${row.user_no || 1}`)}

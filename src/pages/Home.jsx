@@ -8,7 +8,7 @@ import { price } from "common";
 import { Grid, Box, Avatar, makeStyles } from "@material-ui/core";
 import { KeyboardArrowRight } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { Table } from "components";
+import { ColumnTable } from "components";
 
 const useStyles = makeStyles((theme) => ({
   sales_amount: {
@@ -109,7 +109,7 @@ export const Home = () => {
         <Typography color="secondary">{dayjs().format("YYYY.MM.DD hh:mm")} 기준</Typography>
 
         <Box my={2}>
-          <Table columns={user_reward_columns} data={userRewardData} />
+          <ColumnTable columns={user_reward_columns} data={userRewardData} />
         </Box>
 
         <Button>
