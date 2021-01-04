@@ -10,12 +10,12 @@ import { ThemeProvider } from "@material-ui/core/styles";
 import { theme } from "./styles";
 
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/dayjs";
+import DayjsUtils from "@date-io/dayjs";
 
 ReactDOM.render(
   <Provider store={store}>
     <ThemeProvider theme={theme}>
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <MuiPickersUtilsProvider utils={DayjsUtils}>
         <CssBaseline />
         <App />
       </MuiPickersUtilsProvider>
