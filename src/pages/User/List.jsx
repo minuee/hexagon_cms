@@ -126,16 +126,10 @@ export const UserList = () => {
   function handleSignInApprove() {
     console.log(selectedUsers);
   }
-  function handleSearchTextChange(e) {
+  function handleContextChange(name, value) {
     setListContext({
       ...listContext,
-      search_text: e.target.value,
-    });
-  }
-  function handlePageChange(value) {
-    setListContext({
-      ...listContext,
-      page: value,
+      [name]: value,
     });
   }
 
@@ -182,13 +176,13 @@ export const UserList = () => {
           엑셀저장
         </Button>
 
-        <Pagination page={listContext.page} setPage={handlePageChange} />
+        <Pagination page={listContext.page} setPage={handleContextChange} />
 
         <TextField
           name="search_text"
           variant="outlined"
           value={listContext.search_text}
-          onChange={handleSearchTextChange}
+          onChange={(e) => handleContextChange("search_text", e.target.value)}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">

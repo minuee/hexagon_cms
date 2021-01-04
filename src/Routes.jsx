@@ -7,6 +7,7 @@ import { SignIn, SignUp, FindUserInfo } from "./pages/Auth";
 import { Layout } from "./layouts";
 import { Home } from "./pages/Home";
 import { UserList, UserDetail } from "./pages/User";
+import { PurchaseList, PurchaseDetail } from "./pages/Purchase";
 
 const Routes = () => {
   const { userState } = useSelector((state) => state.reducer);
@@ -33,6 +34,9 @@ const MainRoutes = () => {
 
         <Route exact path="/user/:user_no" component={UserDetail} />
         <Route path="/user" component={UserList} />
+
+        <Route exact path="/purchase/:purchase_no" component={PurchaseDetail} />
+        <Route path="/purchase" component={PurchaseList} />
 
         <Redirect to="/" />
       </Switch>
