@@ -6,28 +6,23 @@ import dayjs from "dayjs";
 import { price } from "common";
 
 import {
-  Grid,
   Box,
   makeStyles,
   TextField,
   MenuItem,
-  InputAdornment,
   Avatar,
   TableRow,
   TableCell,
   Checkbox,
   FormControlLabel,
 } from "@material-ui/core";
-import { DescriptionOutlined, Search } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { RowTable, ColumnTable, Pagination } from "components";
+import { RowTable } from "components";
 
 const useStyles = makeStyles((theme) => ({
   shipping_status: {
     display: "flex",
     justifyContent: "space-between",
-    paddingRight: theme.spacing(6),
-    paddingLeft: theme.spacing(6),
 
     "& > *": {
       width: theme.spacing(15),
@@ -46,6 +41,17 @@ const useStyles = makeStyles((theme) => ({
         objectPosition: "center bottom",
       },
     },
+  },
+
+  shipping_indicator: {
+    position: "absolute",
+    left: theme.spacing(12),
+    bottom: theme.spacing(2),
+
+    width: "80%",
+    height: "3px",
+    background: "#003a7b",
+    zIndex: -1,
   },
 }));
 
@@ -114,18 +120,21 @@ export const PurchaseDetail = () => {
 
       <Box mt={4} mb={6}>
         <Typography fontWeight="500">주문 상태</Typography>
-        <Box className={classes.shipping_status}>
-          {shipping_states.map((item) => {
-            let isPassed = item.no <= purchaseInfo?.shipping.status;
-            return (
-              <Box>
-                <Avatar variant="square" src={`/image/order_state_${item.no}.png`} />
-                <Box px={2} py={1} mt={2} bgcolor={isPassed ? "#003a7b" : "#fff"} color={isPassed ? "#fff" : "#000"}>
-                  {item.label}
+        <Box px={6} position="relative">
+          <Box className={classes.shipping_status}>
+            {shipping_states.map((item) => {
+              let isPassed = item.no <= purchaseInfo?.shipping.status;
+              return (
+                <Box key={item.no}>
+                  <Avatar variant="square" src={`/image/order_state_${item.no}.png`} />
+                  <Box px={2} py={1} mt={2} bgcolor={isPassed ? "#003a7b" : "#fff"} color={isPassed ? "#fff" : "#000"}>
+                    {item.label}
+                  </Box>
                 </Box>
-              </Box>
-            );
-          })}
+              );
+            })}
+          </Box>
+          <Box className={classes.shipping_indicator} />
         </Box>
       </Box>
 
@@ -199,7 +208,18 @@ export const PurchaseDetail = () => {
         </TableRow>
         <TableRow>
           <TableCell>미출고시 조치방법</TableCell>
-          <TableCell>{purchaseInfo?.payment.not_shipped_type}</TableCell>
+          <TableCell>
+            <FormControlLabel
+              control={<Checkbox name="rank_bronze" color="primary" />}
+              checked={purchaseInfo?.payment.not_shipped_type === 1}
+              label="결제수단으로 환불"
+            />
+            <FormControlLabel
+              control={<Checkbox name="rank_bronze" color="primary" />}
+              checked={purchaseInfo?.payment.not_shipped_type === 2}
+              label="상품 입고시 배송"
+            />
+          </TableCell>
         </TableRow>
       </RowTable>
 
@@ -225,7 +245,13 @@ export const PurchaseDetail = () => {
         </TableRow>
         <TableRow>
           <TableCell>배송상태</TableCell>
-          <TableCell>{purchaseInfo?.shipping.status}</TableCell>
+          <TableCell>
+            <TextField variant="outlined" select value={purchaseInfo?.shipping.status}>
+              {shipping_states.map((item) => {
+                return <MenuItem value={item.no}>{item.label}</MenuItem>;
+              })}
+            </TextField>
+          </TableCell>
         </TableRow>
       </RowTable>
 
