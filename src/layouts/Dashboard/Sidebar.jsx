@@ -20,7 +20,7 @@ const page = [
   },
   {
     label: `상품관리`,
-    path: `/item`,
+    path: `/product`,
   },
   {
     label: `팝업관리`,

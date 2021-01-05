@@ -8,6 +8,7 @@ import { Layout } from "./layouts";
 import { Home } from "./pages/Home";
 import { UserList, UserDetail } from "./pages/User";
 import { PurchaseList, PurchaseDetail } from "./pages/Purchase";
+import { CategoryList, CategoryDetail, ItemList, ItemDetail } from "./pages/Product";
 
 const Routes = () => {
   const { userState } = useSelector((state) => state.reducer);
@@ -37,6 +38,12 @@ const MainRoutes = () => {
 
         <Route exact path="/purchase/:purchase_no" component={PurchaseDetail} />
         <Route path="/purchase" component={PurchaseList} />
+
+        <Route exact path="/product/category/:category_no" component={CategoryDetail} />
+        <Route path="/product/category" component={CategoryList} />
+        <Route exact path="/product/item/:item_no" component={ItemDetail} />
+        <Route path="/product/item" component={ItemList} />
+        <Redirect from="/product" to="/product/category" />
 
         <Redirect to="/" />
       </Switch>
