@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme) => ({
 
     "& td:first-child": {
       background: theme.palette.grey[300],
-      width: "14rem",
+      width: theme.spacing(25),
     },
   },
 }));
