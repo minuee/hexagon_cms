@@ -45,10 +45,10 @@ const useStyles = makeStyles((theme) => ({
 
   shipping_indicator: {
     position: "absolute",
-    left: theme.spacing(12),
+    left: theme.spacing(7),
     bottom: theme.spacing(2),
 
-    width: "80%",
+    width: `calc(100% - ${theme.spacing(14)}px)`,
     height: "3px",
     background: "#003a7b",
     zIndex: -1,
