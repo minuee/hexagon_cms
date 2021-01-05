@@ -23,230 +23,216 @@ import { Typography, Button } from "components/materialui";
 import { RowTable, ColumnTable, Pagination } from "components";
 
 const useStyles = makeStyles((theme) => ({
-  header_box: {
-    display: "inline-flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-
-    width: "25rem",
-    height: "13rem",
-    background: "#fff",
-
-    border: "solid 1px #ddd",
-    borderRadius: "1rem",
-
-    marginRight: theme.spacing(4),
-    padding: theme.spacing(3),
-  },
-  rank_content: {
+  shipping_status: {
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "flex-end",
+    paddingRight: theme.spacing(6),
+    paddingLeft: theme.spacing(6),
 
-    "& .MuiAvatar-root": {
-      marginLeft: theme.spacing(8),
-      width: "7rem",
-      height: "7rem",
+    "& > *": {
+      width: theme.spacing(15),
+      "& > :first-child": {
+        width: "100%",
+        height: theme.spacing(20),
+      },
+      "& > :last-child": {
+        border: "solid 1px #003a7b",
+        borderRadius: "5px",
+        textAlign: "center",
+      },
+
+      "& img": {
+        objectFit: "contain",
+        objectPosition: "center bottom",
+      },
     },
   },
 }));
 
-const reward_history_column = [
-  {
-    field: "accumulate_dt",
-    title: "적립일자",
-    render: ({ accumulate_dt }) => dayjs(accumulate_dt).format("YYYY.MM.DD"),
-  },
-  { field: "user_name", title: "유저명" },
-  { field: "reward_reason", title: "내역" },
-  {
-    field: "reward_amount",
-    title: "리워드액",
-    render: ({ reward_amount }) => `+${price(reward_amount)}원`,
-  },
-];
-const reward_history_row = [
-  {
-    accumulate_dt: 8882229999,
-    user_name: "륶인창",
-    reward_reason: "친구초대",
-    reward_amount: 5555,
-  },
-  {
-    accumulate_dt: 8882229999,
-    user_name: "륶인창",
-    reward_reason: "친구초대",
-    reward_amount: 5555,
-  },
-  {
-    accumulate_dt: 8882229999,
-    user_name: "륶인창",
-    reward_reason: "친구초대",
-    reward_amount: 5555,
-  },
-  {
-    accumulate_dt: 8882229999,
-    user_name: "륶인창",
-    reward_reason: "친구초대",
-    reward_amount: 5555,
-  },
-  {
-    accumulate_dt: 8882229999,
-    user_name: "륶인창",
-    reward_reason: "친구초대",
-    reward_amount: 5555,
-  },
-  {
-    accumulate_dt: 8882229999,
-    user_name: "륶인창",
-    reward_reason: "친구초대",
-    reward_amount: 5555,
-  },
-  {
-    accumulate_dt: 8882229999,
-    user_name: "륶인창",
-    reward_reason: "친구초대",
-    reward_amount: 5555,
-  },
-  {
-    accumulate_dt: 8882229999,
-    user_name: "륶인창",
-    reward_reason: "친구초대",
-    reward_amount: 5555,
-  },
-];
-
 export const PurchaseDetail = () => {
   const classes = useStyles();
 
-  const [userInfo, setUserInfo] = useState({
-    rank: "silver",
-    rank_text: "실버등급",
-    accumulate_rate: "1.5",
-    accumulate_amount: 12346777,
-
-    name: "전지현",
-    code_no: "81JK3D",
-    register_dt: 3333333333,
-    phone_no: "01055663322",
-    email: "admin@gmail.com",
-    authority: 1,
+  const [purchaseInfo, setPurchaseInfo] = useState({
+    item: {
+      order_no: "20200506-D5446",
+      order_dt: 9456665332,
+      name: "아릭스 수세미 외 1",
+      item_price: 16800,
+      event_price: 15800,
+      discount_amount: 2000,
+      shipping_fee: 5000,
+      total_price: 19800,
+    },
+    user: {
+      name: "김진수",
+      phone_no: "01012345678",
+      email: "djkls@msdkjl.com",
+    },
+    payment: {
+      type: "무통장 입금",
+      deposit_name: "김진수",
+      not_shipped_type: 1,
+    },
+    shipping: {
+      status: 3,
+      reciever_name: "김진수",
+      reciever_phone: "01012345678",
+      reciever_addr_name: "서울 관악구 남사당로 192",
+      reciever_addr_code: "06322",
+      additional_info: "문 앞에 둬주세요",
+    },
   });
+
+  const shipping_states = [
+    {
+      no: 1,
+      label: "입금대기",
+    },
+    {
+      no: 2,
+      label: "입금확인",
+    },
+    {
+      no: 3,
+      label: "상품준비완료",
+    },
+    {
+      no: 4,
+      label: "배송시작",
+    },
+    {
+      no: 5,
+      label: "배송완료",
+    },
+  ];
 
   return (
     <Box>
       <Typography variant="h5" fontWeight="500">
-        유저 정보 및 리워드 상세
+        구매내역 상세
       </Typography>
 
-      <Box my={2}>
-        <Box className={classes.header_box}>
-          <Typography variant="h6" fontWeight="500">
-            등급
-          </Typography>
-
-          <Box className={classes.rank_content}>
-            <Avatar src="/image/rank_silver.png" />
-            <Box textAlign="right">
-              <Typography variant="h6" fontWeight="700">
-                {userInfo?.rank_text || "-"}
-              </Typography>
-              <Typography>적립률 {userInfo?.accumulate_rate || "-"}% 적용</Typography>
-            </Box>
-          </Box>
-        </Box>
-
-        <Box className={classes.header_box}>
-          <Typography variant="h6" fontWeight="500">
-            초대 적립금 현황
-          </Typography>
-
-          <Typography textAlign="right" variant="h5" fontWeight="700">
-            {price(userInfo?.accumulate_amount) || "-"} 원
-          </Typography>
+      <Box mt={4} mb={6}>
+        <Typography fontWeight="500">주문 상태</Typography>
+        <Box className={classes.shipping_status}>
+          {shipping_states.map((item) => {
+            let isPassed = item.no <= purchaseInfo?.shipping.status;
+            return (
+              <Box>
+                <Avatar variant="square" src={`/image/order_state_${item.no}.png`} />
+                <Box px={2} py={1} mt={2} bgcolor={isPassed ? "#003a7b" : "#fff"} color={isPassed ? "#fff" : "#000"}>
+                  {item.label}
+                </Box>
+              </Box>
+            );
+          })}
         </Box>
       </Box>
 
-      <RowTable width={"70%"}>
+      <Box mt={3} mb={1}>
+        <Typography fontWeight="500">주문 상품 정보</Typography>
+      </Box>
+      <RowTable>
         <TableRow>
-          <TableCell>이름</TableCell>
-          <TableCell>{userInfo?.name}</TableCell>
+          <TableCell>주문번호</TableCell>
+          <TableCell>{purchaseInfo?.item.order_no}</TableCell>
         </TableRow>
         <TableRow>
-          <TableCell>코드번호</TableCell>
-          <TableCell>{userInfo?.code_no}</TableCell>
+          <TableCell>구매일시</TableCell>
+          <TableCell>{dayjs(purchaseInfo?.item.order_dt).format("YYYY.MM.DD hh:mm")}</TableCell>
         </TableRow>
         <TableRow>
-          <TableCell>가입승인일자</TableCell>
-          <TableCell>{dayjs(userInfo?.register_dt).format("YYYY-MM-DD")}</TableCell>
+          <TableCell>상품명</TableCell>
+          <TableCell>{purchaseInfo?.item.name}</TableCell>
         </TableRow>
         <TableRow>
-          <TableCell>휴대폰번호</TableCell>
-          <TableCell>{userInfo?.phone_no}</TableCell>
+          <TableCell>상품금액</TableCell>
+          <TableCell>{price(purchaseInfo?.item.item_price)}원</TableCell>
         </TableRow>
         <TableRow>
-          <TableCell>이메일</TableCell>
-          <TableCell>{userInfo?.email}</TableCell>
+          <TableCell>이벤트가</TableCell>
+          <TableCell>{price(purchaseInfo?.item.event_price)}원</TableCell>
         </TableRow>
         <TableRow>
-          <TableCell>권한</TableCell>
-          <TableCell>
-            <TextField select variant="outlined" value={userInfo?.authority}>
-              <MenuItem value={"1"}>영업사원</MenuItem>
-              <MenuItem value={"2"}>경영자</MenuItem>
-              <MenuItem value={"3"}>브로커</MenuItem>
-            </TextField>
-          </TableCell>
+          <TableCell>할인금액</TableCell>
+          <TableCell>{price(purchaseInfo?.item.discount_amount)}원</TableCell>
         </TableRow>
         <TableRow>
-          <TableCell>등급</TableCell>
-          <TableCell>
-            <FormControlLabel
-              control={<Checkbox name="rank_bronze" color="primary" checked={userInfo?.rank === "bronze"} />}
-              label="브론즈"
-            />
-            <FormControlLabel
-              control={<Checkbox name="rank_bronze" color="primary" checked={userInfo?.rank === "silver"} />}
-              label="실버"
-            />
-            <FormControlLabel
-              control={<Checkbox name="rank_bronze" color="primary" checked={userInfo?.rank === "gold"} />}
-              label="골드"
-            />
-            <FormControlLabel
-              control={<Checkbox name="rank_bronze" color="primary" checked={userInfo?.rank === "platinum"} />}
-              label="플래티넘"
-            />
-          </TableCell>
+          <TableCell>배송비</TableCell>
+          <TableCell>{price(purchaseInfo?.item.shipping_fee)}원</TableCell>
         </TableRow>
         <TableRow>
-          <TableCell>적립률</TableCell>
-          <TableCell>{userInfo?.accumulate_rate} %</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>사업자등록증 첨부</TableCell>
-          <TableCell>
-            <Avatar variant="square" src="/image/rank_gold.png" style={{ width: "70px", height: "100px" }} />
-          </TableCell>
+          <TableCell>총 주문금액</TableCell>
+          <TableCell>{price(purchaseInfo?.item.total_price)}원</TableCell>
         </TableRow>
       </RowTable>
 
-      <Box
-        py={2}
-        display="flex"
-        // justifyContent="center"
-      >
-        <Button variant="contained" color="primary">
+      <Box mt={3} mb={1}>
+        <Typography fontWeight="500">주문자 정보</Typography>
+      </Box>
+      <RowTable>
+        <TableRow>
+          <TableCell>주문자명</TableCell>
+          <TableCell>{purchaseInfo?.user.name}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>휴대폰번호</TableCell>
+          <TableCell>{purchaseInfo?.user.phone_no}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>이메일 주소</TableCell>
+          <TableCell>{purchaseInfo?.user.email}</TableCell>
+        </TableRow>
+      </RowTable>
+
+      <Box mt={3} mb={1}>
+        <Typography fontWeight="500">결제 수단</Typography>
+      </Box>
+      <RowTable>
+        <TableRow>
+          <TableCell>결제수단</TableCell>
+          <TableCell>{purchaseInfo?.payment.type}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>입금자명</TableCell>
+          <TableCell>{purchaseInfo?.payment.deposit_name}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>미출고시 조치방법</TableCell>
+          <TableCell>{purchaseInfo?.payment.not_shipped_type}</TableCell>
+        </TableRow>
+      </RowTable>
+
+      <Box mt={3} mb={1}>
+        <Typography fontWeight="500">배송 정보</Typography>
+      </Box>
+      <RowTable>
+        <TableRow>
+          <TableCell>받는 분</TableCell>
+          <TableCell>{purchaseInfo?.shipping.reciever_name}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>휴대폰번호</TableCell>
+          <TableCell>{purchaseInfo?.shipping.reciever_phone}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>배송지주소</TableCell>
+          <TableCell>{`[${purchaseInfo?.shipping.reciever_addr_code}] ${purchaseInfo?.shipping.reciever_addr_name}`}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>배송시 요청사항</TableCell>
+          <TableCell>{purchaseInfo?.shipping.additional_info}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>배송상태</TableCell>
+          <TableCell>{purchaseInfo?.shipping.status}</TableCell>
+        </TableRow>
+      </RowTable>
+
+      <Box py={2} display="flex" justifyContent="center">
+        <Button px={3} variant="contained" color="primary">
           수정
         </Button>
-      </Box>
-
-      <Box my={2}>
-        <Typography fontWeight="500">리워드 히스토리</Typography>
-      </Box>
-      <ColumnTable columns={reward_history_column} data={reward_history_row} />
-      <Box position="relative" p={6}>
-        <Pagination />
       </Box>
     </Box>
   );
