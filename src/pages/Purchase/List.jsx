@@ -131,7 +131,7 @@ export const PurchaseList = () => {
         <ColumnTable
           columns={purchase_list_columns}
           data={userList}
-          onRowClick={(row) => history.push(`/purchase/${row.purchase_no || 1}`)}
+          onRowClick={(row) => history.push(`/purchase/${row.purchase_no}`)}
         />
       </Box>
 

@@ -164,7 +164,7 @@ export const UserList = () => {
         <ColumnTable
           columns={user_list_columns}
           data={userList}
-          onRowClick={(row) => history.push(`/user/${row.user_no || 1}`)}
+          onRowClick={(row) => history.push(`/user/${row.user_no}`)}
           selection
           onSelectionChange={setSelectedUsers}
         />

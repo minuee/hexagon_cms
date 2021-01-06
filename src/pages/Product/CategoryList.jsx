@@ -26,6 +26,10 @@ const useStyles = makeStyles((theme) => ({
     display: "inline-block",
     width: theme.spacing(12),
     height: theme.spacing(12),
+
+    "& img": {
+      objectFit: "contain",
+    },
   },
 
   table_footer: {
@@ -143,7 +147,7 @@ export const CategoryList = () => {
         <ColumnTable
           columns={category_list_columns}
           data={categoryList}
-          onRowClick={(row) => history.push(`/product/category/${row.category_no || 1}`)}
+          onRowClick={(row) => history.push(`/product/category/${row.category_no}`)}
           selection
           onSelectionChange={setSelectedCategorys}
         />
