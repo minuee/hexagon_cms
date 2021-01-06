@@ -74,7 +74,7 @@ export const Dropzone = ({ control, name, width, ratio = 1, maxFiles = 1 }) => {
 
       {fields.map((item, index) => {
         return (
-          <Box display="flex" alignItems="center">
+          <Box display="flex" alignItems="center" key={index}>
             <RatioBox width={width} ratio={ratio} border="solid 1px #dddddd" onClick={() => remove(index)}>
               <Controller
                 as={<Avatar src={item.path} variant="square" className={classes.image} />}

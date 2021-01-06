@@ -151,7 +151,7 @@ export const ItemList = () => {
         </Box>
 
         <Box>
-          <Button variant="contained" onClick={() => history.push("/product/category/add")}>
+          <Button variant="contained" onClick={() => history.push("/product/item/add")}>
             추가
           </Button>
           <Button ml={2} variant="contained" onClick={handleDeleteItems}>

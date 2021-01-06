@@ -7,7 +7,7 @@ const useStyles = makeStyles((theme) => ({
     background: "#fff",
     fontFamily: theme.typography.fontFamily,
 
-    "& td:first-child": {
+    "& td:nth-last-child(2)": {
       background: theme.palette.grey[300],
       width: theme.spacing(25),
     },
