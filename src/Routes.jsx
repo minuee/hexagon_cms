@@ -9,6 +9,7 @@ import { Home } from "./pages/Home";
 import { UserList, UserDetail } from "./pages/User";
 import { PurchaseList, PurchaseDetail } from "./pages/Purchase";
 import { CategoryList, CategoryDetail, ItemList, ItemDetail } from "./pages/Product";
+import { NoticeList, NoticeDetail } from "./pages/Notice";
 
 const Routes = () => {
   const { userState } = useSelector((state) => state.reducer);
@@ -44,6 +45,9 @@ const MainRoutes = () => {
         <Route exact path="/product/item/:item_no" component={ItemDetail} />
         <Route path="/product/item" component={ItemList} />
         <Redirect from="/product" to="/product/category" />
+
+        <Route exact path="/notice/:notice_no" component={NoticeDetail} />
+        <Route path="/notice" component={NoticeList} />
 
         <Redirect to="/" />
       </Switch>
