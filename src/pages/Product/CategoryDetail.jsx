@@ -20,7 +20,7 @@ import {
 } from "@material-ui/core";
 import { DescriptionOutlined, Search } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { RowTable, ColumnTable, Pagination } from "components";
+import { RowTable, ColumnTable, Pagination, Dropzone } from "components";
 
 export const CategoryDetail = () => {
   const { category_no } = useParams();
@@ -89,7 +89,7 @@ export const CategoryDetail = () => {
         <TableRow>
           <TableCell>로고 이미지</TableCell>
           <TableCell>
-            <Button variant="contained">파일 찾기</Button>
+            <Dropzone control={control} name="logo_img" width="90px" ratio={1} />
           </TableCell>
         </TableRow>
       </RowTable>

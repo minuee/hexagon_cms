@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { useForm } from "react-hook-form";
 import dayjs from "dayjs";
 
 import { price } from "common";
@@ -20,7 +21,7 @@ import {
 } from "@material-ui/core";
 import { DescriptionOutlined, Search } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { RowTable, ColumnTable, Pagination } from "components";
+import { RowTable, ColumnTable, Pagination, Dropzone } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header_box: {
@@ -118,6 +119,7 @@ const reward_history_row = [
 
 export const UserDetail = () => {
   const classes = useStyles();
+  const { control } = useForm();
 
   const [userInfo, setUserInfo] = useState({
     rank: "silver",
@@ -226,7 +228,7 @@ export const UserDetail = () => {
         <TableRow>
           <TableCell>사업자등록증 첨부</TableCell>
           <TableCell>
-            <Avatar variant="square" src="/image/rank_gold.png" style={{ width: "70px", height: "100px" }} />
+            <Dropzone control={control} name="lisence_img" width="90px" ratio={1} />
           </TableCell>
         </TableRow>
       </RowTable>
