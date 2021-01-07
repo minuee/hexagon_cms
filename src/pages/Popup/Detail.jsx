@@ -23,8 +23,8 @@ import { DatePicker, TimePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
 import { RowTable, Dropzone } from "components";
 
-export const NoticeDetail = () => {
-  const { notice_no } = useParams();
+export const PopupDetail = () => {
+  const { popup_type, popup_no } = useParams();
   const history = useHistory();
   const { control, reset, handleSubmit } = useForm();
 
@@ -32,29 +32,29 @@ export const NoticeDetail = () => {
     console.log("add", data);
   }
   function handleRemoveNotice() {
-    console.log("remove", notice_no);
+    console.log("remove", popup_no);
   }
   function handleUpdateNotice(data) {
     console.log("update", data);
   }
 
   useEffect(() => {
-    if (notice_no !== "add") {
-      reset({
-        notice_title: "설연휴?",
-        notice_content: `
-dddddd
-      ddddd
-        줄바꿈테스트
-        ㅇㅇㅇ
-        `,
-        register_dt: {
-          date: dayjs(),
-          time: dayjs(),
-        },
-      });
+    if (popup_no !== "add") {
+      //       reset({
+      //         notice_title: "설연휴?",
+      //         notice_content: `
+      // dddddd
+      //       ddddd
+      //         줄바꿈테스트~~
+      //         ㅇㅇㅇ
+      //         `,
+      //         register_dt: {
+      //           date: dayjs(),
+      //           time: dayjs(),
+      //         },
+      //       });
     }
-  }, [notice_no]);
+  }, [popup_no]);
 
   return (
     <Box>
@@ -138,7 +138,7 @@ dddddd
           목록
         </Button>
 
-        {notice_no === "add" ? (
+        {popup_no === "add" ? (
           <Button variant="contained" color="primary" onClick={handleSubmit(handleAddNotice)}>
             등록
           </Button>

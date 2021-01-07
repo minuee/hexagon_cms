@@ -19,6 +19,15 @@ export const theme = createMuiTheme({
     divider: "#707070",
   },
 
+  overrides: {
+    MuiButton: {
+      contained: {
+        color: "#000",
+        backgroundColor: "#fff",
+      },
+    },
+  },
+
   typography: {
     fontFamily: `"Noto Sans KR", "Montserrat", "Roboto", sans-serif`,
     h1: { fontWeight: "400" },
