@@ -83,10 +83,42 @@ export const ItemDetail = () => {
 
       <RowTable>
         <TableRow>
+          <TableCell>카테고리</TableCell>
+          <TableCell>
+            <Controller
+              as={
+                <TextField size="small" select variant="outlined">
+                  <MenuItem value={1}>브랜드</MenuItem>
+                  <MenuItem value={2}>제품군</MenuItem>
+                </TextField>
+              }
+              name="category_type"
+              control={control}
+              defaultValue={1}
+            />
+            <Box display="inline-block" ml={2}>
+              <Controller
+                as={
+                  <TextField size="small" select variant="outlined">
+                    <MenuItem value={1}>아릭스</MenuItem>
+                    <MenuItem value={2}>드라이팍</MenuItem>
+                    <MenuItem value={3}>라코로나</MenuItem>
+                    <MenuItem value={4}>클로린직</MenuItem>
+                    <MenuItem value={5}>톤키타</MenuItem>
+                  </TextField>
+                }
+                name="category_name"
+                control={control}
+                defaultValue={1}
+              />
+            </Box>
+          </TableCell>
+        </TableRow>
+        <TableRow>
           <TableCell>상품명</TableCell>
           <TableCell>
             <Controller
-              as={<TextField variant="outlined" />}
+              as={<TextField size="small" variant="outlined" />}
               placeholder="상품명"
               name="item_name"
               control={control}
@@ -264,7 +296,7 @@ export const ItemDetail = () => {
           </TableCell>
         </TableRow>
 
-        <TableRow>
+        {/* <TableRow>
           <TableCell>제조사</TableCell>
           <TableCell>
             <Controller
@@ -295,12 +327,12 @@ export const ItemDetail = () => {
               />
             </Box>
           </TableCell>
-        </TableRow>
+        </TableRow> */}
         <TableRow>
           <TableCell>재질</TableCell>
           <TableCell>
             <Controller
-              as={<TextField variant="outlined" />}
+              as={<TextField size="small" variant="outlined" />}
               placeholder="재질명"
               name="item_material"
               control={control}
@@ -329,7 +361,7 @@ export const ItemDetail = () => {
           <TableCell>영업사원 인센티브</TableCell>
           <TableCell>
             <Controller
-              as={<TextField variant="outlined" type="number" />}
+              as={<TextField size="small" variant="outlined" type="number" />}
               InputProps={{
                 endAdornment: "%",
               }}

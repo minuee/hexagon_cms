@@ -60,23 +60,32 @@ const item_list_rows = [
     is_brand: true,
     category_name: "아릭스",
     item_name: "철 수세미",
-    item_price: 10000,
+    item_price: {
+      piece: 1000,
+      carton: 20000,
+    },
   },
   {
     item_no: 2,
     item_img: "/image/item_sample.png",
-    is_brand: false,
+    is_brand: true,
     category_name: "드라이팍",
     item_name: "돌 수세미",
-    item_price: 20000,
+    item_price: {
+      piece: 500,
+      box: 5000,
+    },
   },
   {
     item_no: 3,
     item_img: "/image/item_sample.png",
     is_brand: false,
-    category_name: "톤키타",
+    category_name: "주방용품",
     item_name: "고무 수세미",
-    item_price: 30000,
+    item_price: {
+      box: 6000,
+      carton: 100000,
+    },
   },
 ];
 
@@ -93,15 +102,25 @@ export const ItemList = () => {
   });
 
   const item_list_columns = [
+    { field: "category_type", title: "카테고리구분", render: ({ is_brand }) => (is_brand ? "브랜드" : "제품군") },
+    { field: "category_name", title: "제조사" },
     {
       field: "item_img",
       title: "상품 이미지",
       render: ({ item_img }) => <Avatar variant="square" src={item_img} className={classes.logo_box} />,
     },
-    { field: "category_type", title: "카테고리구분", render: ({ is_brand }) => (is_brand ? "브랜드" : "일반") },
-    { field: "category_name", title: "제조사" },
     { field: "item_name", title: "상품명" },
-    { field: "item_price", title: "가격", render: ({ item_price }) => `${price(item_price)}원` },
+    {
+      field: "item_price",
+      title: "가격",
+      render: ({ item_price }) => (
+        <p style={{ whiteSpace: "pre-wrap" }}>
+          {`낱개(${price(item_price.piece) || "-"})
+박스(${price(item_price.box) || "-"})
+카톤(${price(item_price.carton) || "-"})`}
+        </p>
+      ),
+    },
   ];
 
   function handleDeleteItems() {
@@ -131,18 +150,31 @@ export const ItemList = () => {
         <Box>
           <Select
             displayEmpty
-            name="search_category"
+            name="search_category_type"
+            margin="dense"
             variant="outlined"
             value={listContext.search_category}
-            onChange={(e) => handleContextChange("search_category", e.target.value)}
-            startAdornment={
-              <InputAdornment position="start">
-                <Search />
-              </InputAdornment>
-            }
+            onChange={(e) => handleContextChange("search_category_type", e.target.value)}
           >
-            <MenuItem value="">전체상품 보기</MenuItem>
+            <MenuItem value="">카테고리 구분</MenuItem>
+            <MenuItem value="brand">브랜드</MenuItem>
+            <MenuItem value="product_group">제품군</MenuItem>
+          </Select>
+
+          <Box mx={1} />
+
+          <Select
+            displayEmpty
+            name="search_category_name"
+            margin="dense"
+            variant="outlined"
+            value={listContext.search_category}
+            onChange={(e) => handleContextChange("search_category_name", e.target.value)}
+          >
+            <MenuItem value="">카테고리 선택</MenuItem>
             <MenuItem value={1}>아릭스</MenuItem>
+            <MenuItem value={2}>드라이팍</MenuItem>
+            <MenuItem value={3}>라코로나</MenuItem>
           </Select>
 
           <Button ml={2} variant="contained" color="primary" onClick={() => history.push("/product/category")}>

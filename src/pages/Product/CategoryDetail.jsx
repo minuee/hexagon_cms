@@ -80,12 +80,12 @@ export const CategoryDetail = () => {
             />
           </TableCell>
         </TableRow>
-        <TableRow>
+        {/* <TableRow>
           <TableCell>노출순위 {`(관리자 앱에서만 수정가능.)`}</TableCell>
           <TableCell>
             <Typography>12</Typography>
           </TableCell>
-        </TableRow>
+        </TableRow> */}
         <TableRow>
           <TableCell>로고 이미지</TableCell>
           <TableCell>
