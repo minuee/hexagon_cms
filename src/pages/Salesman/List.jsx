@@ -131,7 +131,7 @@ export const SalesmanList = () => {
         <ColumnTable
           columns={salesman_list_columns}
           data={salesmanList}
-          onRowClick={(row) => history.push(`/salesman/info/${row.salesman_no}`)}
+          onRowClick={(row) => history.push(`/salesman/${row.salesman_no}`)}
         />
       </Box>
 

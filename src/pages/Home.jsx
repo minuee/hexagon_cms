@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 
-  user_reward: {
+  column_table: {
     display: "flex",
     flexDirection: "column",
 
@@ -41,35 +41,64 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const user_reward_columns = [
-  { field: "reward_no", title: "번호", width: 80 },
+  { field: "user_no", title: "번호", width: 80 },
   { field: "user_name", title: "유저명" },
   { field: "reward_amount", title: "리워드액" },
 ];
 const user_reward_rows = [
   {
-    reward_no: 1,
+    user_no: 1,
     user_name: "륶인창",
     reward_amount: 1111111111,
   },
   {
-    reward_no: 1,
+    user_no: 2,
     user_name: "륶인창",
     reward_amount: 1111111111,
   },
   {
-    reward_no: 1,
+    user_no: 3,
     user_name: "륶인창",
     reward_amount: 1111111111,
   },
   {
-    reward_no: 1,
+    user_no: 4,
     user_name: "륶인창",
     reward_amount: 1111111111,
   },
 ];
 
+const salesman_incentive_columns = [
+  { field: "salesman_no", title: "번호", width: 80 },
+  { field: "salesman_name", title: "유저명" },
+  { field: "incentive_amount", title: "리워드액" },
+];
+const salesman_incentive_rows = [
+  {
+    salesman_no: 1,
+    salesman_name: "륶인창",
+    incentive_amount: 1111111111,
+  },
+  {
+    salesman_no: 2,
+    salesman_name: "륶인창",
+    incentive_amount: 1111111111,
+  },
+  {
+    salesman_no: 3,
+    salesman_name: "륶인창",
+    incentive_amount: 1111111111,
+  },
+  {
+    salesman_no: 4,
+    salesman_name: "륶인창",
+    incentive_amount: 1111111111,
+  },
+];
+
 export const Home = () => {
   const classes = useStyles();
+  const history = useHistory();
 
   const [userRewardData, setUserRewardData] = useState();
 
@@ -102,20 +131,46 @@ export const Home = () => {
         </Box>
       </Box>
 
-      <Box className={classes.user_reward}>
-        <Typography variant="h6" fontWeight={700}>
-          유저 리워드
-        </Typography>
-        <Typography color="secondary">{dayjs().format("YYYY.MM.DD hh:mm")} 기준</Typography>
+      <Box display="flex">
+        <Box className={classes.column_table} mr={6}>
+          <Typography variant="h6" fontWeight={700}>
+            유저 리워드 통계
+          </Typography>
+          <Typography color="secondary">{dayjs().format("YYYY.MM.DD hh:mm")} 기준</Typography>
 
-        <Box my={2}>
-          <ColumnTable columns={user_reward_columns} data={userRewardData} />
+          <Box my={2}>
+            <ColumnTable
+              columns={user_reward_columns}
+              data={userRewardData}
+              onRowClick={(row) => history.push(`/user/${row.user_no}`)}
+            />
+          </Box>
+
+          <Button onClick={() => history.push("/user")}>
+            <Typography>더보기</Typography>
+            <KeyboardArrowRight />
+          </Button>
         </Box>
 
-        <Button>
-          <Typography>더보기</Typography>
-          <KeyboardArrowRight />
-        </Button>
+        <Box className={classes.column_table}>
+          <Typography variant="h6" fontWeight={700}>
+            영업사원 인센티브 통계
+          </Typography>
+          <Typography color="secondary">{dayjs().format("YYYY.MM.DD hh:mm")} 기준</Typography>
+
+          <Box my={2}>
+            <ColumnTable
+              columns={salesman_incentive_columns}
+              data={salesman_incentive_rows}
+              onRowClick={(row) => history.push(`/salesman/${row.salesman_no}`)}
+            />
+          </Box>
+
+          <Button onClick={() => history.push("/salesman")}>
+            <Typography>더보기</Typography>
+            <KeyboardArrowRight />
+          </Button>
+        </Box>
       </Box>
     </Box>
   );
