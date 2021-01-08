@@ -70,8 +70,8 @@ export const CategoryDetail = () => {
             <Controller
               as={
                 <TextField select variant="outlined">
-                  <MenuItem value={1}>일반</MenuItem>
-                  <MenuItem value={2}>브랜드</MenuItem>
+                  <MenuItem value={1}>브랜드</MenuItem>
+                  <MenuItem value={2}>제품군</MenuItem>
                 </TextField>
               }
               name="category_type"
