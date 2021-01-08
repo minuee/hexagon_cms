@@ -15,6 +15,10 @@ const page = [
     path: `/user`,
   },
   {
+    label: `영업사원관리`,
+    path: `/salesman`,
+  },
+  {
     label: `구매내역`,
     path: `/purchase`,
   },

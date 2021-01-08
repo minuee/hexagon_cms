@@ -7,6 +7,7 @@ import { SignIn, SignUp, FindUserInfo } from "./pages/Auth";
 import { Layout } from "./layouts";
 import { Home } from "./pages/Home";
 import { UserList, UserDetail } from "./pages/User";
+import { SalesmanList, SalesmanDetail, SalesmanRegister, SalesmanIncentive } from "./pages/Salesman";
 import { PurchaseList, PurchaseDetail } from "./pages/Purchase";
 import { CategoryList, CategoryDetail, ItemList, ItemDetail } from "./pages/Product";
 import { PopupList, PopupDetail } from "./pages/Popup";
@@ -37,6 +38,11 @@ const MainRoutes = () => {
 
         <Route exact path="/user/:user_no" component={UserDetail} />
         <Route path="/user" component={UserList} />
+
+        <Route exact path="/salesman/add" component={SalesmanRegister} />
+        <Route exact path="/salesman/:salesman_no" component={SalesmanDetail} />
+        <Route exact path="/salesman/incentive/:month_no" component={SalesmanDetail} />
+        <Route path="/salesman" component={SalesmanList} />
 
         <Route exact path="/purchase/:purchase_no" component={PurchaseDetail} />
         <Route path="/purchase" component={PurchaseList} />
