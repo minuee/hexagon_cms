@@ -56,7 +56,7 @@ const reward_history_column = [
   {
     field: "accumulate_dt",
     title: "적립일자",
-    render: ({ accumulate_dt }) => dayjs(accumulate_dt).format("YYYY.MM.DD"),
+    render: ({ accumulate_dt }) => dayjs.unix(accumulate_dt).format("YYYY.MM.DD"),
   },
   { field: "user_name", title: "유저명" },
   { field: "reward_reason", title: "내역" },
@@ -133,6 +133,9 @@ export const UserDetail = () => {
     phone_no: "01055663322",
     email: "admin@gmail.com",
     authority: 1,
+
+    signup_yn: true,
+    salesman_code: "X398D2",
   });
 
   return (
@@ -193,7 +196,7 @@ export const UserDetail = () => {
         <TableRow>
           <TableCell>권한</TableCell>
           <TableCell>
-            <TextField select variant="outlined" value={userInfo?.authority}>
+            <TextField select size="small" variant="outlined" value={userInfo?.authority}>
               <MenuItem value={"1"}>영업사원</MenuItem>
               <MenuItem value={"2"}>경영자</MenuItem>
               <MenuItem value={"3"}>브로커</MenuItem>
@@ -221,6 +224,12 @@ export const UserDetail = () => {
             />
           </TableCell>
         </TableRow>
+        {userInfo?.signup_yn && (
+          <TableRow>
+            <TableCell>영업사원 코드</TableCell>
+            <TableCell>{userInfo?.salesman_code}</TableCell>
+          </TableRow>
+        )}
         <TableRow>
           <TableCell>적립률</TableCell>
           <TableCell>{userInfo?.accumulate_rate} %</TableCell>
@@ -238,9 +247,15 @@ export const UserDetail = () => {
         display="flex"
         // justifyContent="center"
       >
-        <Button variant="contained" color="primary">
-          수정
-        </Button>
+        {userInfo?.signup_yn ? (
+          <Button variant="contained" color="primary">
+            정보 수정
+          </Button>
+        ) : (
+          <Button variant="contained" color="primary">
+            회원가입 승인
+          </Button>
+        )}
       </Box>
 
       <Box my={2}>
