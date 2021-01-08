@@ -37,6 +37,9 @@ export const NoticeDetail = () => {
   function handleUpdateNotice(data) {
     console.log("update", data);
   }
+  function handleSendNotice() {
+    console.log("notice");
+  }
 
   useEffect(() => {
     if (notice_no !== "add") {
@@ -133,7 +136,7 @@ dddddd
         </TableRow>
       </RowTable>
 
-      <Box mt={4} textAlign="center">
+      <Box mt={4} display="flex" justifyContent="center" alignItems="flex-start">
         <Button mr={2} variant="contained" onClick={() => history.push("/notice")}>
           목록
         </Button>
@@ -144,12 +147,20 @@ dddddd
           </Button>
         ) : (
           <>
-            <Button mr={2} variant="contained" color="primary" onClick={handleRemoveNotice}>
+            <Button variant="contained" color="primary" onClick={handleRemoveNotice}>
               삭제
             </Button>
-            <Button variant="contained" color="primary" onClick={handleSubmit(handleUpdateNotice)}>
+            <Button mx={2} variant="contained" color="primary" onClick={handleSubmit(handleUpdateNotice)}>
               수정
             </Button>
+            <Box display="inline-block">
+              <Button variant="contained" color="secondary" onClick={handleSendNotice}>
+                Push 발송
+              </Button>
+              <p style={{ fontFamily: "Montserrat", fontWeight: "ital,wght@1,300" }}>
+                최근발송: {dayjs.unix(1889883723).format("YYYY-MM-DD hh:mm")}
+              </p>
+            </Box>
           </>
         )}
       </Box>

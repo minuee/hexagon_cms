@@ -47,6 +47,11 @@ const notice_list_columns = [
     title: "업로드 일시",
     render: ({ register_dt }) => dayjs.unix(register_dt).format("YYYY-MM-DD hh:mm"),
   },
+  {
+    field: "push_yn",
+    title: "Push 알림 발송",
+    render: ({ push_yn }) => (push_yn ? "Y" : "N"),
+  },
 ];
 const notice_list_rows = [
   {
@@ -55,6 +60,7 @@ const notice_list_rows = [
     notice_content:
       "설 연휴 배송량 급증에 의한 배송 일정 지연을 공지드립니다. 설 연휴 배송량 급증에 의한 배송 일정 지연을 공지드립니다. 설 연휴 배송량 급증에 의한 배송 일정 지연을 공지드립니다.",
     register_dt: 1605215112,
+    push_yn: true,
   },
   {
     notice_no: 2,
@@ -62,6 +68,7 @@ const notice_list_rows = [
     notice_content:
       "추석 연휴 배송량 급증에 의한 배송 일정 지연을 공지드립니다. 추석 연휴 배송량 급증에 의한 배송 일정 지연을 공지드립니다. 추석 연휴 배송량 급증에 의한 배송 일정 지연을 공지드립니다.",
     register_dt: 1605298112,
+    push_yn: false,
   },
   {
     notice_no: 3,
@@ -69,6 +76,7 @@ const notice_list_rows = [
     notice_content:
       "크리스마스 연휴 배송량 급증에 의한 배송 일정 지연을 공지드립니다. 크리스마스 연휴 배송량 급증에 의한 배송 일정 지연을 공지드립니다. 크리스마스 연휴 배송량 급증에 의한 배송 일정 지연을 공지드립니다.",
     register_dt: 1610915112,
+    push_yn: false,
   },
   {
     notice_no: 4,
@@ -76,6 +84,7 @@ const notice_list_rows = [
     notice_content:
       "추수감사절 연휴 배송량 급증에 의한 배송 일정 지연을 공지드립니다. 추수감사절 연휴 배송량 급증에 의한 배송 일정 지연을 공지드립니다. 추수감사절 연휴 배송량 급증에 의한 배송 일정 지연을 공지드립니다.",
     register_dt: 1605276912,
+    push_yn: false,
   },
 ];
 
