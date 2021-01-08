@@ -84,8 +84,8 @@ export const PopupList = () => {
   const [popupType, setPopupType] = useState("notice");
 
   const [listContext, setListContext] = useState({
-    page: 1,
-    search_text: "",
+    cur_popup_page: 1,
+    prev_popup_page: 1,
   });
 
   const popup_list_columns_1 = [
@@ -188,7 +188,7 @@ export const PopupList = () => {
         />
 
         <Box position="relative" mt={6}>
-          <Pagination page={listContext.page} setPage={handleContextChange} />
+          <Pagination page={listContext.page} setPage={handleContextChange} name="cur_popup_page" />
         </Box>
       </Box>
 
@@ -216,7 +216,7 @@ export const PopupList = () => {
         />
 
         <Box position="relative" mt={6}>
-          <Pagination page={listContext.page} setPage={handleContextChange} />
+          <Pagination page={listContext.page} setPage={handleContextChange} name="prev_popup_page" />
         </Box>
       </Box>
 
