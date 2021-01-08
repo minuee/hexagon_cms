@@ -37,23 +37,24 @@ const useStyles = makeStyles((theme) => ({
 
 const purchase_list_columns = [
   { field: "purchase_no", title: "번호" },
-  { field: "purchase_dt", title: "구매일자", render: ({ purchase_dt }) => dayjs(purchase_dt).format("YYYY-MM-DD") },
+  { field: "purchase_code", title: "구매번호" },
+  {
+    field: "purchase_dt",
+    title: "구매일자",
+    render: ({ purchase_dt }) => dayjs.unix(purchase_dt).format("YYYY-MM-DD"),
+  },
   { field: "user_name", title: "유저명" },
-  { field: "purchase_price", title: "구매액", render: ({ purchase_price }) => price(purchase_price) },
-  { field: "item_name", title: "상품명" },
-  { field: "purchase_amount", title: "수량", render: ({ purchase_amount }) => price(purchase_amount) },
-  { field: "purchase_unit_text", title: "단위" },
+  { field: "purchase_price", title: "구매액", render: ({ purchase_price }) => `${price(purchase_price)}원` },
+  { field: "order_status", title: "주문상태" },
 ];
 const purchase_list_rows = [
   {
     purchase_no: 1,
+    purchase_code: "20200506-D5446",
     purchase_dt: 3333333333,
     user_name: "전지현",
     purchase_price: 1234567,
-    item_name: "마초킹스페셜",
-    purchase_amount: 33,
-    purchase_unit: 1,
-    purchase_unit_text: "카톤",
+    order_status: "배송중",
   },
 ];
 

@@ -59,7 +59,30 @@ export const PurchaseDetail = () => {
   const classes = useStyles();
 
   const [purchaseInfo, setPurchaseInfo] = useState({
-    item: {
+    items: [
+      {
+        no: 1,
+        name: "철수세미",
+        price: 5000,
+        unit: "카톤",
+        amount: 2,
+      },
+      {
+        no: 2,
+        name: "철수세미",
+        price: 6000,
+        unit: "낱개",
+        amount: 12,
+      },
+      {
+        no: 3,
+        name: "모래수세미",
+        price: 4800,
+        unit: "박스",
+        amount: 6,
+      },
+    ],
+    order: {
       order_no: "20200506-D5446",
       order_dt: 9456665332,
       name: "아릭스 수세미 외 1",
@@ -139,40 +162,55 @@ export const PurchaseDetail = () => {
       </Box>
 
       <Box mt={3} mb={1}>
-        <Typography fontWeight="500">주문 상품 정보</Typography>
+        <Typography fontWeight="500">주문 상품</Typography>
       </Box>
       <RowTable>
         <TableRow>
           <TableCell>주문번호</TableCell>
-          <TableCell>{purchaseInfo?.item.order_no}</TableCell>
+          <TableCell colSpan={3}>{purchaseInfo?.order.order_no}</TableCell>
         </TableRow>
+        {purchaseInfo?.items.map((item, index) => (
+          <>
+            <TableRow>
+              <TableCell>상품명</TableCell>
+              <TableCell>{item.name}</TableCell>
+              <TableCell>금액</TableCell>
+              <TableCell>{price(item.price)}원</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>단위</TableCell>
+              <TableCell>{item.unit}</TableCell>
+              <TableCell>수량</TableCell>
+              <TableCell>{price(item.amount)}</TableCell>
+            </TableRow>
+          </>
+        ))}
+      </RowTable>
+
+      <Box mt={3} mb={1}>
+        <Typography fontWeight="500">주문 정보</Typography>
+      </Box>
+      <RowTable>
         <TableRow>
           <TableCell>구매일시</TableCell>
-          <TableCell>{dayjs(purchaseInfo?.item.order_dt).format("YYYY.MM.DD hh:mm")}</TableCell>
+          <TableCell>{dayjs.unix(purchaseInfo?.order.order_dt).format("YYYY.MM.DD hh:mm")}</TableCell>
         </TableRow>
-        <TableRow>
-          <TableCell>상품명</TableCell>
-          <TableCell>{purchaseInfo?.item.name}</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>상품금액</TableCell>
-          <TableCell>{price(purchaseInfo?.item.item_price)}원</TableCell>
-        </TableRow>
+
         <TableRow>
           <TableCell>이벤트가</TableCell>
-          <TableCell>{price(purchaseInfo?.item.event_price)}원</TableCell>
+          <TableCell>{price(purchaseInfo?.order.event_price)}원</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>할인금액</TableCell>
-          <TableCell>{price(purchaseInfo?.item.discount_amount)}원</TableCell>
+          <TableCell>{price(purchaseInfo?.order.discount_amount)}원</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>배송비</TableCell>
-          <TableCell>{price(purchaseInfo?.item.shipping_fee)}원</TableCell>
+          <TableCell>{price(purchaseInfo?.order.shipping_fee)}원</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>총 주문금액</TableCell>
-          <TableCell>{price(purchaseInfo?.item.total_price)}원</TableCell>
+          <TableCell>{price(purchaseInfo?.order.total_price)}원</TableCell>
         </TableRow>
       </RowTable>
 
@@ -246,7 +284,7 @@ export const PurchaseDetail = () => {
         <TableRow>
           <TableCell>배송상태</TableCell>
           <TableCell>
-            <TextField variant="outlined" select value={purchaseInfo?.shipping.status}>
+            <TextField size="small" variant="outlined" select value={purchaseInfo?.shipping.status}>
               {shipping_states.map((item) => {
                 return <MenuItem value={item.no}>{item.label}</MenuItem>;
               })}
