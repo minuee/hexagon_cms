@@ -40,8 +40,8 @@ const MainRoutes = () => {
         <Route path="/user" component={UserList} />
 
         <Route exact path="/salesman/add" component={SalesmanRegister} />
-        <Route exact path="/salesman/:salesman_no" component={SalesmanDetail} />
-        <Route exact path="/salesman/incentive/:month_no" component={SalesmanDetail} />
+        <Route exact path="/salesman/incentive/:month_no" component={SalesmanIncentive} />
+        <Route exact path="/salesman/info/:salesman_no" component={SalesmanDetail} />
         <Route path="/salesman" component={SalesmanList} />
 
         <Route exact path="/purchase/:purchase_no" component={PurchaseDetail} />
