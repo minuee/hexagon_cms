@@ -19,8 +19,8 @@ const useStyles = makeStyles((theme) => ({
 
   table_image: {
     display: "inline-block",
-    width: theme.spacing(12),
-    height: theme.spacing(12),
+    width: "60px",
+    height: "60px",
 
     "& img": {
       objectFit: "contain",
