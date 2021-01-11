@@ -38,7 +38,7 @@ const page = [
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    width: "20rem",
+    width: "350px",
     background: theme.palette.secondary.main,
 
     "& a": {

@@ -5,11 +5,11 @@ import { Box } from "@material-ui/core";
 
 export const Layout = ({ children, ...props }) => {
   return (
-    <Box minWidth="1440px" {...props}>
+    <Box minWidth="1280px" {...props}>
       <Header />
-      <Box display="flex" minHeight="calc(100vh - 6rem)">
+      <Box display="flex" minHeight="calc(100vh - 100px)">
         <Sidebar />
-        <Box p={4} width="calc(100% - 20rem)" bgcolor="rgba(223, 223, 223, 0.2)">
+        <Box p={4} width="calc(100% - 350px)" bgcolor="rgba(223, 223, 223, 0.2)">
           {children}
         </Box>
       </Box>

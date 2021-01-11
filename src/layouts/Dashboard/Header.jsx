@@ -8,7 +8,7 @@ import { AccountCircle } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    height: "6rem",
+    height: "100px",
     justifyContent: "space-between",
     alignItems: "center",
     borderBottom: "solid 1px #ddd",
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignItems: "center",
 
-    width: "20rem",
+    width: "350px",
     height: "100%",
 
     "& > *": {
