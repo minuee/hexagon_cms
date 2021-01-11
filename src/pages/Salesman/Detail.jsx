@@ -195,7 +195,7 @@ export const SalesmanDetail = () => {
         )}
       </Box>
 
-      <Box position="relative" p={6}>
+      <Box position="relative" py={6}>
         <Pagination />
       </Box>
     </Box>

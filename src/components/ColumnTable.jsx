@@ -34,6 +34,9 @@ export const ColumnTable = ({ columns, data = [], onRowClick = () => {}, selecti
 
           selection: !!selection || false,
         }}
+        components={{
+          Container: (props) => <Box bgcolor="#fff" {...props} />,
+        }}
         {...props}
       />
     </Box>

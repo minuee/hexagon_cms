@@ -54,7 +54,7 @@ export const SalesmanIncentive = () => {
         data={incentive_list_rows}
         onRowClick={(row) => history.push(`/purchase/${row.purchase_no}`)}
       />
-      <Box position="relative" p={6}>
+      <Box position="relative" py={6}>
         <Pagination />
       </Box>
     </Box>

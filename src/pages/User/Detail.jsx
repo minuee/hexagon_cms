@@ -262,7 +262,7 @@ export const UserDetail = () => {
         <Typography fontWeight="500">리워드 히스토리</Typography>
       </Box>
       <ColumnTable columns={reward_history_column} data={reward_history_row} />
-      <Box position="relative" p={6}>
+      <Box position="relative" py={6}>
         <Pagination />
       </Box>
     </Box>
