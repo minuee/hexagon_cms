@@ -59,8 +59,18 @@ const salesman_member_columns = [
 ];
 const monthly_incentive_columns = [
   { field: "incentive_dt", title: "날짜", render: ({ incentive_dt }) => dayjs.unix(incentive_dt).format("YYYY-MM") },
-  { field: "total_amount", title: "총구매대행액", render: ({ total_amount }) => `${price(total_amount)}원` },
-  { field: "incentive_amount", title: "인센티브액", render: ({ incentive_amount }) => `${price(incentive_amount)}원` },
+  {
+    field: "total_amount",
+    title: "총구매대행액",
+    render: ({ total_amount }) => `${price(total_amount)}원`,
+    cellStyle: { textAlign: "right" },
+  },
+  {
+    field: "incentive_amount",
+    title: "인센티브액",
+    render: ({ incentive_amount }) => `${price(incentive_amount)}원`,
+    cellStyle: { textAlign: "right" },
+  },
 ];
 
 const salesman_member_rows = [

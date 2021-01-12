@@ -35,8 +35,18 @@ const user_list_columns = [
   { field: "user_code", title: "코드값" },
   { field: "user_phone", title: "휴대폰번호" },
   { field: "user_email", title: "이메일주소" },
-  { field: "purchase_amount", title: "구매액", render: ({ purchase_amount }) => `${price(purchase_amount)}원` },
-  { field: "reward_amount", title: "리워드액", render: ({ reward_amount }) => `${price(reward_amount)}원` },
+  {
+    field: "purchase_amount",
+    title: "구매액",
+    render: ({ purchase_amount }) => `${price(purchase_amount)}원`,
+    cellStyle: { textAlign: "right" },
+  },
+  {
+    field: "reward_amount",
+    title: "리워드액",
+    render: ({ reward_amount }) => `${price(reward_amount)}원`,
+    cellStyle: { textAlign: "right" },
+  },
   { field: "user_grade", title: "등급" },
   {
     field: "remark",

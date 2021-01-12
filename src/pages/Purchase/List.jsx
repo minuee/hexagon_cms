@@ -44,7 +44,12 @@ const purchase_list_columns = [
     render: ({ purchase_dt }) => dayjs.unix(purchase_dt).format("YYYY-MM-DD"),
   },
   { field: "user_name", title: "유저명" },
-  { field: "purchase_price", title: "구매액", render: ({ purchase_price }) => `${price(purchase_price)}원` },
+  {
+    field: "purchase_price",
+    title: "구매액",
+    render: ({ purchase_price }) => `${price(purchase_price)}원`,
+    cellStyle: { textAlign: "right" },
+  },
   { field: "order_status", title: "주문상태" },
 ];
 const purchase_list_rows = [

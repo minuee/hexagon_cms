@@ -35,12 +35,14 @@ const notice_list_columns = [
     field: "notice_title",
     title: "제목",
     render: ({ notice_title }) => (notice_title?.length > 20 ? notice_title?.substring(0, 20) : notice_title),
+    cellStyle: { textAlign: "left" },
   },
   {
     field: "notice_content",
     title: "내용",
     render: ({ notice_content }) =>
       notice_content?.length > 20 ? `${notice_content?.substring(0, 20)}...` : notice_content,
+    cellStyle: { textAlign: "left" },
   },
   {
     field: "register_dt",

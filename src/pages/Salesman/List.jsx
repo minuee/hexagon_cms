@@ -37,12 +37,14 @@ const salesman_list_columns = [
   {
     field: "salesman_total_amount",
     title: "구매대행액",
-    render: ({ salesman_total_amount }) => price(salesman_total_amount),
+    render: ({ salesman_total_amount }) => `${price(salesman_total_amount)}원`,
+    cellStyle: { textAlign: "right" },
   },
   {
     field: "salesman_total_incentive",
     title: "인센티브액",
-    render: ({ salesman_total_incentive }) => price(salesman_total_incentive),
+    render: ({ salesman_total_incentive }) => `${price(salesman_total_incentive)}원`,
+    cellStyle: { textAlign: "right" },
   },
   { field: "salesman_status_text", title: "상태" },
 ];

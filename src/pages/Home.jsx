@@ -43,55 +43,65 @@ const useStyles = makeStyles((theme) => ({
 const user_reward_columns = [
   { field: "user_no", title: "번호", width: 80 },
   { field: "user_name", title: "유저명" },
-  { field: "reward_amount", title: "리워드액" },
+  {
+    field: "reward_amount",
+    title: "리워드액",
+    render: ({ reward_amount }) => `${price(reward_amount)}원`,
+    cellStyle: { textAlign: "right" },
+  },
 ];
 const user_reward_rows = [
   {
     user_no: 1,
-    user_name: "륶인창",
+    user_name: "황지은",
     reward_amount: 1111111111,
   },
   {
     user_no: 2,
-    user_name: "륶인창",
+    user_name: "유지은",
     reward_amount: 1111111111,
   },
   {
     user_no: 3,
-    user_name: "륶인창",
+    user_name: "오지은",
     reward_amount: 1111111111,
   },
   {
     user_no: 4,
-    user_name: "륶인창",
+    user_name: "이지은",
     reward_amount: 1111111111,
   },
 ];
 
 const salesman_incentive_columns = [
   { field: "salesman_no", title: "번호", width: 80 },
-  { field: "salesman_name", title: "유저명" },
-  { field: "incentive_amount", title: "리워드액" },
+  { field: "salesman_name", title: "영업사원명" },
+  {
+    field: "incentive_amount",
+    title: "인센티브액",
+    render: ({ incentive_amount }) => `${price(incentive_amount)}원`,
+    cellStyle: { textAlign: "right" },
+  },
 ];
 const salesman_incentive_rows = [
   {
     salesman_no: 1,
-    salesman_name: "륶인창",
+    salesman_name: "전지현",
     incentive_amount: 1111111111,
   },
   {
     salesman_no: 2,
-    salesman_name: "륶인창",
+    salesman_name: "이지현",
     incentive_amount: 1111111111,
   },
   {
     salesman_no: 3,
-    salesman_name: "륶인창",
+    salesman_name: "박지현",
     incentive_amount: 1111111111,
   },
   {
     salesman_no: 4,
-    salesman_name: "륶인창",
+    salesman_name: "김지현",
     incentive_amount: 1111111111,
   },
 ];

@@ -64,6 +64,7 @@ const reward_history_column = [
     field: "reward_amount",
     title: "리워드액",
     render: ({ reward_amount }) => `+${price(reward_amount)}원`,
+    cellStyle: { textAlign: "right" },
   },
 ];
 const reward_history_row = [
