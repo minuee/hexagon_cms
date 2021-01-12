@@ -36,7 +36,7 @@ const MainRoutes = () => {
       <Switch>
         <Route exact path="/" component={Home} />
 
-        <Route exact path="/user/:user_no" component={UserDetail} />
+        <Route exact path="/user/:member_pk" component={UserDetail} />
         <Route path="/user" component={UserList} />
 
         <Route exact path="/salesman/add" component={SalesmanRegister} />

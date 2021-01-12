@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { price } from "common";
-import dayjs from "dayjs";
+import { apiObject } from "api";
 
-import { Grid, Box, makeStyles, TextField, InputAdornment } from "@material-ui/core";
+import { Grid, Box, makeStyles, TextField, InputAdornment, IconButton } from "@material-ui/core";
 import { DescriptionOutlined, Search } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, Pagination } from "components";
@@ -31,68 +31,24 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const user_list_columns = [
-  { field: "user_name", title: "이름" },
-  { field: "user_code", title: "코드값" },
-  { field: "user_phone", title: "휴대폰번호" },
-  { field: "user_email", title: "이메일주소" },
+  { title: "이름", field: "name" },
+  { title: "코드값", field: "member_pk" },
+  { title: "휴대폰번호", field: "phone" },
+  { title: "이메일주소", field: "email" },
   {
-    field: "purchase_amount",
     title: "구매액",
-    render: ({ purchase_amount }) => `${price(purchase_amount)}원`,
+    render: ({ total_amount }) => `${price(total_amount) || 0}원`,
     cellStyle: { textAlign: "right" },
   },
   {
-    field: "reward_amount",
     title: "리워드액",
-    render: ({ reward_amount }) => `${price(reward_amount)}원`,
+    render: ({ reward_point }) => `${price(reward_point) || 0}원`,
     cellStyle: { textAlign: "right" },
   },
-  { field: "user_grade", title: "등급" },
+  { title: "등급", field: "grade_name" },
   {
-    field: "remark",
     title: "비고",
-    render: ({ signup_yn, salesman_code }) => (signup_yn ? salesman_code : "회원가입 미승인"),
-  },
-];
-const user_list_rows = [
-  {
-    user_name: "륶인창",
-    user_code: "81JK3D",
-    user_phone: "01022223333",
-    user_email: "sss@mmmelk.com",
-    purchase_amount: 55555555,
-    reward_amount: 1111111111,
-    user_grade: "골드",
-    remark: "-",
-
-    signup_yn: true,
-    salesman_code: "X792D2",
-  },
-  {
-    user_name: "륶인창",
-    user_code: "81JK3D",
-    user_phone: "01022223333",
-    user_email: "sss@mmmelk.com",
-    purchase_amount: 55555555,
-    reward_amount: 1111111111,
-    user_grade: "골드",
-    remark: "-",
-
-    signup_yn: true,
-    salesman_code: "V309L7",
-  },
-  {
-    user_name: "륶인창",
-    user_code: "81JK3D",
-    user_phone: "01022223333",
-    user_email: "sss@mmmelk.com",
-    purchase_amount: 55555555,
-    reward_amount: 1111111111,
-    user_grade: "골드",
-    remark: "-",
-
-    signup_yn: false,
-    salesman_code: "-",
+    render: ({ approval, special_code }) => (approval ? special_code : "회원가입 미승인"),
   },
 ];
 
@@ -104,8 +60,18 @@ export const UserList = () => {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [listContext, setListContext] = useState({
     page: 1,
-    search_text: "",
+    search_word: "",
+    order_type: "",
   });
+
+  async function getUserList() {
+    let data = await apiObject.getMemberList({
+      ...listContext,
+    });
+
+    setUserList(data);
+    console.log(data);
+  }
 
   function handleSignInApprove() {
     console.log(selectedUsers);
@@ -118,12 +84,8 @@ export const UserList = () => {
   }
 
   useEffect(() => {
-    console.log("listContext", listContext);
-  }, [listContext]);
-
-  useEffect(() => {
-    setUserList(user_list_rows);
-  }, []);
+    getUserList();
+  }, [listContext.page, listContext.order_type]);
 
   return (
     <Box>
@@ -133,11 +95,21 @@ export const UserList = () => {
         </Typography>
 
         <Box className={classes.header_buttons}>
-          <Button>이름순</Button>
-          <Button>가입일자순</Button>
-          <Button>번호순</Button>
-          <Button>구매액순</Button>
-          <Button>리워드액순</Button>
+          <Button onClick={() => handleContextChange("order_type", "uname")}>
+            <Typography fontWeight={listContext.order_type === "uname" && "700"}>이름순</Typography>
+          </Button>
+          <Button onClick={() => handleContextChange("order_type", "reg")}>
+            <Typography fontWeight={listContext.order_type === "reg" && "700"}>가입일자순</Typography>
+          </Button>
+          <Button onClick={() => handleContextChange("order_type", "no")}>
+            <Typography fontWeight={listContext.order_type === "no" && "700"}>번호순</Typography>
+          </Button>
+          <Button onClick={() => handleContextChange("order_type", "order")}>
+            <Typography fontWeight={listContext.order_type === "order" && "700"}>구매액순</Typography>
+          </Button>
+          <Button onClick={() => handleContextChange("order_type", "reward")}>
+            <Typography fontWeight={listContext.order_type === "reward" && "700"}>리워드액순</Typography>
+          </Button>
           <Button variant="contained" color="primary" ml={3} onClick={handleSignInApprove}>
             회원가입 승인
           </Button>
@@ -148,7 +120,7 @@ export const UserList = () => {
         <ColumnTable
           columns={user_list_columns}
           data={userList}
-          onRowClick={(row) => history.push(`/user/${row.user_no}`)}
+          onRowClick={(row) => history.push(`/user/${row.member_pk}`)}
           selection
           onSelectionChange={setSelectedUsers}
         />
@@ -160,17 +132,24 @@ export const UserList = () => {
           엑셀저장
         </Button>
 
-        <Pagination page={listContext.page} setPage={handleContextChange} />
+        <Pagination
+          page={listContext.page}
+          setPage={handleContextChange}
+          count={Math.ceil(+userList?.[0]?.total / 10)}
+        />
 
         <TextField
-          name="search_text"
+          name="search_word"
           variant="outlined"
-          value={listContext.search_text}
-          onChange={(e) => handleContextChange("search_text", e.target.value)}
+          value={listContext.search_word}
+          onChange={(e) => handleContextChange("search_word", e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && getUserList()}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Search />
+                <IconButton onClick={getUserList}>
+                  <Search />
+                </IconButton>
               </InputAdornment>
             ),
           }}
