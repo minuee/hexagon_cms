@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme) => ({
     },
     "& th": {
       background: theme.palette.grey[300],
+      fontWeight: "700",
     },
   },
 }));

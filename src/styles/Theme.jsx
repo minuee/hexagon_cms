@@ -29,7 +29,8 @@ export const theme = createMuiTheme({
   },
 
   typography: {
-    fontFamily: `"Noto Sans KR", "Montserrat", "Roboto", sans-serif`,
+    fontFamily: "Roboto,'Noto Sans KR', sans-serif",
+
     h1: { fontWeight: "400" },
     h2: { fontWeight: "400" },
     h3: { fontWeight: "400" },
