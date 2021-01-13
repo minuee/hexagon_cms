@@ -47,7 +47,7 @@ axios.interceptors.response.use(
 
 export const apiObject = {
   // Member
-  getMemberList: async ({ page, paginate = 10, search_word, term_start, term_end, order_type }) => {
+  getMemberList: async ({ page, paginate = 10, search_word, term_start, term_end, sort_item, sort_type }) => {
     try {
       let data = await axios.get("/member/list", {
         params: {
@@ -56,7 +56,8 @@ export const apiObject = {
           search_word,
           term_start,
           term_end,
-          order_type,
+          sort_item,
+          sort_type,
         },
       });
       let ret = data.data.data.userList;
@@ -72,12 +73,31 @@ export const apiObject = {
       let data = await axios.get(`/member/view/${member_pk}`, {
         params: {},
       });
+
       let ret = data.data.data.userDetail[0];
+      ret.sample_img = "https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg";
 
       return ret;
     } catch (e) {
       console.log(e);
       return {};
+    }
+  },
+  getMemberRewardList: async ({ member_pk, page, paginate = 10 }) => {
+    try {
+      let data = await axios.get(`/member/reward/list/${member_pk}`, {
+        params: { page, paginate },
+      });
+
+      let ret = data.data.data.userRewardHistory;
+      // ret.forEach((item) => {
+      //   item.reward_type = item.reward_type || "-";
+      // });
+
+      return ret;
+    } catch (e) {
+      console.log(e);
+      return [];
     }
   },
 };

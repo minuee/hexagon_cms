@@ -5,7 +5,7 @@ import { price } from "common";
 import { apiObject } from "api";
 
 import { Grid, Box, makeStyles, TextField, InputAdornment, IconButton } from "@material-ui/core";
-import { DescriptionOutlined, Search } from "@material-ui/icons";
+import { DescriptionOutlined, Search, ArrowDropDown, ArrowDropUp } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, Pagination } from "components";
 
@@ -61,7 +61,8 @@ export const UserList = () => {
   const [listContext, setListContext] = useState({
     page: 1,
     search_word: "",
-    order_type: "",
+    sort_item: "",
+    sort_type: "",
   });
 
   async function getUserList() {
@@ -76,6 +77,21 @@ export const UserList = () => {
   function handleSignInApprove() {
     console.log(selectedUsers);
   }
+  function handleSortClicked(value) {
+    if (listContext.sort_item === value) {
+      if (listContext.sort_type === "DESC") {
+        handleContextChange("sort_type", "ASC");
+      } else {
+        handleContextChange("sort_type", "DESC");
+      }
+    } else {
+      setListContext({
+        ...listContext,
+        sort_item: value,
+        sort_type: "DESC",
+      });
+    }
+  }
   function handleContextChange(name, value) {
     setListContext({
       ...listContext,
@@ -85,7 +101,8 @@ export const UserList = () => {
 
   useEffect(() => {
     getUserList();
-  }, [listContext.page, listContext.order_type]);
+    console.log(listContext);
+  }, [listContext.page, listContext.sort_item, listContext.sort_type]);
 
   return (
     <Box>
@@ -95,20 +112,35 @@ export const UserList = () => {
         </Typography>
 
         <Box className={classes.header_buttons}>
-          <Button onClick={() => handleContextChange("order_type", "uname")}>
-            <Typography fontWeight={listContext.order_type === "uname" && "700"}>이름순</Typography>
+          <Button onClick={() => handleSortClicked("uname")}>
+            <Typography fontWeight={listContext.sort_item === "uname" ? "700" : undefined}>이름순</Typography>
+            {listContext.sort_item === "uname" && (
+              <>{listContext.sort_type === "DESC" ? <ArrowDropDown /> : <ArrowDropUp />}</>
+            )}
           </Button>
-          <Button onClick={() => handleContextChange("order_type", "reg")}>
-            <Typography fontWeight={listContext.order_type === "reg" && "700"}>가입일자순</Typography>
+          <Button onClick={() => handleSortClicked("reg")}>
+            <Typography fontWeight={listContext.sort_item === "reg" ? "700" : undefined}>가입일자순</Typography>
+            {listContext.sort_item === "reg" && (
+              <>{listContext.sort_type === "DESC" ? <ArrowDropDown /> : <ArrowDropUp />}</>
+            )}
           </Button>
-          <Button onClick={() => handleContextChange("order_type", "no")}>
-            <Typography fontWeight={listContext.order_type === "no" && "700"}>번호순</Typography>
+          <Button onClick={() => handleSortClicked("no")}>
+            <Typography fontWeight={listContext.sort_item === "no" ? "700" : undefined}>번호순</Typography>
+            {listContext.sort_item === "no" && (
+              <>{listContext.sort_type === "DESC" ? <ArrowDropDown /> : <ArrowDropUp />}</>
+            )}
           </Button>
-          <Button onClick={() => handleContextChange("order_type", "order")}>
-            <Typography fontWeight={listContext.order_type === "order" && "700"}>구매액순</Typography>
+          <Button onClick={() => handleSortClicked("order")}>
+            <Typography fontWeight={listContext.sort_item === "order" ? "700" : undefined}>구매액순</Typography>
+            {listContext.sort_item === "order" && (
+              <>{listContext.sort_type === "DESC" ? <ArrowDropDown /> : <ArrowDropUp />}</>
+            )}
           </Button>
-          <Button onClick={() => handleContextChange("order_type", "reward")}>
-            <Typography fontWeight={listContext.order_type === "reward" && "700"}>리워드액순</Typography>
+          <Button onClick={() => handleSortClicked("reward")}>
+            <Typography fontWeight={listContext.sort_item === "reward" ? "700" : undefined}>리워드액순</Typography>
+            {listContext.sort_item === "reward" && (
+              <>{listContext.sort_type === "DESC" ? <ArrowDropDown /> : <ArrowDropUp />}</>
+            )}
           </Button>
           <Button variant="contained" color="primary" ml={3} onClick={handleSignInApprove}>
             회원가입 승인
