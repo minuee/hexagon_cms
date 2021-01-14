@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { useForm } from "react-hook-form";
-import dayjs from "dayjs";
-
+import { useForm, Controller } from "react-hook-form";
 import { price } from "common";
+import dayjs from "dayjs";
+import { apiObject } from "api";
 
 import {
   Grid,
@@ -16,7 +16,8 @@ import {
   Avatar,
   TableRow,
   TableCell,
-  Checkbox,
+  RadioGroup,
+  Radio,
   FormControlLabel,
 } from "@material-ui/core";
 import { DescriptionOutlined, Search } from "@material-ui/icons";
@@ -54,90 +55,66 @@ const useStyles = makeStyles((theme) => ({
 
 const reward_history_column = [
   {
-    field: "accumulate_dt",
+    field: "regdatetime",
     title: "적립일자",
-    render: ({ accumulate_dt }) => dayjs.unix(accumulate_dt).format("YYYY.MM.DD"),
+    // render: ({ accumulate_dt }) => dayjs.unix(accumulate_dt).format("YYYY.MM.DD"),
   },
-  { field: "user_name", title: "유저명" },
-  { field: "reward_reason", title: "내역" },
+  { field: "name", title: "유저명" },
+  { field: "reward_gubun", title: "내역" },
   {
-    field: "reward_amount",
+    field: "reward_point",
     title: "리워드액",
-    render: ({ reward_amount }) => `+${price(reward_amount)}원`,
+    render: ({ reward_point }) => `+${price(reward_point)}원`,
     cellStyle: { textAlign: "right" },
-  },
-];
-const reward_history_row = [
-  {
-    accumulate_dt: 8882229999,
-    user_name: "륶인창",
-    reward_reason: "친구초대",
-    reward_amount: 5555,
-  },
-  {
-    accumulate_dt: 8882229999,
-    user_name: "륶인창",
-    reward_reason: "친구초대",
-    reward_amount: 5555,
-  },
-  {
-    accumulate_dt: 8882229999,
-    user_name: "륶인창",
-    reward_reason: "친구초대",
-    reward_amount: 5555,
-  },
-  {
-    accumulate_dt: 8882229999,
-    user_name: "륶인창",
-    reward_reason: "친구초대",
-    reward_amount: 5555,
-  },
-  {
-    accumulate_dt: 8882229999,
-    user_name: "륶인창",
-    reward_reason: "친구초대",
-    reward_amount: 5555,
-  },
-  {
-    accumulate_dt: 8882229999,
-    user_name: "륶인창",
-    reward_reason: "친구초대",
-    reward_amount: 5555,
-  },
-  {
-    accumulate_dt: 8882229999,
-    user_name: "륶인창",
-    reward_reason: "친구초대",
-    reward_amount: 5555,
-  },
-  {
-    accumulate_dt: 8882229999,
-    user_name: "륶인창",
-    reward_reason: "친구초대",
-    reward_amount: 5555,
   },
 ];
 
 export const UserDetail = () => {
   const classes = useStyles();
-  const { control } = useForm();
+  const { member_pk } = useParams();
+  const { control, reset, handleSubmit } = useForm();
 
-  const [userInfo, setUserInfo] = useState({
-    rank: "silver",
-    rank_text: "실버등급",
-    accumulate_rate: "1.5",
-    accumulate_amount: 12346777,
+  const [userInfo, setUserInfo] = useState();
+  const [rewardList, setRewardList] = useState();
+  const [rewardPage, setRewardPage] = useState(1);
+  const [isModify, setIsModify] = useState(false);
 
-    name: "전지현",
-    code_no: "81JK3D",
-    register_dt: 3333333333,
-    phone_no: "01055663322",
-    email: "admin@gmail.com",
-    authority: 1,
+  async function getUserDetail() {
+    let data = await apiObject.getMemberDetail({ member_pk });
 
-    signup_yn: true,
-    salesman_code: "X398D2",
-  });
+    setUserInfo(data);
+    console.log(data);
+
+    reset({
+      grade_code: data.grade_code,
+      member_type: data.member_type,
+      lisence_img: [{ file: null, path: data.img_url }],
+    });
+  }
+  async function getUserReward() {
+    let data = await apiObject.getMemberRewardList({ member_pk, page: 1 });
+
+    setRewardList(data);
+    console.log(data);
+  }
+
+  async function handleApprove() {
+    await apiObject.approveMember({ member_pk });
+  }
+  async function handleUpdate(data) {
+    await apiObject.updateMemberDetail({
+      ...data,
+      member_pk,
+      img_url: userInfo.img_url,
+    });
+
+    getUserDetail();
+  }
+
+  useEffect(() => {
+    getUserDetail();
+    getUserReward();
+  }, [member_pk]);
 
   return (
     <Box>
@@ -152,12 +129,12 @@ export const UserDetail = () => {
           </Typography>
 
           <Box className={classes.rank_content}>
-            <Avatar src="/image/rank_silver.png" />
+            <Avatar src={`/image/rank_${userInfo?.grade_code.toLowerCase()}.png`} />
             <Box textAlign="right">
               <Typography variant="h6" fontWeight="700">
-                {userInfo?.rank_text || "-"}
+                {userInfo?.grade_name || "-"}
               </Typography>
-              <Typography>적립률 {userInfo?.accumulate_rate || "-"}% 적용</Typography>
+              <Typography>적립률 {userInfo?.rate || "-"}% 적용</Typography>
             </Box>
           </Box>
         </Box>
@@ -180,15 +157,17 @@ export const UserDetail = () => {
         </TableRow>
         <TableRow>
           <TableCell>코드번호</TableCell>
-          <TableCell>{userInfo?.code_no}</TableCell>
+          <TableCell>{userInfo?.special_code}</TableCell>
         </TableRow>
-        <TableRow>
-          <TableCell>가입승인일자</TableCell>
-          <TableCell>{dayjs(userInfo?.register_dt).format("YYYY-MM-DD")}</TableCell>
-        </TableRow>
+        {userInfo?.approval_dt && (
+          <TableRow>
+            <TableCell>가입승인일자</TableCell>
+            <TableCell>{dayjs.unix(userInfo?.approval_dt).format("YYYY-MM-DD")}</TableCell>
+          </TableRow>
+        )}
         <TableRow>
           <TableCell>휴대폰번호</TableCell>
-          <TableCell>{userInfo?.phone_no}</TableCell>
+          <TableCell>{userInfo?.phone}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>이메일</TableCell>
@@ -197,48 +176,64 @@ export const UserDetail = () => {
         <TableRow>
           <TableCell>권한</TableCell>
           <TableCell>
-            <TextField select size="small" variant="outlined" value={userInfo?.authority}>
-              <MenuItem value={"1"}>영업사원</MenuItem>
-              <MenuItem value={"2"}>경영자</MenuItem>
-              <MenuItem value={"3"}>브로커</MenuItem>
-            </TextField>
+            <Controller
+              as={
+                <TextField
+                  select
+                  size="small"
+                  variant="outlined"
+                  // readOnly={isModify}
+                >
+                  <MenuItem value={"Normal"}>일반</MenuItem>
+                  <MenuItem value={"Sales"}>영업사원</MenuItem>
+                  <MenuItem value={"Admin"}>관리자</MenuItem>
+                  <MenuItem value={"ETC"}>기타</MenuItem>
+                </TextField>
+              }
+              control={control}
+              name="member_type"
+              defaultValue=""
+            />
           </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>등급</TableCell>
           <TableCell>
-            <FormControlLabel
-              control={<Checkbox name="rank_bronze" color="primary" checked={userInfo?.rank === "bronze"} />}
-              label="브론즈"
-            />
-            <FormControlLabel
-              control={<Checkbox name="rank_bronze" color="primary" checked={userInfo?.rank === "silver"} />}
-              label="실버"
-            />
-            <FormControlLabel
-              control={<Checkbox name="rank_bronze" color="primary" checked={userInfo?.rank === "gold"} />}
-              label="골드"
-            />
-            <FormControlLabel
-              control={<Checkbox name="rank_bronze" color="primary" checked={userInfo?.rank === "platinum"} />}
-              label="플래티넘"
+            <Controller
+              as={
+                <RadioGroup row>
+                  <FormControlLabel value="Bronze" control={<Radio color="primary" />} label="브론즈" />
+                  <FormControlLabel value="Silver" control={<Radio color="primary" />} label="실버" />
+                  <FormControlLabel value="Gold" control={<Radio color="primary" />} label="골드" />
+                  <FormControlLabel value="Platinum" control={<Radio color="primary" />} label="플래티넘" />
+                </RadioGroup>
+              }
+              name="grade_code"
+              control={control}
+              defaultValue="Bronze"
             />
           </TableCell>
         </TableRow>
-        {userInfo?.signup_yn && (
+        {/* {userInfo?.approval && (
           <TableRow>
             <TableCell>영업사원 코드</TableCell>
             <TableCell>{userInfo?.salesman_code}</TableCell>
           </TableRow>
-        )}
+        )} */}
         <TableRow>
           <TableCell>적립률</TableCell>
-          <TableCell>{userInfo?.accumulate_rate} %</TableCell>
+          <TableCell>{userInfo?.rate} %</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>사업자등록증 첨부</TableCell>
           <TableCell>
-            <Dropzone control={control} name="lisence_img" width="90px" ratio={1} />
+            <Dropzone
+              control={control}
+              name="lisence_img"
+              width="90px"
+              ratio={1}
+              // readOnly={isModify}
+            />
           </TableCell>
         </TableRow>
       </RowTable>
@@ -248,12 +243,12 @@ export const UserDetail = () => {
         display="flex"
         // justifyContent="center"
       >
-        {userInfo?.signup_yn ? (
-          <Button variant="contained" color="primary">
+        {userInfo?.approval_dt ? (
+          <Button variant="contained" color="primary" onClick={handleSubmit(handleUpdate)}>
             정보 수정
           </Button>
         ) : (
-          <Button variant="contained" color="primary">
+          <Button variant="contained" color="primary" onClick={handleApprove}>
             회원가입 승인
           </Button>
         )}
@@ -262,9 +257,9 @@ export const UserDetail = () => {
       <Box my={2}>
         <Typography fontWeight="500">리워드 히스토리</Typography>
       </Box>
-      <ColumnTable columns={reward_history_column} data={reward_history_row} />
+      <ColumnTable columns={reward_history_column} data={rewardList} />
       <Box position="relative" py={6}>
-        <Pagination />
+        <Pagination page={rewardPage} setPage={setRewardPage} count={Math.ceil(+rewardList?.[0]?.total / 10)} />
       </Box>
     </Box>
   );

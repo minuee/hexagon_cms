@@ -1,5 +1,6 @@
 import axios from "axios";
 import { store } from "redux/index";
+import dayjs from "dayjs";
 
 // let token = localStorage.getItem("token");
 // axios.defaults.headers.common.Authorization = token;
@@ -46,6 +47,35 @@ axios.interceptors.response.use(
 );
 
 export const apiObject = {
+  // Common
+  uploadImage: async ({ file, page }) => {
+    try {
+      let fileKey = `cms/${page}/${dayjs().unix()}_${file.name}`;
+      let path = `https://hg-prod-file.s3.ap-northeast-1.amazonaws.com/public/${fileKey}`;
+
+      let img_path = await axios.put(path, file, {
+        headers: {
+          "Content-Type": file.type,
+        },
+      });
+
+      return img_path;
+    } catch (e) {
+      console.log(e);
+      return "";
+    }
+  },
+  approveMember: async ({ member_pk }) => {
+    try {
+      console.log(member_pk);
+      let response = await axios.patch(`/member/approval/${member_pk}`, {
+        params: {},
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  },
+
   // Member
   getMemberList: async ({ page, paginate = 10, search_word, term_start, term_end, sort_item, sort_type }) => {
     try {
@@ -75,7 +105,7 @@ export const apiObject = {
       });
 
       let ret = data.data.data.userDetail[0];
-      ret.sample_img = "https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg";
+      ret.img_url = "/image/lisence_sample.png";
 
       return ret;
     } catch (e) {
@@ -98,6 +128,19 @@ export const apiObject = {
     } catch (e) {
       console.log(e);
       return [];
+    }
+  },
+  updateMemberDetail: async ({ member_pk, grade_code, img_url, member_type }) => {
+    try {
+      console.log({
+        member_pk,
+        grade_code,
+        img_url,
+        member_type,
+      });
+      let data = await axios.put(`/member/modify/${member_pk}`, { grade_code, img_url, member_type });
+    } catch (e) {
+      console.log(e);
     }
   },
 };
