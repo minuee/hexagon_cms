@@ -5,12 +5,23 @@ import { useDispatch } from "react-redux";
 import dayjs from "dayjs";
 import { price } from "common";
 
-import { Grid, Box, makeStyles, TextField, InputAdornment, Avatar, Select, MenuItem } from "@material-ui/core";
+import {
+  Grid,
+  Box,
+  makeStyles,
+  TextField,
+  InputAdornment,
+  Avatar,
+  Select,
+  MenuItem,
+  IconButton,
+} from "@material-ui/core";
 import { DescriptionOutlined, Search, EventNote } from "@material-ui/icons";
 import { DatePicker } from "@material-ui/pickers";
 
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, Pagination } from "components";
+import { apiObject } from "api";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -55,51 +66,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const category_list_rows = [
-  {
-    category_no: 1,
-    logo_img: "/image/arix.png",
-    is_brand: true,
-    category_name: "아릭스",
-    exposure_priority: 1,
-  },
-  {
-    category_no: 2,
-    logo_img: "/image/dri-pak.png",
-    is_brand: true,
-    category_name: "드라이팍",
-    exposure_priority: 3,
-  },
-  {
-    category_no: 3,
-    logo_img: "/image/la-corona.png",
-    is_brand: true,
-    category_name: "라코로나",
-    exposure_priority: 4,
-  },
-  {
-    category_no: 4,
-    logo_img: "/image/cleanlogic.png",
-    is_brand: true,
-    category_name: "클린로직",
-    exposure_priority: 2,
-  },
-  {
-    category_no: 5,
-    logo_img: "/image/tonkita.png",
-    is_brand: true,
-    category_name: "톤기타",
-    exposure_priority: 5,
-  },
-  {
-    category_no: 6,
-    logo_img: "/image/item_sample.png",
-    is_brand: false,
-    category_name: "주방용품",
-    exposure_priority: 6,
-  },
-];
-
 export const CategoryList = () => {
   const classes = useStyles();
   const history = useHistory();
@@ -114,14 +80,20 @@ export const CategoryList = () => {
 
   const category_list_columns = [
     {
-      field: "logo_img",
       title: "로고",
       render: ({ logo_img }) => <Avatar variant="square" src={logo_img} className={classes.logo_box} />,
     },
-    { field: "category_type", title: "카테고리구분", render: ({ is_brand }) => (is_brand ? "브랜드" : "제품군") },
-    { field: "category_name", title: "카테고리명" },
+    { title: "카테고리구분", render: ({ category_type }) => (category_type === "B" ? "브랜드" : "제품군") },
+    { title: "카테고리명", field: "category_name" },
     // { field: "exposure_priority", title: "노출순위" },
   ];
+
+  async function getCategoryList() {
+    let data = await apiObject.getCategoryList({ ...listContext });
+
+    setCategoryList(data);
+    console.log(data);
+  }
 
   function handleDeleteCategorys() {
     console.log(selectedCategorys);
@@ -133,11 +105,11 @@ export const CategoryList = () => {
     });
   }
 
+  // useEffect(() => {
+  //   console.log("listContext", listContext);
+  // }, [listContext]);
   useEffect(() => {
-    console.log("listContext", listContext);
-  }, [listContext]);
-  useEffect(() => {
-    setCategoryList(category_list_rows);
+    getCategoryList();
   }, []);
 
   return (
@@ -161,8 +133,8 @@ export const CategoryList = () => {
             }
           >
             <MenuItem value="">전체 카테고리</MenuItem>
-            <MenuItem value={"brand"}>브랜드</MenuItem>
-            <MenuItem value={"product_group"}>제품군</MenuItem>
+            <MenuItem value={"B"}>브랜드</MenuItem>
+            <MenuItem value={"N"}>제품군</MenuItem>
           </Select>
 
           <Button ml={2} variant="contained" color="primary" onClick={() => history.push("/product/item")}>
@@ -184,7 +156,7 @@ export const CategoryList = () => {
         <ColumnTable
           columns={category_list_columns}
           data={categoryList}
-          onRowClick={(row) => history.push(`/product/category/${row.category_no}`)}
+          onRowClick={(row) => history.push(`/product/category/${row.category_pk}`)}
           selection
           onSelectionChange={setSelectedCategorys}
         />
@@ -209,7 +181,9 @@ export const CategoryList = () => {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <Search />
+                  <IconButton onClick={getCategoryList}>
+                    <Search />
+                  </IconButton>
                 </InputAdornment>
               ),
             }}

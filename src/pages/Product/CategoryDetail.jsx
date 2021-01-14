@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
 import dayjs from "dayjs";
 import { price } from "common";
+import { apiObject } from "api";
 
 import {
   Grid,
@@ -23,34 +24,64 @@ import { Typography, Button } from "components/materialui";
 import { RowTable, ColumnTable, Pagination, Dropzone } from "components";
 
 export const CategoryDetail = () => {
-  const { category_no } = useParams();
+  const { category_pk } = useParams();
   const { control, reset, handleSubmit } = useForm();
+
+  async function getCategoryDetail() {
+    let data = await apiObject.getCategoryDetail({ category_pk });
+    reset({
+      ...data,
+      category_logo: [{ file: null, path: data.category_logo }],
+    });
+  }
 
   function handleAddCategory(data) {
     console.log("add", data);
   }
-  function handleUpdateCategory(data) {
+  async function handleUpdateCategory(data) {
     console.log("update", data);
+    // await apiObject.updateCategoryDetail({
+    //   // ...data,
+    //   category_pk,
+    //   category_name: data.category_name,
+    //   category_type: data.category_type,
+    //   category_logo: "",
+    // });
+
+    getCategoryDetail();
   }
 
   useEffect(() => {
-    if (category_no !== "add") {
-      reset({
-        category_name: "아릭스",
-        category_type: 2,
-      });
+    if (category_pk !== "add") {
+      getCategoryDetail();
     }
-  }, [category_no]);
+  }, [category_pk]);
 
   return (
     <Box>
       <Box mb={1}>
         <Typography variant="h5" fontWeight="500">
-          상품 카테고리 {category_no === "add" ? "추가" : "정보"}
+          상품 카테고리 {category_pk === "add" ? "추가" : "정보"}
         </Typography>
       </Box>
 
       <RowTable>
+        <TableRow>
+          <TableCell>카테고리구분</TableCell>
+          <TableCell>
+            <Controller
+              as={
+                <TextField select variant="outlined">
+                  <MenuItem value="B">브랜드</MenuItem>
+                  <MenuItem value="N">제품군</MenuItem>
+                </TextField>
+              }
+              name="category_type"
+              control={control}
+              defaultValue="B"
+            />
+          </TableCell>
+        </TableRow>
         <TableRow>
           <TableCell>카테고리명</TableCell>
           <TableCell>
@@ -64,22 +95,7 @@ export const CategoryDetail = () => {
             />
           </TableCell>
         </TableRow>
-        <TableRow>
-          <TableCell>카테고리구분</TableCell>
-          <TableCell>
-            <Controller
-              as={
-                <TextField select variant="outlined">
-                  <MenuItem value={1}>브랜드</MenuItem>
-                  <MenuItem value={2}>제품군</MenuItem>
-                </TextField>
-              }
-              name="category_type"
-              control={control}
-              defaultValue={1}
-            />
-          </TableCell>
-        </TableRow>
+
         {/* <TableRow>
           <TableCell>노출순위 {`(관리자 앱에서만 수정가능.)`}</TableCell>
           <TableCell>
@@ -89,13 +105,13 @@ export const CategoryDetail = () => {
         <TableRow>
           <TableCell>로고 이미지</TableCell>
           <TableCell>
-            <Dropzone control={control} name="logo_img" width="90px" ratio={1} />
+            <Dropzone control={control} name="category_logo" width="90px" ratio={1} />
           </TableCell>
         </TableRow>
       </RowTable>
 
       <Box mt={4} textAlign="center">
-        {category_no === "add" ? (
+        {category_pk === "add" ? (
           <Button variant="contained" color="primary" onClick={handleSubmit(handleAddCategory)}>
             추가
           </Button>

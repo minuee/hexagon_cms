@@ -132,13 +132,46 @@ export const apiObject = {
   },
   updateMemberDetail: async ({ member_pk, grade_code, img_url, member_type }) => {
     try {
-      console.log({
-        member_pk,
-        grade_code,
-        img_url,
-        member_type,
-      });
       let data = await axios.put(`/member/modify/${member_pk}`, { grade_code, img_url, member_type });
+    } catch (e) {
+      console.log(e);
+    }
+  },
+
+  // Category
+  getCategoryList: async ({ search_word, search_category }) => {
+    try {
+      let data = await axios.get("/category/list", {
+        params: { search_word },
+      });
+      let ret = data.data.data.categoryList;
+
+      return ret;
+    } catch (e) {
+      console.log(e);
+      return [];
+    }
+  },
+  getCategoryDetail: async ({ category_pk }) => {
+    try {
+      let data = await axios.get(`/category/view/${category_pk}`, {
+        params: {},
+      });
+
+      console.log(data);
+
+      let ret = data.data.data.categoryDetail[0];
+      // ret.img_url = "/image/lisence_sample.png";
+
+      return ret;
+    } catch (e) {
+      console.log(e);
+      return {};
+    }
+  },
+  updateCategoryDetail: async ({ category_pk, category_name, category_logo, category_type }) => {
+    try {
+      let data = await axios.put(`/category/modify/${category_pk}`, { category_name, category_logo, category_type });
     } catch (e) {
       console.log(e);
     }
