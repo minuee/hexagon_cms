@@ -196,7 +196,7 @@ export const CategoryList = () => {
           엑셀저장
         </Button>
 
-        <Pagination page={listContext.page} setPage={handleContextChange} />
+        {/* <Pagination page={listContext.page} setPage={handleContextChange} /> */}
 
         <Box className={classes.search_section}>
           <Box display="inline-block" mx={1} />

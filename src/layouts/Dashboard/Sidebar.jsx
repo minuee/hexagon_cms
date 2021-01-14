@@ -14,10 +14,10 @@ const page = [
     label: `유저관리`,
     path: `/user`,
   },
-  {
-    label: `영업사원관리`,
-    path: `/salesman`,
-  },
+  // {
+  //   label: `영업사원관리`,
+  //   path: `/salesman`,
+  // },
   {
     label: `구매내역`,
     path: `/purchase`,

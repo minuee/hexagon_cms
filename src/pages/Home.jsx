@@ -162,7 +162,7 @@ export const Home = () => {
           </Button>
         </Box>
 
-        <Box className={classes.column_table}>
+        {/* <Box className={classes.column_table}>
           <Typography variant="h6" fontWeight={700}>
             영업사원 인센티브 통계
           </Typography>
@@ -180,7 +180,7 @@ export const Home = () => {
             <Typography>더보기</Typography>
             <KeyboardArrowRight />
           </Button>
-        </Box>
+        </Box> */}
       </Box>
     </Box>
   );
