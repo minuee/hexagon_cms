@@ -102,13 +102,19 @@ export const UserDetail = () => {
     await apiObject.approveMember({ member_pk });
   }
   async function handleUpdate(data) {
-    await apiObject.updateMemberDetail({
-      ...data,
-      member_pk,
-      img_url: userInfo.img_url,
+    // console.log(data);
+    // await apiObject.updateMemberDetail({
+    //   ...data,
+    //   member_pk,
+    //   img_url: userInfo.img_url,
+    // });
+
+    // console.log(data.lisence_img?.[0]?.file);
+    let path = await apiObject.uploadImage({
+      file: data.lisence_img?.[0]?.file,
     });
 
-    getUserDetail();
+    // getUserDetail();
   }
 
   useEffect(() => {

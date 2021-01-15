@@ -11,6 +11,7 @@ import { DatePicker } from "@material-ui/pickers";
 
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, Pagination } from "components";
+import { apiObject } from "api";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -53,42 +54,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const item_list_rows = [
-  {
-    item_no: 1,
-    item_img: "/image/item_sample.png",
-    is_brand: true,
-    category_name: "아릭스",
-    item_name: "철 수세미",
-    item_price: {
-      piece: 1000,
-      carton: 20000,
-    },
-  },
-  {
-    item_no: 2,
-    item_img: "/image/item_sample.png",
-    is_brand: true,
-    category_name: "드라이팍",
-    item_name: "돌 수세미",
-    item_price: {
-      piece: 500,
-      box: 5000,
-    },
-  },
-  {
-    item_no: 3,
-    item_img: "/image/item_sample.png",
-    is_brand: false,
-    category_name: "주방용품",
-    item_name: "고무 수세미",
-    item_price: {
-      box: 6000,
-      carton: 100000,
-    },
-  },
-];
-
 export const ItemList = () => {
   const classes = useStyles();
   const history = useHistory();
@@ -97,21 +62,19 @@ export const ItemList = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [listContext, setListContext] = useState({
     page: 1,
-    search_text: "",
+    search_word: "",
     search_category: "",
   });
 
   const item_list_columns = [
-    { field: "category_type", title: "카테고리구분", render: ({ is_brand }) => (is_brand ? "브랜드" : "제품군") },
-    { field: "category_name", title: "제조사" },
+    { title: "카테고리구분", render: ({ is_brand }) => (is_brand ? "브랜드" : "제품군") },
+    { title: "제조사", field: "category_name" },
     {
-      field: "item_img",
       title: "상품 이미지",
       render: ({ item_img }) => <Avatar variant="square" src={item_img} className={classes.logo_box} />,
     },
-    { field: "item_name", title: "상품명" },
+    { title: "상품명", field: "item_name" },
     {
-      field: "item_price",
       title: "가격",
       render: ({ item_price }) => (
         <p style={{ whiteSpace: "pre-wrap" }}>
@@ -122,6 +85,15 @@ export const ItemList = () => {
       ),
     },
   ];
+
+  async function getItemList() {
+    let data = await apiObject.getItemList({
+      ...listContext,
+    });
+
+    setItemList(data);
+    console.log(data);
+  }
 
   function handleDeleteItems() {
     console.log(selectedItems);
@@ -137,7 +109,7 @@ export const ItemList = () => {
     console.log("listContext", listContext);
   }, [listContext]);
   useEffect(() => {
-    setItemList(item_list_rows);
+    getItemList();
   }, []);
 
   return (
@@ -211,10 +183,10 @@ export const ItemList = () => {
         <Pagination page={listContext.page} setPage={handleContextChange} />
 
         <TextField
-          name="search_text"
+          name="search_word"
           variant="outlined"
-          value={listContext.search_text}
-          onChange={(e) => handleContextChange("search_text", e.target.value)}
+          value={listContext.search_word}
+          onChange={(e) => handleContextChange("search_word", e.target.value)}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">

@@ -48,15 +48,10 @@ axios.interceptors.response.use(
 
 export const apiObject = {
   // Common
-  uploadImage: async ({ file, page }) => {
+  uploadImage: async ({ file }) => {
     try {
-      let fileKey = `cms/${page}/${dayjs().unix()}_${file.name}`;
-      let path = `https://hg-prod-file.s3.ap-northeast-1.amazonaws.com/public/${fileKey}`;
-
-      let img_path = await axios.put(path, file, {
-        headers: {
-          "Content-Type": file.type,
-        },
+      let img_path = await axios.post("/v1/img/test", {
+        test_img: file,
       });
 
       return img_path;
@@ -174,6 +169,21 @@ export const apiObject = {
       let data = await axios.put(`/category/modify/${category_pk}`, { category_name, category_logo, category_type });
     } catch (e) {
       console.log(e);
+    }
+  },
+
+  // Item
+  getItemList: async ({ category_pk, page, paginate = 10, search_word }) => {
+    try {
+      let data = await axios.get("/product/list", {
+        params: { category_pk, page, paginate, search_word },
+      });
+      let ret = data.data.data.productList;
+
+      return ret;
+    } catch (e) {
+      console.log(e);
+      return [];
     }
   },
 };
