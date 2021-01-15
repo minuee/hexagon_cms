@@ -94,6 +94,10 @@ export const SalesmanRegister = () => {
             />
           </TableCell>
         </TableRow>
+        <TableRow>
+          <TableCell>영업사원코드</TableCell>
+          <TableCell>자동생성</TableCell>
+        </TableRow>
       </RowTable>
 
       <Box mt={3}>

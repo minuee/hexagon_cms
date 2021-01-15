@@ -147,7 +147,7 @@ export const UserDetail = () => {
 
         <Box className={classes.header_box}>
           <Typography variant="h6" fontWeight="500">
-            초대 적립금 현황
+            적립금 현황
           </Typography>
 
           <Typography textAlign="right" variant="h5" fontWeight="700">
@@ -179,7 +179,7 @@ export const UserDetail = () => {
           <TableCell>이메일</TableCell>
           <TableCell>{userInfo?.email}</TableCell>
         </TableRow>
-        <TableRow>
+        {/* <TableRow>
           <TableCell>권한</TableCell>
           <TableCell>
             <Controller
@@ -201,7 +201,7 @@ export const UserDetail = () => {
               defaultValue=""
             />
           </TableCell>
-        </TableRow>
+        </TableRow> */}
         <TableRow>
           <TableCell>등급</TableCell>
           <TableCell>

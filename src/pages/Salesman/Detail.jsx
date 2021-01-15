@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { price } from "common";
 import dayjs from "dayjs";
 
@@ -113,21 +113,34 @@ const monthly_incentive_rows = [
 
 export const SalesmanDetail = () => {
   const classes = useStyles();
+  const { member_pk } = useParams();
   const history = useHistory();
-  const { control } = useForm();
+  const { control, register, reset, handleSubmit } = useForm();
 
   const [tabStatus, setTabStatus] = useState("member");
-  const [salesmanInfo, setUserInfo] = useState({
-    name: "전지현",
-    code_no: "81JK3D",
-    register_dt: 3333333333,
-    phone_no: "01055663322",
-    email: "admin@gmail.com",
-    status_text: "정지",
+  const [salesmanInfo, setUserInfo] = useState();
 
-    accumulate_rate: "1.5",
-    accumulate_amount: 12346777,
-  });
+  async function getSalesmanDetail() {
+    reset({
+      name: "전지현",
+      phone: "01055663322",
+      email: "admin@gmail.com",
+      status: "2",
+    });
+    setUserInfo({
+      code_no: "81JK3D",
+      register_dt: 3333333333,
+    });
+  }
+  async function handleUpdateSalesman(data) {
+    console.log("data", data);
+
+    getSalesmanDetail();
+  }
+
+  useEffect(() => {
+    getSalesmanDetail();
+  }, [member_pk]);
 
   return (
     <Box>
@@ -140,32 +153,72 @@ export const SalesmanDetail = () => {
       <RowTable width={"70%"}>
         <TableRow>
           <TableCell>이름</TableCell>
-          <TableCell>{salesmanInfo?.name}</TableCell>
+          <TableCell>
+            <TextField
+              size="small"
+              variant="outlined"
+              fullWidth
+              name="name"
+              placeholder="이름을 입력해주세요"
+              inputRef={register({ required: true })}
+            />
+          </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>코드번호</TableCell>
           <TableCell>{salesmanInfo?.code_no}</TableCell>
         </TableRow>
         <TableRow>
-          <TableCell>가입승인일자</TableCell>
+          <TableCell>등록일자</TableCell>
           <TableCell>{dayjs.unix(salesmanInfo?.register_dt).format("YYYY-MM-DD")}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>휴대폰번호</TableCell>
-          <TableCell>{salesmanInfo?.phone_no}</TableCell>
+          <TableCell>
+            <TextField
+              size="small"
+              variant="outlined"
+              fullWidth
+              name="phone"
+              placeholder="휴대폰 번호를 입력해주세요"
+              inputRef={register({ required: true })}
+            />
+          </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>이메일</TableCell>
-          <TableCell>{salesmanInfo?.email}</TableCell>
+          <TableCell>
+            <TextField
+              size="small"
+              variant="outlined"
+              fullWidth
+              name="email"
+              placeholder="이메일을 입력해주세요"
+              inputRef={register({ required: true })}
+            />
+          </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>상태</TableCell>
-          <TableCell>{salesmanInfo?.status_text}</TableCell>
+          <TableCell>
+            <Controller
+              as={
+                <TextField select size="small" variant="outlined">
+                  <MenuItem value={"0"}>이용중</MenuItem>
+                  <MenuItem value={"1"}>일시정지</MenuItem>
+                  <MenuItem value={"2"}>퇴사</MenuItem>
+                </TextField>
+              }
+              control={control}
+              name="status"
+              defaultValue="0"
+            />
+          </TableCell>
         </TableRow>
-        <TableRow>
+        {/* <TableRow>
           <TableCell>인센티브율</TableCell>
           <TableCell>{salesmanInfo?.accumulate_rate} %</TableCell>
-        </TableRow>
+        </TableRow> */}
         <TableRow>
           <TableCell>사업자등록증 첨부</TableCell>
           <TableCell>
@@ -179,7 +232,7 @@ export const SalesmanDetail = () => {
         display="flex"
         // justifyContent="center"
       >
-        <Button variant="contained" color="primary">
+        <Button variant="contained" color="primary" onClick={handleSubmit(handleUpdateSalesman)}>
           수정
         </Button>
       </Box>

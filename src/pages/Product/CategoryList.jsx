@@ -114,9 +114,15 @@ export const CategoryList = () => {
 
   return (
     <Box>
-      <Typography variant="h5" fontWeight="500">
-        상품 카테고리
-      </Typography>
+      <Box display="flex" alignItems="center">
+        <Typography variant="h5" fontWeight="500">
+          상품 카테고리
+        </Typography>
+
+        <Button ml={2} variant="contained" color="primary" onClick={() => history.push("/product/item")}>
+          상품 목록 관리
+        </Button>
+      </Box>
 
       <Box className={classes.header}>
         <Box>
@@ -136,10 +142,6 @@ export const CategoryList = () => {
             <MenuItem value={"B"}>브랜드</MenuItem>
             <MenuItem value={"N"}>제품군</MenuItem>
           </Select>
-
-          <Button ml={2} variant="contained" color="primary" onClick={() => history.push("/product/item")}>
-            상품 목록 관리
-          </Button>
         </Box>
 
         <Box>

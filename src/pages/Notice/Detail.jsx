@@ -99,7 +99,6 @@ dddddd
             </Box>
           </TableCell>
         </TableRow>
-
         <TableRow>
           <TableCell>제목</TableCell>
           <TableCell>
@@ -113,7 +112,6 @@ dddddd
             />
           </TableCell>
         </TableRow>
-
         <TableRow>
           <TableCell>내용</TableCell>
           <TableCell>
@@ -127,11 +125,34 @@ dddddd
             />
           </TableCell>
         </TableRow>
-
         <TableRow>
           <TableCell>이미지</TableCell>
           <TableCell>
             <Dropzone control={control} name="notice_img" width="90px" ratio={1} />
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>Push 발송 여부</TableCell>
+          <TableCell>
+            <Controller
+              as={
+                <FormControlLabel
+                  control={<Checkbox color="primary" />}
+                  label={
+                    notice_no !== "add" ? (
+                      <p style={{ fontFamily: "Montserrat", fontWeight: "ital,wght@1,300", display: "inline" }}>
+                        최근발송: {dayjs.unix(1889883723).format("YYYY-MM-DD hh:mm")}
+                      </p>
+                    ) : (
+                      "체크시 푸시알림이 발송됩니다"
+                    )
+                  }
+                />
+              }
+              name="push_yn"
+              control={control}
+              defaultValue={false}
+            />
           </TableCell>
         </TableRow>
       </RowTable>
@@ -153,14 +174,14 @@ dddddd
             <Button mx={2} variant="contained" color="primary" onClick={handleSubmit(handleUpdateNotice)}>
               수정
             </Button>
-            <Box display="inline-block">
+            {/* <Box display="inline-block">
               <Button variant="contained" color="secondary" onClick={handleSendNotice}>
                 Push 발송
               </Button>
               <p style={{ fontFamily: "Montserrat", fontWeight: "ital,wght@1,300" }}>
                 최근발송: {dayjs.unix(1889883723).format("YYYY-MM-DD hh:mm")}
               </p>
-            </Box>
+            </Box> */}
           </>
         )}
       </Box>

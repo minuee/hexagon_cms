@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import dayjs from "dayjs";
@@ -62,24 +62,49 @@ export const PurchaseDetail = () => {
     items: [
       {
         no: 1,
-        name: "철수세미",
-        price: 5000,
-        unit: "카톤",
-        amount: 2,
+        name: "돌수세미",
+        tot_price: 2000,
+        detail: [
+          {
+            unit: "박스",
+            amount: 1,
+            price: 2000,
+          },
+        ],
       },
       {
         no: 2,
         name: "철수세미",
-        price: 6000,
-        unit: "낱개",
-        amount: 12,
+        tot_price: 6000,
+        detail: [
+          {
+            unit: "카톤",
+            amount: 2,
+            price: 5000,
+          },
+          {
+            unit: "낱개",
+            amount: 4,
+            price: 1000,
+          },
+        ],
       },
       {
         no: 3,
         name: "모래수세미",
-        price: 4800,
-        unit: "박스",
-        amount: 6,
+        tot_price: 4800,
+        detail: [
+          {
+            unit: "박스",
+            amount: 4,
+            price: 4000,
+          },
+          {
+            unit: "낱개",
+            amount: 8,
+            price: 800,
+          },
+        ],
       },
     ],
     order: {
@@ -112,7 +137,7 @@ export const PurchaseDetail = () => {
     },
   });
 
-  const shipping_states = [
+  const delivery_state = [
     {
       no: 1,
       label: "입금대기",
@@ -145,7 +170,7 @@ export const PurchaseDetail = () => {
         <Typography fontWeight="500">주문 상태</Typography>
         <Box px={6} position="relative">
           <Box className={classes.shipping_status}>
-            {shipping_states.map((item) => {
+            {delivery_state.map((item) => {
               let isPassed = item.no <= purchaseInfo?.shipping.status;
               return (
                 <Box key={item.no}>
@@ -167,23 +192,27 @@ export const PurchaseDetail = () => {
       <RowTable>
         <TableRow>
           <TableCell>주문번호</TableCell>
-          <TableCell colSpan={3}>{purchaseInfo?.order.order_no}</TableCell>
+          <TableCell colSpan={5}>{purchaseInfo?.order.order_no}</TableCell>
         </TableRow>
-        {purchaseInfo?.items.map((item, index) => (
-          <>
+        {purchaseInfo?.items.map((item) => (
+          <Fragment key={item.no}>
             <TableRow>
               <TableCell>상품명</TableCell>
               <TableCell>{item.name}</TableCell>
-              <TableCell>금액</TableCell>
-              <TableCell>{price(item.price)}원</TableCell>
+              <TableCell>총 금액</TableCell>
+              <TableCell colSpan={3}>{price(item.tot_price)}원</TableCell>
             </TableRow>
-            <TableRow>
-              <TableCell>단위</TableCell>
-              <TableCell>{item.unit}</TableCell>
-              <TableCell>수량</TableCell>
-              <TableCell>{price(item.amount)}</TableCell>
-            </TableRow>
-          </>
+            {item.detail.map((chunk, index) => (
+              <TableRow key={index}>
+                <TableCell>금액</TableCell>
+                <TableCell>{price(chunk.price)}</TableCell>
+                <TableCell>단위</TableCell>
+                <TableCell>{chunk.unit}</TableCell>
+                <TableCell>수량</TableCell>
+                <TableCell>{chunk.amount}</TableCell>
+              </TableRow>
+            ))}
+          </Fragment>
         ))}
       </RowTable>
 
@@ -197,7 +226,7 @@ export const PurchaseDetail = () => {
         </TableRow>
 
         <TableRow>
-          <TableCell>이벤트가</TableCell>
+          <TableCell>상품가</TableCell>
           <TableCell>{price(purchaseInfo?.order.event_price)}원</TableCell>
         </TableRow>
         <TableRow>
@@ -285,8 +314,12 @@ export const PurchaseDetail = () => {
           <TableCell>배송상태</TableCell>
           <TableCell>
             <TextField size="small" variant="outlined" select value={purchaseInfo?.shipping.status}>
-              {shipping_states.map((item) => {
-                return <MenuItem value={item.no}>{item.label}</MenuItem>;
+              {delivery_state.map((item) => {
+                return (
+                  <MenuItem value={item.no} key={item.no}>
+                    {item.label}
+                  </MenuItem>
+                );
               })}
             </TextField>
           </TableCell>
