@@ -73,10 +73,24 @@ export const UserList = () => {
     setUserList(data);
     console.log(data);
   }
-
-  function handleSignInApprove() {
+  async function approveSignIn() {
     console.log(selectedUsers);
+
+    let member_array = [];
+    selectedUsers.forEach((item) => {
+      member_array.push({
+        member_pk: item.member_pk,
+      });
+    });
+
+    if (window.confirm("선택한 유저들을 회원가입 승인하시겠습니까?")) {
+      let resp = await apiObject.approveMembers({ member_array });
+      console.log(resp);
+
+      getUserList();
+    }
   }
+
   function handleSortClicked(value) {
     if (listContext.sort_item === value) {
       if (listContext.sort_type === "DESC") {
@@ -101,7 +115,6 @@ export const UserList = () => {
 
   useEffect(() => {
     getUserList();
-    console.log(listContext);
   }, [listContext.page, listContext.sort_item, listContext.sort_type]);
 
   return (
@@ -142,7 +155,7 @@ export const UserList = () => {
               <>{listContext.sort_type === "DESC" ? <ArrowDropDown /> : <ArrowDropUp />}</>
             )}
           </Button>
-          <Button variant="contained" color="primary" ml={3} onClick={handleSignInApprove}>
+          <Button variant="contained" color="primary" ml={3} onClick={approveSignIn}>
             회원가입 승인
           </Button>
         </Box>

@@ -99,7 +99,15 @@ export const UserDetail = () => {
   }
 
   async function handleApprove() {
-    await apiObject.approveMember({ member_pk });
+    await apiObject.approveMembers({
+      member_array: [
+        {
+          member_pk,
+        },
+      ],
+    });
+
+    getUserDetail();
   }
   async function handleUpdate(data) {
     // console.log(data);
