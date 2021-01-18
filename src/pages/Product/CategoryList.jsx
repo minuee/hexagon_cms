@@ -74,14 +74,14 @@ export const CategoryList = () => {
   const [selectedCategorys, setSelectedCategorys] = useState([]);
   const [listContext, setListContext] = useState({
     page: 1,
-    search_text: "",
-    search_category: "",
+    search_word: "",
+    search_category: "B",
   });
 
   const category_list_columns = [
     {
       title: "로고",
-      render: ({ logo_img }) => <Avatar variant="square" src={logo_img} className={classes.logo_box} />,
+      render: ({ category_logo }) => <Avatar variant="square" src={category_logo} className={classes.logo_box} />,
     },
     { title: "카테고리구분", render: ({ category_type }) => (category_type === "B" ? "브랜드" : "제품군") },
     { title: "카테고리명", field: "category_name" },
@@ -94,10 +94,22 @@ export const CategoryList = () => {
     setCategoryList(data);
     console.log(data);
   }
+  async function removeCategorys() {
+    let category_array = [];
+    selectedCategorys.forEach((item) => {
+      category_array.push({
+        category_pk: item.category_pk,
+      });
+    });
 
-  function handleDeleteCategorys() {
-    console.log(selectedCategorys);
+    if (window.confirm("선택한 카테고리들을 삭제하시겠습니까?")) {
+      let resp = await apiObject.removeCategorys({ category_array });
+      console.log(resp);
+
+      getCategoryList();
+    }
   }
+
   function handleContextChange(name, value) {
     setListContext({
       ...listContext,
@@ -105,9 +117,6 @@ export const CategoryList = () => {
     });
   }
 
-  // useEffect(() => {
-  //   console.log("listContext", listContext);
-  // }, [listContext]);
   useEffect(() => {
     getCategoryList();
   }, []);
@@ -138,7 +147,6 @@ export const CategoryList = () => {
               </InputAdornment>
             }
           >
-            <MenuItem value="">전체 카테고리</MenuItem>
             <MenuItem value={"B"}>브랜드</MenuItem>
             <MenuItem value={"N"}>제품군</MenuItem>
           </Select>
@@ -148,7 +156,7 @@ export const CategoryList = () => {
           <Button variant="contained" onClick={() => history.push("/product/category/add")}>
             추가
           </Button>
-          <Button ml={2} variant="contained" onClick={handleDeleteCategorys}>
+          <Button ml={2} variant="contained" onClick={removeCategorys}>
             삭제
           </Button>
         </Box>
@@ -157,7 +165,9 @@ export const CategoryList = () => {
       <Box mt={2} mb={3}>
         <ColumnTable
           columns={category_list_columns}
-          data={categoryList}
+          data={
+            listContext.search_category === "B" ? categoryList?.categoryBrandList : categoryList?.categoryNormalList
+          }
           onRowClick={(row) => history.push(`/product/category/${row.category_pk}`)}
           selection
           onSelectionChange={setSelectedCategorys}
@@ -176,10 +186,11 @@ export const CategoryList = () => {
           <Box display="inline-block" mx={1} />
 
           <TextField
-            name="search_text"
+            name="search_word"
             variant="outlined"
-            value={listContext.search_text}
-            onChange={(e) => handleContextChange("search_text", e.target.value)}
+            value={listContext.search_word}
+            onChange={(e) => handleContextChange("search_word", e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && getCategoryList()}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">

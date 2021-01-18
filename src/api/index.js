@@ -1,6 +1,7 @@
 import axios from "axios";
 import { store } from "redux/index";
 import dayjs from "dayjs";
+import _ from "lodash";
 
 // let token = localStorage.getItem("token");
 // axios.defaults.headers.common.Authorization = token;
@@ -48,26 +49,21 @@ axios.interceptors.response.use(
 
 export const apiObject = {
   // Common
-  uploadImage: async ({ file }) => {
+  uploadImage: async ({ img }) => {
+    console.log(img);
     try {
-      let img_path = await axios.post("/v1/img/test", {
-        test_img: file,
-      });
+      let img_path = await axios.post(
+        "/v1/img/single",
+        { img: img },
+        {
+          header: { "content-type": img.type },
+        },
+      );
 
       return img_path;
     } catch (e) {
       console.log(e);
       return "";
-    }
-  },
-  approveMember: async ({ member_pk }) => {
-    try {
-      console.log(member_pk);
-      let response = await axios.patch(`/member/approval/${member_pk}`, {
-        params: {},
-      });
-    } catch (e) {
-      console.log(e);
     }
   },
 
@@ -91,6 +87,17 @@ export const apiObject = {
     } catch (e) {
       console.log(e);
       return [];
+    }
+  },
+  approveMembers: async ({ member_array }) => {
+    try {
+      let response = await axios.put(`/member/approval`, {
+        member_array,
+      });
+
+      return response;
+    } catch (e) {
+      console.log(e);
     }
   },
   getMemberDetail: async ({ member_pk }) => {
@@ -134,17 +141,31 @@ export const apiObject = {
   },
 
   // Category
-  getCategoryList: async ({ search_word, search_category }) => {
+  getCategoryList: async ({ search_word }) => {
     try {
       let data = await axios.get("/category/list", {
         params: { search_word },
       });
-      let ret = data.data.data.categoryList;
+      let ret = data.data.data;
 
       return ret;
     } catch (e) {
       console.log(e);
       return [];
+    }
+  },
+  removeCategorys: async ({ category_array }) => {
+    try {
+      let response = await axios.delete(`/category/remove/`, {
+        data: {
+          category_array,
+        },
+      });
+
+      return response;
+    } catch (e) {
+      console.log(e);
+      return {};
     }
   },
   getCategoryDetail: async ({ category_pk }) => {
@@ -162,6 +183,60 @@ export const apiObject = {
     } catch (e) {
       console.log(e);
       return {};
+    }
+  },
+  getNormalCategoryList: async () => {
+    try {
+      let data = await axios.get("/category/depth/list", {});
+
+      let ret = {
+        d1: [],
+        d2: {},
+        d3: {},
+      };
+
+      data.data.data.categoryDepthList.forEach((item) => {
+        if (item.depth === 1) {
+          // d1
+          ret.d1.push(item);
+        } else if (item.depth === 2) {
+          // d2
+          if (_.has(ret.d2, item.group_code)) {
+            ret.d2[item.group_code].push(item);
+          } else {
+            ret.d2[item.group_code] = [item];
+          }
+        } else {
+          // d3
+          if (_.has(ret.d3, item.group_code)) {
+            ret.d3[item.group_code].push(item);
+          } else {
+            ret.d3[item.group_code] = [item];
+          }
+        }
+      });
+
+      return ret;
+    } catch (e) {
+      console.log(e);
+      return [];
+    }
+  },
+
+  registCategory: async ({ category_name, category_logo, category_seq = 1, category_type, normalcategory_pk }) => {
+    try {
+      let response = await axios.post("/category/regist", {
+        category_name,
+        category_logo,
+        category_seq,
+        category_type,
+        normalcategory_pk,
+      });
+
+      return response;
+    } catch (e) {
+      console.log(e);
+      return "";
     }
   },
   updateCategoryDetail: async ({ category_pk, category_name, category_logo, category_type }) => {
