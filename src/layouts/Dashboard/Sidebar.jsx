@@ -27,12 +27,20 @@ const page = [
     path: `/product`,
   },
   {
+    label: `이벤트상품관리`,
+    path: `/eventproduct`,
+  },
+  {
     label: `팝업관리`,
     path: `/popup`,
   },
   {
     label: `공지관리`,
     path: `/notice`,
+  },
+  {
+    label: `쿠폰관리`,
+    path: `/coupon`,
   },
 ];
 

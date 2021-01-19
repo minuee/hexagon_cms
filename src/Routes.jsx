@@ -10,8 +10,10 @@ import { UserList, UserDetail } from "./pages/User";
 import { SalesmanList, SalesmanDetail, SalesmanRegister, SalesmanIncentive } from "./pages/Salesman";
 import { PurchaseList, PurchaseDetail } from "./pages/Purchase";
 import { CategoryList, CategoryDetail, ItemList, ItemDetail } from "./pages/Product";
+import { EventProductList } from "./pages/EventProduct";
 import { PopupList, PopupDetail } from "./pages/Popup";
 import { NoticeList, NoticeDetail } from "./pages/Notice";
+import { CouponList } from "./pages/Coupon";
 
 const Routes = () => {
   const { userState } = useSelector((state) => state.reducer);
@@ -53,11 +55,15 @@ const MainRoutes = () => {
         <Route path="/product/item" component={ItemList} />
         <Redirect from="/product" to="/product/category" />
 
+        <Route path="/eventproduct" component={EventProductList} />
+
         <Route exact path="/popup/:popup_type_1/:popup_type_2/:popup_no" component={PopupDetail} />
         <Route path="/popup" component={PopupList} />
 
         <Route exact path="/notice/:notice_no" component={NoticeDetail} />
         <Route path="/notice" component={NoticeList} />
+
+        <Route path="/coupon" component={CouponList} />
 
         <Redirect to="/" />
       </Switch>
