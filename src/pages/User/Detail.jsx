@@ -100,29 +100,25 @@ export const UserDetail = () => {
 
   async function handleApprove() {
     await apiObject.approveMembers({
-      member_array: [
-        {
-          member_pk,
-        },
-      ],
+      member_array: [{ member_pk }],
     });
 
     getUserDetail();
   }
   async function handleUpdate(data) {
-    // console.log(data);
-    // await apiObject.updateMemberDetail({
-    //   ...data,
-    //   member_pk,
-    //   img_url: userInfo.img_url,
-    // });
-
-    // console.log(data.lisence_img?.[0]?.file);
-    let path = await apiObject.uploadImage({
-      file: data.lisence_img?.[0]?.file,
+    await apiObject.updateMemberDetail({
+      ...data,
+      member_pk,
+      img_url: userInfo.img_url,
+      member_type: "Normal",
     });
 
-    // getUserDetail();
+    // console.log(data.lisence_img?.[0]?.file);
+    // let path = await apiObject.uploadImage({
+    //   file: data.lisence_img?.[0]?.file,
+    // });
+
+    getUserDetail();
   }
 
   useEffect(() => {
@@ -143,7 +139,7 @@ export const UserDetail = () => {
           </Typography>
 
           <Box className={classes.rank_content}>
-            <Avatar src={`/image/rank_${userInfo?.grade_code.toLowerCase()}.png`} />
+            <Avatar src={`/image/rank_${userInfo?.grade_code?.toLowerCase()}.png`} />
             <Box textAlign="right">
               <Typography variant="h6" fontWeight="700">
                 {userInfo?.grade_name || "-"}

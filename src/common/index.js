@@ -1,3 +1,26 @@
+import CryptoJS from "crypto-js";
+
+const appID = "hexagonadmin";
+const CommonSaltKey = "hexagonadmineda40baa4fHynnm4W1";
+
+const key_hash = CryptoJS.MD5(appID);
+const hashkey = CryptoJS.enc.Utf8.parse(key_hash);
+const hashiv = CryptoJS.enc.Utf8.parse(CommonSaltKey);
+
+export function encrypt(str) {
+  let encrypted = CryptoJS.AES.encrypt(str, hashkey, { iv: hashiv, mode: CryptoJS.mode.CBC });
+  return encrypted.toString();
+}
+export function decrypt(str) {
+  try {
+    let decrypted = CryptoJS.AES.decrypt(str, hashkey, { iv: hashiv, mode: CryptoJS.mode.CBC });
+    return decrypted.toString(CryptoJS.enc.Utf8);
+  } catch (e) {
+    console.log({ e });
+    return str;
+  }
+}
+
 export function price(num) {
   if (!Number.isInteger(num)) {
     return null;

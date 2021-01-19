@@ -1,5 +1,6 @@
 import axios from "axios";
 import { store } from "redux/index";
+import { encrypt, decrypt } from "common";
 import dayjs from "dayjs";
 import _ from "lodash";
 
@@ -8,10 +9,10 @@ import _ from "lodash";
 // axios.defaults.headers.common["Access-Control-Allow-Origin"] = "*";
 
 //  const instance = axios.create({
-//      baseURL: "https://b2e4ceh3wj.execute-api.ap-northeast-1.amazonaws.com/hax-prod-api-stage/cms",
+//  baseURL: "https://b2e4ceh3wj.execute-api.ap-northeast-1.amazonaws.com/hax-prod-api-stage/cms",
 //  })
 
-axios.defaults.baseURL = "https://b2e4ceh3wj.execute-api.ap-northeast-1.amazonaws.com/hax-prod-api-stage/cms";
+axios.defaults.baseURL = "https://b2e4ceh3wj.execute-api.ap-northeast-1.amazonaws.com/hax-prod-api-stage";
 
 axios.interceptors.request.use(
   function (config) {
@@ -54,6 +55,7 @@ export const apiObject = {
     try {
       let img_path = await axios.post(
         "/v1/img/single",
+        // "https://b2e4ceh3wj.execute-api.ap-northeast-1.amazonaws.com/hax-prod-api-stage/v1/img/single",
         { img: img },
         {
           header: { "content-type": img.type },
@@ -70,7 +72,7 @@ export const apiObject = {
   // Member
   getMemberList: async ({ page, paginate = 10, search_word, term_start, term_end, sort_item, sort_type }) => {
     try {
-      let data = await axios.get("/member/list", {
+      let data = await axios.get("/cms/member/list", {
         params: {
           page,
           paginate,
@@ -81,7 +83,12 @@ export const apiObject = {
           sort_type,
         },
       });
+
       let ret = data.data.data.userList;
+      ret.forEach((item) => {
+        item.email = decrypt(item.email);
+        item.phone = decrypt(item.phone);
+      });
 
       return ret;
     } catch (e) {
@@ -91,7 +98,7 @@ export const apiObject = {
   },
   approveMembers: async ({ member_array }) => {
     try {
-      let response = await axios.put(`/member/approval`, {
+      let response = await axios.put(`/cms/member/approval`, {
         member_array,
       });
 
@@ -102,12 +109,27 @@ export const apiObject = {
   },
   getMemberDetail: async ({ member_pk }) => {
     try {
-      let data = await axios.get(`/member/view/${member_pk}`, {
+      let data = await axios.get(`/cms/member/view/${member_pk}`, {
         params: {},
       });
 
       let ret = data.data.data.userDetail[0];
       ret.img_url = "/image/lisence_sample.png";
+      ret.email = decrypt(ret.email);
+      ret.phone = decrypt(ret.phone);
+
+      // console.log("email", ret.email);
+      // console.log("email", decrypt(ret.email));
+
+      // let tmp = ret.phone;
+
+      // console.log("phone", tmp);
+      // let encrypted = encrypt("email");
+      // console.log("encrypted", encrypt(null));
+      // console.log("decrypted", decrypt(encrypted));
+      // console.log("decrypted", {
+      //   aa: decrypt(tmp),
+      // });
 
       return ret;
     } catch (e) {
@@ -117,7 +139,7 @@ export const apiObject = {
   },
   getMemberRewardList: async ({ member_pk, page, paginate = 10 }) => {
     try {
-      let data = await axios.get(`/member/reward/list/${member_pk}`, {
+      let data = await axios.get(`/cms/member/reward/list/${member_pk}`, {
         params: { page, paginate },
       });
 
@@ -134,16 +156,22 @@ export const apiObject = {
   },
   updateMemberDetail: async ({ member_pk, grade_code, img_url, member_type }) => {
     try {
-      let data = await axios.put(`/member/modify/${member_pk}`, { grade_code, img_url, member_type });
+      let response = await axios.put(`/cms/member/modify/${member_pk}`, {
+        grade_code,
+        img_url,
+        member_type,
+      });
+
+      return response;
     } catch (e) {
-      console.log(e);
+      console.log({ e });
     }
   },
 
   // Category
   getCategoryList: async ({ search_word }) => {
     try {
-      let data = await axios.get("/category/list", {
+      let data = await axios.get("/cms/category/list", {
         params: { search_word },
       });
       let ret = data.data.data;
@@ -156,7 +184,7 @@ export const apiObject = {
   },
   removeCategorys: async ({ category_array }) => {
     try {
-      let response = await axios.delete(`/category/remove/`, {
+      let response = await axios.delete(`/cms/category/remove/`, {
         data: {
           category_array,
         },
@@ -170,7 +198,7 @@ export const apiObject = {
   },
   getCategoryDetail: async ({ category_pk }) => {
     try {
-      let data = await axios.get(`/category/view/${category_pk}`, {
+      let data = await axios.get(`/cms/category/view/${category_pk}`, {
         params: {},
       });
 
@@ -187,7 +215,7 @@ export const apiObject = {
   },
   getNormalCategoryList: async () => {
     try {
-      let data = await axios.get("/category/depth/list", {});
+      let data = await axios.get("/cms/category/depth/list", {});
 
       let ret = {
         d1: [],
@@ -225,7 +253,7 @@ export const apiObject = {
 
   registCategory: async ({ category_name, category_logo, category_seq = 1, category_type, normalcategory_pk }) => {
     try {
-      let response = await axios.post("/category/regist", {
+      let response = await axios.post("/cms/category/regist", {
         category_name,
         category_logo,
         category_seq,
@@ -241,7 +269,11 @@ export const apiObject = {
   },
   updateCategoryDetail: async ({ category_pk, category_name, category_logo, category_type }) => {
     try {
-      let data = await axios.put(`/category/modify/${category_pk}`, { category_name, category_logo, category_type });
+      let data = await axios.put(`/cms/category/modify/${category_pk}`, {
+        category_name,
+        category_logo,
+        category_type,
+      });
     } catch (e) {
       console.log(e);
     }
@@ -250,7 +282,7 @@ export const apiObject = {
   // Item
   getItemList: async ({ category_pk, page, paginate = 10, search_word }) => {
     try {
-      let data = await axios.get("/product/list", {
+      let data = await axios.get("/cms/product/list", {
         params: { category_pk, page, paginate, search_word },
       });
       let ret = data.data.data.productList;
