@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { useForm, Controller } from "react-hook-form";
 
 import dayjs from "dayjs";
 import { price } from "common";
@@ -27,7 +28,8 @@ const useStyles = makeStyles((theme) => ({
     },
 
     "& .MuiInputBase-root": {
-      width: theme.spacing(25),
+      marginRight: theme.spacing(1),
+      width: theme.spacing(20),
       background: "#fff",
     },
   },
@@ -57,13 +59,16 @@ const useStyles = makeStyles((theme) => ({
 export const ItemList = () => {
   const classes = useStyles();
   const history = useHistory();
+  const { control, watch } = useForm();
 
   const [itemList, setItemList] = useState();
   const [selectedItems, setSelectedItems] = useState([]);
+  const [categoryList, setCategoryList] = useState();
   const [listContext, setListContext] = useState({
     page: 1,
     search_word: "",
     search_category: "",
+    category_pk: "",
   });
 
   const item_list_columns = [
@@ -71,16 +76,16 @@ export const ItemList = () => {
     { title: "제조사", field: "category_name" },
     {
       title: "상품 이미지",
-      render: ({ item_img }) => <Avatar variant="square" src={item_img} className={classes.logo_box} />,
+      render: ({ thumb_img }) => <Avatar variant="square" src={thumb_img} className={classes.logo_box} />,
     },
-    { title: "상품명", field: "item_name" },
+    { title: "상품명", field: "product_name" },
     {
       title: "가격",
       render: ({ item_price }) => (
         <p style={{ whiteSpace: "pre-wrap" }}>
-          {`낱개(${price(item_price.piece) || "-"})
-박스(${price(item_price.box) || "-"})
-카톤(${price(item_price.carton) || "-"})`}
+          {`낱개(${price(item_price?.piece) || "-"})
+박스(${price(item_price?.box) || "-"})
+카톤(${price(item_price?.carton) || "-"})`}
         </p>
       ),
     },
@@ -92,6 +97,12 @@ export const ItemList = () => {
     });
 
     setItemList(data);
+    console.log(data);
+  }
+  async function getCategoryList() {
+    let data = await apiObject.getCategoryList({});
+
+    setCategoryList(data);
     console.log(data);
   }
 
@@ -106,11 +117,22 @@ export const ItemList = () => {
   }
 
   useEffect(() => {
-    console.log("listContext", listContext);
-  }, [listContext]);
-  useEffect(() => {
+    // console.log("listContext", listContext);
     getItemList();
+  }, [listContext.page, listContext.search_category, listContext.category_pk]);
+
+  useEffect(() => {
+    // getItemList();
+    getCategoryList();
   }, []);
+
+  useEffect(() => {
+    handleContextChange("category_pk", "");
+  }, [watch("category_type", "")]);
+
+  useEffect(() => {
+    console.log(listContext.category_pk);
+  }, [listContext.category_pk]);
 
   return (
     <Box>
@@ -126,37 +148,54 @@ export const ItemList = () => {
 
       <Box className={classes.header}>
         <Box>
-          <Select
-            displayEmpty
-            name="search_category_type"
-            margin="dense"
-            variant="outlined"
-            value={listContext.search_category}
-            onChange={(e) => handleContextChange("search_category_type", e.target.value)}
-          >
-            <MenuItem value="">카테고리 구분</MenuItem>
-            <MenuItem value="brand">브랜드</MenuItem>
-            <MenuItem value="product_group">제품군</MenuItem>
-          </Select>
+          <Controller
+            as={
+              <Select displayEmpty margin="dense" variant="outlined">
+                <MenuItem value="">카테고리 구분</MenuItem>
+                <MenuItem value="B">브랜드</MenuItem>
+                <MenuItem value="N">제품군</MenuItem>
+              </Select>
+            }
+            control={control}
+            name="category_type"
+            defaultValue=""
+          />
 
-          <Box mx={1} />
-
-          <Select
-            displayEmpty
-            name="search_category_name"
-            margin="dense"
-            variant="outlined"
-            value={listContext.search_category}
-            onChange={(e) => handleContextChange("search_category_name", e.target.value)}
-          >
-            <MenuItem value="">카테고리 선택</MenuItem>
-            <MenuItem value={1}>아릭스</MenuItem>
-            <MenuItem value={2}>드라이팍</MenuItem>
-            <MenuItem value={3}>라코로나</MenuItem>
-          </Select>
+          {watch("category_type", "") === "B" && (
+            <Select
+              displayEmpty
+              margin="dense"
+              variant="outlined"
+              value={listContext.category_pk}
+              onChange={(e) => handleContextChange("category_pk", e.target.value)}
+            >
+              <MenuItem value="">카테고리 분류</MenuItem>
+              {categoryList.categoryBrandList.map((item, index) => (
+                <MenuItem value={item.category_pk} key={index}>
+                  {item.category_name}
+                </MenuItem>
+              ))}
+            </Select>
+          )}
+          {watch("category_type", "") === "N" && (
+            <Select
+              displayEmpty
+              margin="dense"
+              variant="outlined"
+              value={listContext.category_pk}
+              onChange={(e) => handleContextChange("category_pk", e.target.value)}
+            >
+              <MenuItem value="">카테고리 분류</MenuItem>
+              {categoryList.categoryNormalList.map((item, index) => (
+                <MenuItem value={item.category_pk} key={index}>
+                  {item.category_name}
+                </MenuItem>
+              ))}
+            </Select>
+          )}
 
           <Box ml={2}>
-            <Typography>등록 상품 수: {222}</Typography>
+            <Typography>등록 상품 수: {itemList?.[0]?.total}</Typography>
           </Box>
         </Box>
 
@@ -174,7 +213,7 @@ export const ItemList = () => {
         <ColumnTable
           columns={item_list_columns}
           data={itemList}
-          onRowClick={(row) => history.push(`/product/item/${row.item_no}`)}
+          onRowClick={(row) => history.push(`/product/item/${row.product_pk}`)}
           selection
           onSelectionChange={setSelectedItems}
         />
@@ -186,13 +225,18 @@ export const ItemList = () => {
           엑셀저장
         </Button>
 
-        <Pagination page={listContext.page} setPage={handleContextChange} />
+        <Pagination
+          page={listContext.page}
+          setPage={handleContextChange}
+          count={Math.ceil(itemList?.[0]?.total / 10)}
+        />
 
         <TextField
           name="search_word"
           variant="outlined"
           value={listContext.search_word}
           onChange={(e) => handleContextChange("search_word", e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && getItemList()}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">

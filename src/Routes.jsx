@@ -51,7 +51,7 @@ const MainRoutes = () => {
 
         <Route exact path="/product/category/:category_pk" component={CategoryDetail} />
         <Route path="/product/category" component={CategoryList} />
-        <Route exact path="/product/item/:item_no" component={ItemDetail} />
+        <Route exact path="/product/item/:product_pk" component={ItemDetail} />
         <Route path="/product/item" component={ItemList} />
         <Redirect from="/product" to="/product/category" />
 

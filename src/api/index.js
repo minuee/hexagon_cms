@@ -304,4 +304,18 @@ export const apiObject = {
       return [];
     }
   },
+  getItemCategoryList: async ({ page, paginate, search_word }) => {
+    try {
+      let data = await axios.get("/cms/product/category/list", {
+        params: { page, paginate, search_word },
+      });
+      console.log(data);
+      // let ret = data.data.data.productList;
+
+      // return ret;
+    } catch (e) {
+      console.log(e);
+      return [];
+    }
+  },
 };
