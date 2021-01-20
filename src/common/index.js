@@ -8,10 +8,14 @@ const hashkey = CryptoJS.enc.Utf8.parse(key_hash);
 const hashiv = CryptoJS.enc.Utf8.parse(CommonSaltKey);
 
 export function encrypt(str) {
+  if (!str) return str;
+
   let encrypted = CryptoJS.AES.encrypt(str, hashkey, { iv: hashiv, mode: CryptoJS.mode.CBC });
   return encrypted.toString();
 }
 export function decrypt(str) {
+  if (!str) return str;
+
   try {
     let decrypted = CryptoJS.AES.decrypt(str, hashkey, { iv: hashiv, mode: CryptoJS.mode.CBC });
     return decrypted.toString(CryptoJS.enc.Utf8);

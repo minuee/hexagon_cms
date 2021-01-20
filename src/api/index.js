@@ -50,21 +50,22 @@ axios.interceptors.response.use(
 
 export const apiObject = {
   // Common
-  uploadImage: async ({ img }) => {
-    console.log(img);
-    try {
-      let img_path = await axios.post(
-        "/v1/img/single",
-        // "https://b2e4ceh3wj.execute-api.ap-northeast-1.amazonaws.com/hax-prod-api-stage/v1/img/single",
-        { img: img },
-        {
-          header: { "content-type": img.type },
-        },
-      );
+  uploadImageSingle: async ({ img, page }) => {
+    if (!img?.file) return img?.path;
 
-      return img_path;
+    let formData = new FormData();
+    formData.append("img", img.file);
+    formData.append("folder", page);
+
+    try {
+      let response = await axios.post("/v1/img/single", formData, {
+        headers: { "content-type": "multipart/form-data" },
+      });
+      let ret = response.data.data;
+
+      return ret;
     } catch (e) {
-      console.log(e);
+      console.log({ e });
       return "";
     }
   },
@@ -113,7 +114,8 @@ export const apiObject = {
         params: {},
       });
 
-      let ret = data.data.data.userDetail[0];
+      let ret = data.data.userDetail;
+
       ret.img_url = "/image/lisence_sample.png";
       ret.email = decrypt(ret.email);
       ret.phone = decrypt(ret.phone);
@@ -267,12 +269,21 @@ export const apiObject = {
       return "";
     }
   },
-  updateCategoryDetail: async ({ category_pk, category_name, category_logo, category_type }) => {
+  updateCategoryDetail: async ({
+    category_pk,
+    category_name,
+    category_logo,
+    category_seq = 1,
+    category_type,
+    category_yn = true,
+  }) => {
     try {
       let data = await axios.put(`/cms/category/modify/${category_pk}`, {
         category_name,
         category_logo,
         category_type,
+        category_seq,
+        category_yn,
       });
     } catch (e) {
       console.log(e);

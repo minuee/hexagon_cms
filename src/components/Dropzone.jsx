@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useFormContext, useFieldArray, Controller } from "react-hook-form";
 import { Avatar, Box, makeStyles, Fade, Badge, Grid, InputLabel } from "@material-ui/core";
 import { Close, Add } from "@material-ui/icons";
@@ -19,6 +19,7 @@ const useStyles = makeStyles({
   image: {
     "& img": {
       objectFit: "contain",
+      objectPosition: "center center",
     },
   },
 });
@@ -52,6 +53,7 @@ export const Dropzone = ({ control, name, width, ratio = 1, maxFiles = 1, readOn
 
   return (
     <Box className={classes.container}>
+      {/* <Button onClick={() => console.log(fields)}>dsfsdf</Button> */}
       {/* <Button p={0} variant="contained">
         <InputLabel htmlFor="dropzone" variant="standard" style={{ padding: "10px" }}>
           <Typography fontWeight="500">파일 찾기</Typography>
@@ -72,7 +74,7 @@ export const Dropzone = ({ control, name, width, ratio = 1, maxFiles = 1, readOn
         </RatioBox>
       )}
 
-      {fields.map((item, index) => {
+      {fields?.map((item, index) => {
         return (
           <Box display="flex" alignItems="center" key={index}>
             <RatioBox
@@ -80,13 +82,14 @@ export const Dropzone = ({ control, name, width, ratio = 1, maxFiles = 1, readOn
               ratio={ratio}
               border="solid 1px #dddddd"
               // onClick={readOnly ? undefined : () => remove(index)}
-              onClick={() => !readOnly && remove(index)}
+              // onClick={() => !readOnly && remove(index)}
+              onClick={() => remove(index)}
             >
               <Controller
-                as={<Avatar src={item.path} variant="square" className={classes.image} />}
-                name={`${name}[${index}].file`}
+                as={<Avatar src={item.path || "/image/default.jpg"} variant="square" className={classes.image} />}
+                name={`${name}.[${index}]`}
                 control={control}
-                defaultValue={item.file}
+                defaultValue={item}
               />
             </RatioBox>
             <Box ml={2}>

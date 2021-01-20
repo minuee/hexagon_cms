@@ -41,11 +41,13 @@ export const CategoryDetail = () => {
 
   async function getCategoryDetail() {
     let data = await apiObject.getCategoryDetail({ category_pk });
-    console.log(data);
+
     reset({
       ...data,
-      category_logo: [{ file: null, path: data?.category_logo }],
+      // category_logo: [{ file: null, path: data?.category_logo }],
+      category_logo: [],
     });
+    setValue("category_logo", [{ file: null, path: data?.category_logo }]);
   }
   async function getNormalCategoryList() {
     let data = await apiObject.getNormalCategoryList();
@@ -64,41 +66,67 @@ export const CategoryDetail = () => {
   }
 
   async function handleAddCategory(data) {
-    console.log(data);
-
-    let path = await apiObject.uploadImage({
-      // img: data.category_logo?.[0]?.file,
-      img: data.category_logo?.[0].file,
-    });
-    console.log(path);
     // console.log(data);
-    // let normalcategory_pk = data.d3?.normalcategory_pk;
-    // let category_name = data.category_name || data.d3?.name;
 
-    // let resp = await apiObject.registCategory({
-    //   category_name,
-    //   category_type: data.category_type,
-    //   normalcategory_pk,
+    // let path = "https://hg-prod-file.s3-ap-northeast-1.amazonaws.com/public/default/photo.jpg";
+    // if (data.category_logo) {
+    //   path = await apiObject.uploadImageSingle({
+    //     img: data.category_logo?.[0],
+    //     page: "product",
+    //   });
+    // }
+    let path = await apiObject.uploadImageSingle({
+      img: data.category_logo?.[0],
+      page: "product",
+    });
 
-    //   // category_logo: data.category_logo?.[0]?.file,
-    //   category_logo:
-    //     data.category_type === "N"
-    //       ? `http://placehold.it/60X60/${getRandomColor()}/ffffff?text=${normalcategory_pk}`
-    //       : `http://placehold.it/60X60/${getRandomColor()}/ffffff?text=test_image`,
-    // });
-    // console.log(resp.data);
+    let normalcategory_pk = data.d3?.normalcategory_pk;
+    let category_name = data.category_name || data.d3?.name;
 
-    // history.push(`product/category`);
+    let resp = await apiObject.registCategory({
+      category_name,
+      category_type: data.category_type,
+      category_logo: path,
+      normalcategory_pk,
+      // category_logo:
+      //   data.category_type === "N"
+      //     ? `http://placehold.it/60X60/${getRandomColor()}/ffffff?text=${normalcategory_pk}`
+      //     : `http://placehold.it/60X60/${getRandomColor()}/ffffff?text=test_image`,
+    });
+
+    history.push(`product/category`);
   }
   async function handleUpdateCategory(data) {
-    console.log("update", data);
-    // await apiObject.updateCategoryDetail({
-    //   // ...data,
-    //   category_pk,
-    //   category_name: data.category_name,
-    //   category_type: data.category_type,
-    //   category_logo: "",
-    // });
+    // let img = data.category_logo?.[0].file;
+    // let path;
+    // if (img) {
+    //   path = await apiObject.uploadImageSingle({
+    //     img: data.category_logo?.[0].file,
+    //   });
+    // } else [(path = data.category_logo?.[0].path)];
+
+    // let path = "https://hg-prod-file.s3-ap-northeast-1.amazonaws.com/public/default/photo.jpg";
+    // if (data.category_logo) {
+    //   path = await apiObject.uploadImageSingle({
+    //     img: data.category_logo?.[0],
+    //     page: "product",
+    //   });
+    // }
+    let path = await apiObject.uploadImageSingle({
+      img: data.category_logo?.[0],
+      page: "product",
+    });
+
+    let normalcategory_pk = data.d3?.normalcategory_pk;
+    let category_name = data.category_name || data.d3?.name;
+
+    let resp = await apiObject.updateCategoryDetail({
+      category_pk,
+      category_name,
+      category_type: data.category_type,
+      category_logo: path,
+      normalcategory_pk,
+    });
 
     getCategoryDetail();
   }
@@ -216,7 +244,7 @@ export const CategoryDetail = () => {
         <TableRow>
           <TableCell>로고 이미지</TableCell>
           <TableCell>
-            <Dropzone control={control} name="category_logo" width="90px" ratio={1} />
+            <Dropzone control={control} name="category_logo" width="90px" />
           </TableCell>
         </TableRow>
       </RowTable>
