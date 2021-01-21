@@ -2,14 +2,16 @@ import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
-import dayjs from "dayjs";
 import { price } from "common";
+import { apiObject } from "api";
+import dayjs from "dayjs";
 
 import {
   Grid,
   Box,
   makeStyles,
   TextField,
+  Select,
   MenuItem,
   InputAdornment,
   Avatar,
@@ -49,35 +51,75 @@ const useStyles = makeStyles((theme) => ({
 
 export const ItemDetail = () => {
   const classes = useStyles();
-  const { item_no } = useParams();
-  const { control, reset, handleSubmit } = useForm();
+  const { product_pk } = useParams();
+  const { control, reset, setValue, watch, handleSubmit } = useForm();
 
-  function handleAddItem(data) {
-    console.log("add", data);
+  const [categoryList, setCategoryList] = useState();
+
+  async function getCategoryList() {
+    let data = await apiObject.getCategoryList({});
+
+    setCategoryList(data);
   }
-  function handleUpdateItem(data) {
-    console.log("update", data);
+  async function getItemDetail() {
+    let data = await apiObject.getItemDetail({ product_pk });
+
+    reset({
+      ...data,
+      material: data.material || "",
+      thumb_img: [],
+      detail_img: [],
+    });
+    setValue("thumb_img", data.thumb_img);
+    setValue("detail_img", data.detail_img);
+  }
+  async function registItem(form) {
+    const { detail_img, thumb_img, ...data } = form;
+
+    if (!thumb_img || !detail_img) return;
+    if (!window.confirm("기재한 정보로 상품을 추가하시겠습니까?")) return;
+
+    let detail_img_paths = await apiObject.uploadImageMultiple({ img_arr: detail_img, page: "product" });
+    console.log(detail_img_paths);
+    for (let i = 1; i <= detail_img_paths.length; i++) {
+      data[`detail_img${i}`] = detail_img_paths[i];
+    }
+
+    let thumb_img_path = await apiObject.uploadImageSingle({ img: thumb_img?.[0], page: "product" });
+    data.thumb_img = thumb_img_path;
+
+    let resp = await apiObject.registItem(data);
+  }
+  async function updateItem(form) {
+    if (!form.thumb_img || !form.detail_img) return;
+
+    let detail_img_paths = await apiObject.uploadImageMultiple({ img_arr: form.detail_img, page: "product" });
+    for (let i = 1; i <= detail_img_paths; i++) {
+      form[`detail_img${i}`] = detail_img_paths[i];
+    }
+
+    let thumb_img_path = await apiObject.uploadImageSingle({ img: form.thumb_img?.[0], page: "product" });
+    form.thumb_img = thumb_img_path;
+
+    console.log(form);
   }
 
   useEffect(() => {
-    if (item_no !== "add") {
-      reset({
-        item_name: "알인스",
-        category_type: 1,
-        category_name: 2,
-        item_material: "돌덩이",
+    setValue("category_pk", "");
+  }, [watch("category_type", "B")]);
 
-        salesman_incentive: 1.4,
-        can_use_accumulate: "1",
-      });
+  useEffect(() => {
+    if (product_pk !== "add") {
+      getItemDetail();
     }
-  }, [item_no]);
+    getCategoryList();
+  }, [product_pk]);
 
   return (
     <Box>
       <Box mb={1}>
         <Typography variant="h5" fontWeight="500">
-          상품 {item_no === "add" ? "등록" : "정보"}
+          상품 {product_pk === "add" ? "등록" : "정보"}
         </Typography>
       </Box>
 
@@ -87,29 +129,38 @@ export const ItemDetail = () => {
           <TableCell>
             <Controller
               as={
-                <TextField size="small" select variant="outlined">
-                  <MenuItem value={1}>브랜드</MenuItem>
-                  <MenuItem value={2}>제품군</MenuItem>
-                </TextField>
+                <Select margin="dense" variant="outlined">
+                  {/* <MenuItem value="">카테고리선택</MenuItem> */}
+                  <MenuItem value="B">브랜드</MenuItem>
+                  <MenuItem value="N">제품군</MenuItem>
+                </Select>
               }
               name="category_type"
               control={control}
-              defaultValue={1}
+              defaultValue={"B"}
             />
             <Box display="inline-block" ml={2}>
               <Controller
                 as={
-                  <TextField size="small" select variant="outlined">
-                    <MenuItem value={1}>아릭스</MenuItem>
-                    <MenuItem value={2}>드라이팍</MenuItem>
-                    <MenuItem value={3}>라코로나</MenuItem>
-                    <MenuItem value={4}>클로린직</MenuItem>
-                    <MenuItem value={5}>톤키타</MenuItem>
-                  </TextField>
+                  <Select margin="dense" variant="outlined" displayEmpty>
+                    <MenuItem value="">카테고리 분류 선택</MenuItem>
+                    {watch("category_type", "B") === "B" &&
+                      categoryList?.categoryBrandList.map((item, index) => (
+                        <MenuItem value={item.category_pk} key={index}>
+                          {item.category_name}
+                        </MenuItem>
+                      ))}
+                    {watch("category_type", "B") === "N" &&
+                      categoryList?.categoryNormalList.map((item, index) => (
+                        <MenuItem value={item.category_pk} key={index}>
+                          {item.category_name}
+                        </MenuItem>
+                      ))}
+                  </Select>
                 }
-                name="category_name"
+                name="category_pk"
                 control={control}
-                defaultValue={1}
+                defaultValue={""}
               />
             </Box>
           </TableCell>
@@ -120,7 +171,7 @@ export const ItemDetail = () => {
             <Controller
               as={<TextField size="small" variant="outlined" />}
               placeholder="상품명"
-              name="item_name"
+              name="product_name"
               control={control}
               rules={{ required: true }}
               defaultValue=""
@@ -140,9 +191,8 @@ export const ItemDetail = () => {
                     endAdornment: <InputAdornment position="end">원</InputAdornment>,
                   }}
                   placeholder="숫자만 입력"
-                  name="normal_price.piece.price"
+                  name="each_price"
                   control={control}
-                  rules={{ required: true }}
                   defaultValue=""
                 />
               </Box>
@@ -160,9 +210,8 @@ export const ItemDetail = () => {
                     endAdornment: <InputAdornment position="end">원</InputAdornment>,
                   }}
                   placeholder="숫자만 입력"
-                  name="normal_price.box.price"
+                  name="box_price"
                   control={control}
-                  rules={{ required: true }}
                   defaultValue=""
                 />
                 <Controller
@@ -171,9 +220,8 @@ export const ItemDetail = () => {
                     endAdornment: <InputAdornment position="end">개입</InputAdornment>,
                   }}
                   placeholder="숫자만 입력"
-                  name="normal_price.box.amount"
+                  name="box_unit"
                   control={control}
-                  rules={{ required: true }}
                   defaultValue=""
                 />
               </Box>
@@ -191,9 +239,8 @@ export const ItemDetail = () => {
                     endAdornment: <InputAdornment position="end">원</InputAdornment>,
                   }}
                   placeholder="숫자만 입력"
-                  name="normal_price.carton.price"
+                  name="carton_price"
                   control={control}
-                  rules={{ required: true }}
                   defaultValue=""
                 />
                 <Controller
@@ -202,9 +249,8 @@ export const ItemDetail = () => {
                     endAdornment: <InputAdornment position="end">개입</InputAdornment>,
                   }}
                   placeholder="숫자만 입력"
-                  name="normal_price.carton.amount"
+                  name="carton_unit"
                   control={control}
-                  rules={{ required: true }}
                   defaultValue=""
                 />
               </Box>
@@ -224,9 +270,8 @@ export const ItemDetail = () => {
                     endAdornment: <InputAdornment position="end">원</InputAdornment>,
                   }}
                   placeholder="숫자만 입력"
-                  name="event_price.piece.price"
+                  name="event_each_price"
                   control={control}
-                  rules={{ required: true }}
                   defaultValue=""
                 />
               </Box>
@@ -244,9 +289,8 @@ export const ItemDetail = () => {
                     endAdornment: <InputAdornment position="end">원</InputAdornment>,
                   }}
                   placeholder="숫자만 입력"
-                  name="event_price.box.price"
+                  name="event_box_price"
                   control={control}
-                  rules={{ required: true }}
                   defaultValue=""
                 />
                 <Controller
@@ -255,9 +299,8 @@ export const ItemDetail = () => {
                     endAdornment: <InputAdornment position="end">개입</InputAdornment>,
                   }}
                   placeholder="숫자만 입력"
-                  name="event_price.box.amount"
+                  name="event_box_unit"
                   control={control}
-                  rules={{ required: true }}
                   defaultValue=""
                 />
               </Box>
@@ -275,9 +318,8 @@ export const ItemDetail = () => {
                     endAdornment: <InputAdornment position="end">원</InputAdornment>,
                   }}
                   placeholder="숫자만 입력"
-                  name="event_price.carton.price"
+                  name="event_carton_price"
                   control={control}
-                  rules={{ required: true }}
                   defaultValue=""
                 />
                 <Controller
@@ -286,9 +328,8 @@ export const ItemDetail = () => {
                     endAdornment: <InputAdornment position="end">개입</InputAdornment>,
                   }}
                   placeholder="숫자만 입력"
-                  name="event_price.carton.amount"
+                  name="event_carton_unit"
                   control={control}
-                  rules={{ required: true }}
                   defaultValue=""
                 />
               </Box>
@@ -334,9 +375,8 @@ export const ItemDetail = () => {
             <Controller
               as={<TextField size="small" variant="outlined" />}
               placeholder="재질명"
-              name="item_material"
+              name="material"
               control={control}
-              rules={{ required: true }}
               defaultValue=""
             />
           </TableCell>
@@ -344,20 +384,20 @@ export const ItemDetail = () => {
         <TableRow>
           <TableCell>상품 대표 이미지</TableCell>
           <TableCell>
-            <Dropzone control={control} name="item_main_img" width="90px" ratio={1} />
+            <Dropzone control={control} name="thumb_img" width="90px" ratio={1} minFiles={1} />
           </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>상품 설명 이미지</TableCell>
           <TableCell>
-            <Dropzone control={control} name="item_desc_img" width="90px" ratio={1} />
+            <Dropzone control={control} name="detail_img" width="90px" ratio={1} maxFiles={4} />
             <Typography color="textSecondary">
-              상품에 대한 상세한 설명 또는 브랜드에 관한 소개를 이미지로 업로드해주세요.
+              상품에 대한 상세한 설명 또는 브랜드에 관한 소개를 4개까지 이미지로 업로드해주세요.
             </Typography>
           </TableCell>
         </TableRow>
 
-        <TableRow>
+        {/* <TableRow>
           <TableCell>영업사원 인센티브</TableCell>
           <TableCell>
             <Controller
@@ -372,6 +412,23 @@ export const ItemDetail = () => {
               defaultValue=""
             />
           </TableCell>
+        </TableRow> */}
+        <TableRow>
+          <TableCell>품절 여부</TableCell>
+          <TableCell>
+            <Controller
+              as={
+                <RadioGroup row>
+                  <FormControlLabel value={true} control={<Radio color="primary" />} label="품절" />
+                  <Box display="inline" ml={2} />
+                  <FormControlLabel value={false} control={<Radio color="primary" />} label="재고있음" />
+                </RadioGroup>
+              }
+              name="is_soldout"
+              control={control}
+              defaultValue={false}
+            />
+          </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>적립금 사용 가능 여부</TableCell>
@@ -379,27 +436,26 @@ export const ItemDetail = () => {
             <Controller
               as={
                 <RadioGroup row>
-                  <FormControlLabel value="1" control={<Radio color="primary" />} label="적립금 사용 가능 상품" />
-                  <Box display="inline" ml={2}>
-                    <FormControlLabel value="2" control={<Radio color="primary" />} label="적립금 사용 불가 상품" />
-                  </Box>
+                  <FormControlLabel value={true} control={<Radio color="primary" />} label="적립금 사용 가능 상품" />
+                  <Box display="inline" ml={2} />
+                  <FormControlLabel value={false} control={<Radio color="primary" />} label="적립금 사용 불가 상품" />
                 </RadioGroup>
               }
-              name="can_use_accumulate"
+              name="is_nonpoint"
               control={control}
-              defaultValue="1"
+              defaultValue={false}
             />
           </TableCell>
         </TableRow>
       </RowTable>
 
       <Box mt={4} textAlign="center">
-        {item_no === "add" ? (
-          <Button variant="contained" color="primary" onClick={handleSubmit(handleAddItem)}>
+        {product_pk === "add" ? (
+          <Button variant="contained" color="primary" onClick={handleSubmit(registItem)}>
             게시
           </Button>
         ) : (
-          <Button variant="contained" color="primary" onClick={handleSubmit(handleUpdateItem)}>
+          <Button variant="contained" color="primary" onClick={handleSubmit(updateItem)}>
             수정
           </Button>
         )}

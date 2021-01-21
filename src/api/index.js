@@ -3,6 +3,7 @@ import { store } from "redux/index";
 import { encrypt, decrypt } from "common";
 import dayjs from "dayjs";
 import _ from "lodash";
+import { IMAGE_BASE_URL } from "env";
 
 // let token = localStorage.getItem("token");
 // axios.defaults.headers.common.Authorization = token;
@@ -69,6 +70,33 @@ export const apiObject = {
       return "";
     }
   },
+  uploadImageMultiple: async ({ img_arr, page }) => {
+    if (!img_arr.length) return [];
+
+    let formData = new FormData();
+    formData.append("folder", page);
+    img_arr.forEach((item) => {
+      formData.append("img", item.file);
+    });
+
+    try {
+      let response = await axios.post("/v1/img/multiple", formData, {
+        headers: { "content-type": "multipart/form-data" },
+      });
+
+      let ret = [];
+      for (let i = 0; i < response.data.data.length; i++) {
+        if (i % 2 !== 0) {
+          ret.push(response.data.data[i]);
+        }
+      }
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return [];
+    }
+  },
 
   // Member
   getMemberList: async ({ page, paginate = 10, search_word, term_start, term_end, sort_item, sort_type }) => {
@@ -93,7 +121,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
-      console.log(e);
+      console.log({ e });
       return [];
     }
   },
@@ -105,7 +133,7 @@ export const apiObject = {
 
       return response;
     } catch (e) {
-      console.log(e);
+      console.log({ e });
     }
   },
   getMemberDetail: async ({ member_pk }) => {
@@ -135,7 +163,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
-      console.log(e);
+      console.log({ e });
       return {};
     }
   },
@@ -152,7 +180,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
-      console.log(e);
+      console.log({ e });
       return [];
     }
   },
@@ -180,7 +208,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
-      console.log(e);
+      console.log({ e });
       return [];
     }
   },
@@ -194,7 +222,7 @@ export const apiObject = {
 
       return response;
     } catch (e) {
-      console.log(e);
+      console.log({ e });
       return {};
     }
   },
@@ -211,7 +239,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
-      console.log(e);
+      console.log({ e });
       return {};
     }
   },
@@ -248,7 +276,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
-      console.log(e);
+      console.log({ e });
       return [];
     }
   },
@@ -265,7 +293,7 @@ export const apiObject = {
 
       return response;
     } catch (e) {
-      console.log(e);
+      console.log({ e });
       return "";
     }
   },
@@ -286,7 +314,7 @@ export const apiObject = {
         category_yn,
       });
     } catch (e) {
-      console.log(e);
+      console.log({ e });
     }
   },
 
@@ -300,22 +328,37 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
-      console.log(e);
+      console.log({ e });
       return [];
     }
   },
-  getItemCategoryList: async ({ page, paginate, search_word }) => {
+  getItemDetail: async ({ product_pk }) => {
     try {
-      let data = await axios.get("/cms/product/category/list", {
-        params: { page, paginate, search_word },
-      });
-      console.log(data);
-      // let ret = data.data.data.productList;
+      let data = await axios.get(`/cms/product/view/${product_pk}`, {});
+      let ret = data.data.data.productDetail?.[0];
 
-      // return ret;
+      ret.thumb_img = [{ file: null, path: ret.thumb_img }];
+      ret.detail_img = [];
+      for (let i = 1; i <= 4; i++) {
+        if (ret[`detail_img${i}`] === null) break;
+        ret.detail_img.push({ file: null, path: ret[`detail_img${i}`] });
+      }
+
+      return ret;
     } catch (e) {
-      console.log(e);
-      return [];
+      console.log({ e });
+      return {};
+    }
+  },
+  registItem: async (form) => {
+    try {
+      let response = await axios.post("/cms/product/regist", {
+        ...form,
+      });
+
+      return response;
+    } catch (e) {
+      console.log({ e });
     }
   },
 };
