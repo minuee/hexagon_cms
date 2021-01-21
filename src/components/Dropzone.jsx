@@ -24,25 +24,35 @@ const useStyles = makeStyles({
   },
 });
 
-export const Dropzone = ({ control, name, width, ratio = 1, maxFiles = 1, readOnly }) => {
+export const Dropzone = ({ control, name, width, ratio = 1, maxFiles = 1, minFiles = 0, readOnly }) => {
   const classes = useStyles();
   const { fields, append, remove } = useFieldArray({
     control: control,
     name: name,
   });
 
-  const onDropAccepted = (files) => {
+  const onDropAccepted = async (files) => {
     let count = Math.min(files.length, maxFiles - fields.length);
 
+    let tmp = [];
     for (let i = 0; i < count; i++) {
+      let path = await getFilePath(files[i]);
+      tmp.push({ file: files[i], path });
+    }
+
+    append(tmp);
+  };
+
+  function getFilePath(file) {
+    return new Promise((resolve, reject) => {
       let reader = new FileReader();
-      reader.readAsDataURL(files[i]);
+      reader.readAsDataURL(file);
 
       reader.onload = () => {
-        append({ file: files[i], path: reader.result });
+        resolve(reader.result);
       };
-    }
-  };
+    });
+  }
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: "image/*",
@@ -76,7 +86,7 @@ export const Dropzone = ({ control, name, width, ratio = 1, maxFiles = 1, readOn
 
       {fields?.map((item, index) => {
         return (
-          <Box display="flex" alignItems="center" key={index}>
+          <Box display="flex" alignItems="center" key={item.id}>
             <RatioBox
               width={width}
               ratio={ratio}
