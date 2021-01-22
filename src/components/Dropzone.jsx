@@ -6,6 +6,8 @@ import { useDropzone } from "react-dropzone";
 import { RatioBox } from "components/RatioBox";
 import { Button, Typography } from "components/materialui";
 
+import { getFullImgURL } from "common";
+
 const useStyles = makeStyles({
   container: {
     marginTop: "1rem",
@@ -96,7 +98,13 @@ export const Dropzone = ({ control, name, width, ratio = 1, maxFiles = 1, minFil
               onClick={() => remove(index)}
             >
               <Controller
-                as={<Avatar src={item.path || "/image/default.jpg"} variant="square" className={classes.image} />}
+                as={
+                  <Avatar
+                    src={getFullImgURL(item.path) || "/image/default.jpg"}
+                    variant="square"
+                    className={classes.image}
+                  />
+                }
                 name={`${name}.[${index}]`}
                 control={control}
                 defaultValue={item}

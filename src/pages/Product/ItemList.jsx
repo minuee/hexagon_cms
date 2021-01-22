@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { useForm, Controller } from "react-hook-form";
 
 import dayjs from "dayjs";
-import { price } from "common";
+import { price, getFullImgURL } from "common";
 
 import { Grid, Box, makeStyles, TextField, InputAdornment, Avatar, Select, MenuItem } from "@material-ui/core";
 import { DescriptionOutlined, Search, EventNote } from "@material-ui/icons";
@@ -76,7 +76,9 @@ export const ItemList = () => {
     { title: "제조사", field: "category_name" },
     {
       title: "상품 이미지",
-      render: ({ thumb_img }) => <Avatar variant="square" src={thumb_img} className={classes.logo_box} />,
+      render: ({ thumb_img }) => (
+        <Avatar variant="square" src={getFullImgURL(thumb_img)} className={classes.logo_box} />
+      ),
     },
     { title: "상품명", field: "product_name" },
     {

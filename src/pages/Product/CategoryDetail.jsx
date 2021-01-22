@@ -3,8 +3,9 @@ import { useHistory, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
 import dayjs from "dayjs";
-import { price, getRandomColor } from "common";
+import { price, getRandomColor, getFullImgURL } from "common";
 import { apiObject } from "api";
+import _ from "lodash";
 
 import {
   Grid,
@@ -35,16 +36,16 @@ export const CategoryDetail = () => {
   const classes = useStyles();
   const history = useHistory();
   const { category_pk } = useParams();
-  const { control, watch, setValue, reset, handleSubmit } = useForm();
+  const { state } = history.location;
+  const { control, register, watch, setValue, reset, handleSubmit } = useForm();
 
   const [normalCategoryList, setNormalCategoryList] = useState();
 
   async function getCategoryDetail() {
-    let data = await apiObject.getCategoryDetail({ category_pk });
+    let data = await apiObject.getCategoryDetail({ category_pk, category_type: state?.category_type });
 
     reset({
       ...data,
-      // category_logo: [{ file: null, path: data?.category_logo }],
       category_logo: [],
     });
     setValue("category_logo", [{ file: null, path: data?.category_logo }]);
@@ -52,17 +53,7 @@ export const CategoryDetail = () => {
   async function getNormalCategoryList() {
     let data = await apiObject.getNormalCategoryList();
 
-    // let d1 = data.d1?.[0];
-    // let d2 = data.d2[d1.code]?.[0];
-    // let d3 = data.d3[d2.code]?.[0];
-
-    // reset({ d1, d2, d3 });
-    // setValue("d1", d1);
-    // setValue("d2", d2);
-    // setValue("d3", d3);
-
     setNormalCategoryList(data);
-    console.log(data);
   }
 
   async function handleAddCategory(data) {
@@ -97,57 +88,47 @@ export const CategoryDetail = () => {
     history.push(`product/category`);
   }
   async function handleUpdateCategory(data) {
-    // let img = data.category_logo?.[0].file;
-    // let path;
-    // if (img) {
-    //   path = await apiObject.uploadImageSingle({
-    //     img: data.category_logo?.[0].file,
-    //   });
-    // } else [(path = data.category_logo?.[0].path)];
+    console.log(data);
 
-    // let path = "https://hg-prod-file.s3-ap-northeast-1.amazonaws.com/public/default/photo.jpg";
-    // if (data.category_logo) {
-    //   path = await apiObject.uploadImageSingle({
-    //     img: data.category_logo?.[0],
-    //     page: "product",
-    //   });
-    // }
     let path = await apiObject.uploadImageSingle({
       img: data.category_logo?.[0],
       page: "product",
     });
 
-    let normalcategory_pk = data.d3?.normalcategory_pk;
-    let category_name = data.category_name || data.d3?.name;
+    if (data.category_type !== "B") {
+      for (let c of normalCategoryList.d3[watch("d2")]) {
+        if (c.code == data.d3) {
+          data.normalcategory_pk = c.normalcategory_pk;
+          data.category_name = c.name;
+          break;
+        }
+      }
+    }
 
     let resp = await apiObject.updateCategoryDetail({
+      ...data,
       category_pk,
-      category_name,
-      category_type: data.category_type,
       category_logo: path,
-      normalcategory_pk,
     });
 
     getCategoryDetail();
   }
 
+  function onCategoryChange(name) {
+    if (name === "d1") {
+      setValue("d2", "");
+      setValue("d3", "");
+    } else if (name === "d2") {
+      setValue("d3", "");
+    }
+  }
+
   useEffect(() => {
+    getNormalCategoryList();
     if (category_pk !== "add") {
       getCategoryDetail();
     }
-    getNormalCategoryList();
-  }, [category_pk]);
-
-  useEffect(() => {
-    if (watch("d1")) {
-      setValue("d2", normalCategoryList?.d2[watch("d1")?.code]?.[0]);
-    }
-  }, [watch("d1")]);
-  useEffect(() => {
-    if (watch("d2")) {
-      setValue("d3", normalCategoryList?.d3[watch("d2")?.code]?.[0]);
-    }
-  }, [watch("d2")]);
+  }, [category_pk, state?.category_type]);
 
   return (
     <Box>
@@ -179,38 +160,59 @@ export const CategoryDetail = () => {
           {watch("category_type") === "N" ? (
             <TableCell>
               <Controller
-                as={
-                  <Select variant="outlined" className={classes.category_input}>
+                render={({ value, onChange }) => (
+                  <Select
+                    variant="outlined"
+                    displayEmpty
+                    className={classes.category_input}
+                    value={value}
+                    onChange={(e) => {
+                      onCategoryChange("d1");
+                      onChange(e);
+                    }}
+                  >
+                    <MenuItem value="">-</MenuItem>
                     {normalCategoryList?.d1.map((item, index) => (
-                      <MenuItem key={index} value={item}>
+                      <MenuItem key={index} value={item.code}>
                         {item.name}
                       </MenuItem>
                     ))}
                   </Select>
-                }
+                )}
                 name="d1"
                 control={control}
                 defaultValue=""
               />
               <Controller
-                as={
-                  <Select variant="outlined" className={classes.category_input}>
-                    {normalCategoryList?.d2[watch("d1")?.code || "K1"]?.map((item, index) => (
-                      <MenuItem key={index} value={item}>
+                render={({ value, onChange }) => (
+                  <Select
+                    variant="outlined"
+                    displayEmpty
+                    className={classes.category_input}
+                    value={value}
+                    onChange={(e) => {
+                      onCategoryChange("d2");
+                      onChange(e);
+                    }}
+                  >
+                    <MenuItem value="">-</MenuItem>
+                    {normalCategoryList?.d2[watch("d1")]?.map((item, index) => (
+                      <MenuItem key={index} value={item.code}>
                         {item.name}
                       </MenuItem>
                     ))}
                   </Select>
-                }
+                )}
                 name="d2"
                 control={control}
                 defaultValue=""
               />
               <Controller
                 as={
-                  <Select variant="outlined" className={classes.category_input}>
-                    {normalCategoryList?.d3[watch("d2")?.code || "K1K1"]?.map((item, index) => (
-                      <MenuItem key={index} value={item}>
+                  <Select variant="outlined" displayEmpty className={classes.category_input}>
+                    <MenuItem value="">-</MenuItem>
+                    {normalCategoryList?.d3[watch("d2")]?.map((item, index) => (
+                      <MenuItem key={index} value={item.code}>
                         {item.name}
                       </MenuItem>
                     ))}

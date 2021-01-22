@@ -1,9 +1,8 @@
 import axios from "axios";
 import { store } from "redux/index";
-import { encrypt, decrypt } from "common";
+import { encrypt, decrypt, getFullImgURL } from "common";
 import dayjs from "dayjs";
 import _ from "lodash";
-import { IMAGE_BASE_URL } from "env";
 
 // let token = localStorage.getItem("token");
 // axios.defaults.headers.common.Authorization = token;
@@ -99,7 +98,7 @@ export const apiObject = {
   },
 
   // Member
-  getMemberList: async ({ page, paginate = 10, search_word, term_start, term_end, sort_item, sort_type }) => {
+  getMemberList: async ({ page = 1, paginate = 10, search_word, term_start, term_end, sort_item, sort_type }) => {
     try {
       let data = await axios.get("/cms/member/list", {
         params: {
@@ -138,28 +137,13 @@ export const apiObject = {
   },
   getMemberDetail: async ({ member_pk }) => {
     try {
-      let data = await axios.get(`/cms/member/view/${member_pk}`, {
-        params: {},
-      });
+      let data = await axios.get(`/cms/member/view/${member_pk}`, {});
 
-      let ret = data.data.userDetail;
+      let ret = data.data.data.userDetail;
 
-      ret.img_url = "/image/lisence_sample.png";
+      // ret.img_url = getFullImgURL(ret.img_url);
       ret.email = decrypt(ret.email);
       ret.phone = decrypt(ret.phone);
-
-      // console.log("email", ret.email);
-      // console.log("email", decrypt(ret.email));
-
-      // let tmp = ret.phone;
-
-      // console.log("phone", tmp);
-      // let encrypted = encrypt("email");
-      // console.log("encrypted", encrypt(null));
-      // console.log("decrypted", decrypt(encrypted));
-      // console.log("decrypted", {
-      //   aa: decrypt(tmp),
-      // });
 
       return ret;
     } catch (e) {
@@ -204,7 +188,16 @@ export const apiObject = {
       let data = await axios.get("/cms/category/list", {
         params: { search_word },
       });
+
       let ret = data.data.data;
+      // ret.categoryBrandList.forEach((item) => {
+      //   item.category_logo = getFullImgURL(item.category_logo);
+      // });
+      // ret.categoryNormalList.forEach((item) => {
+      //   item.category_logo = getFullImgURL(item.category_logo);
+      // });
+
+      console.log(ret);
 
       return ret;
     } catch (e) {
@@ -226,16 +219,20 @@ export const apiObject = {
       return {};
     }
   },
-  getCategoryDetail: async ({ category_pk }) => {
+  getCategoryDetail: async ({ category_pk, category_type }) => {
     try {
       let data = await axios.get(`/cms/category/view/${category_pk}`, {
-        params: {},
+        params: { category_type },
       });
 
-      console.log(data);
+      let ret = data.data.data.categoryDetail;
 
-      let ret = data.data.data.categoryDetail[0];
-      // ret.img_url = "/image/lisence_sample.png";
+      console.log(ret);
+      if (ret.category_type === "N") {
+        for (let i = 1; i <= 3; i++) {
+          ret[`d${i}`] = ret[`depth${i}code`];
+        }
+      }
 
       return ret;
     } catch (e) {
@@ -274,6 +271,7 @@ export const apiObject = {
         }
       });
 
+      console.log(ret);
       return ret;
     } catch (e) {
       console.log({ e });
@@ -304,6 +302,7 @@ export const apiObject = {
     category_seq = 1,
     category_type,
     category_yn = true,
+    normalcategory_pk,
   }) => {
     try {
       let data = await axios.put(`/cms/category/modify/${category_pk}`, {
@@ -312,6 +311,7 @@ export const apiObject = {
         category_type,
         category_seq,
         category_yn,
+        normalcategory_pk,
       });
     } catch (e) {
       console.log({ e });
@@ -324,7 +324,11 @@ export const apiObject = {
       let data = await axios.get("/cms/product/list", {
         params: { category_pk, page, paginate, search_word },
       });
+
       let ret = data.data.data.productList;
+      // ret.forEach((item) => {
+      //   item.thumb_img = getFullImgURL(item.thumb_img);
+      // });
 
       return ret;
     } catch (e) {
@@ -335,7 +339,7 @@ export const apiObject = {
   getItemDetail: async ({ product_pk }) => {
     try {
       let data = await axios.get(`/cms/product/view/${product_pk}`, {});
-      let ret = data.data.data.productDetail?.[0];
+      let ret = data.data.data.productDetail;
 
       ret.thumb_img = [{ file: null, path: ret.thumb_img }];
       ret.detail_img = [];

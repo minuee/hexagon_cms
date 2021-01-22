@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
-
+import { price, getFullImgURL } from "common";
 import dayjs from "dayjs";
-import { price } from "common";
+import qs from "query-string";
 
 import {
   Grid,
@@ -66,22 +66,25 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const CategoryList = () => {
+export const CategoryList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
+  const query = qs.parse(location.search);
 
   const [categoryList, setCategoryList] = useState();
   const [selectedCategorys, setSelectedCategorys] = useState([]);
   const [listContext, setListContext] = useState({
     page: 1,
     search_word: "",
-    search_category: "B",
+    category_type: "B",
   });
 
   const category_list_columns = [
     {
       title: "로고",
-      render: ({ category_logo }) => <Avatar variant="square" src={category_logo} className={classes.logo_box} />,
+      render: ({ category_logo }) => (
+        <Avatar variant="square" src={getFullImgURL(category_logo)} className={classes.logo_box} />
+      ),
     },
     { title: "카테고리구분", render: ({ category_type }) => (category_type === "B" ? "브랜드" : "제품군") },
     { title: "카테고리명", field: "category_name" },
@@ -119,6 +122,7 @@ export const CategoryList = () => {
 
   useEffect(() => {
     getCategoryList();
+    // console.log(query);
   }, []);
 
   return (
@@ -137,10 +141,10 @@ export const CategoryList = () => {
         <Box>
           <Select
             displayEmpty
-            name="search_category"
+            name="category_type"
             variant="outlined"
-            value={listContext.search_category}
-            onChange={(e) => handleContextChange("search_category", e.target.value)}
+            value={listContext.category_type}
+            onChange={(e) => handleContextChange("category_type", e.target.value)}
             startAdornment={
               <InputAdornment position="start">
                 <Search />
@@ -165,10 +169,13 @@ export const CategoryList = () => {
       <Box mt={2} mb={3}>
         <ColumnTable
           columns={category_list_columns}
-          data={
-            listContext.search_category === "B" ? categoryList?.categoryBrandList : categoryList?.categoryNormalList
+          data={listContext.category_type === "B" ? categoryList?.categoryBrandList : categoryList?.categoryNormalList}
+          onRowClick={(row) =>
+            history.push({
+              pathname: `/product/category/${row.category_pk}`,
+              state: { category_type: listContext.category_type },
+            })
           }
-          onRowClick={(row) => history.push(`/product/category/${row.category_pk}`)}
           selection
           onSelectionChange={setSelectedCategorys}
         />
