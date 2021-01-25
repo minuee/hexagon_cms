@@ -64,7 +64,7 @@ const event_list_columns = [
   },
   { title: "종료여부", render: ({ termination_yn }) => (termination_yn ? "Y" : "N") },
 ];
-const product_list_rows = [
+const event_list_rows = [
   {
     event_pk: 1,
     event_type: "TERM",
@@ -81,12 +81,12 @@ export const EventList = ({ location }) => {
   const history = useHistory();
   const query = qs.parse(location.search);
 
-  const [productList, setProductList] = useState();
+  const [eventList, setEventList] = useState();
   const [searchWord, setSearchWord] = useState("");
 
-  async function getEventProductList() {
+  async function getEventList() {
     console.log("get list called");
-    setProductList(product_list_rows);
+    setEventList(event_list_rows);
   }
 
   function handleQueryChange(q, v) {
@@ -95,8 +95,8 @@ export const EventList = ({ location }) => {
   }
 
   useEffect(() => {
-    getEventProductList();
-  }, [query.page, query.filter_item]);
+    getEventList();
+  }, [query.page, query.filter_item, query.search_word]);
 
   return (
     <Box>
@@ -121,7 +121,7 @@ export const EventList = ({ location }) => {
       <Box mt={2} mb={3}>
         <ColumnTable
           columns={event_list_columns}
-          data={productList}
+          data={eventList}
           onRowClick={(row) => history.push(`/event/${row.event_pk}`)}
         />
       </Box>

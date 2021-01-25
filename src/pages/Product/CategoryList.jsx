@@ -171,7 +171,14 @@ export const CategoryList = ({ location }) => {
           data={
             (query.category_type || "B") === "B" ? categoryList?.categoryBrandList : categoryList?.categoryNormalList
           }
-          onRowClick={(row) => history.push(`/product/category/${row.category_pk}`)}
+          onRowClick={(row) =>
+            history.push({
+              pathname: `/product/category/${row.category_pk}`,
+              state: {
+                category_type: query?.category_type || "B",
+              },
+            })
+          }
           selection
           onSelectionChange={setSelectedCategorys}
         />

@@ -239,23 +239,19 @@ export const PopupDetail = () => {
             <TableRow>
               <TableCell>이벤트 적용 상품</TableCell>
               <TableCell>
-                <Box>
-                  {smaple_item_list.map((item, index) => (
-                    <Box className={classes.item_wrapper} key={index}>
-                      <Avatar variant="square" src="/image/item_sample.png" />
-                      <Box ml={2}>
-                        <Typography fontWeight="500">{item.name}</Typography>
-                        <Typography fontWeight="500">{price(item.price)}원</Typography>
-                      </Box>
-                      <IconButton onClick={() => console.log("delete click")}>
-                        <HighlightOff />
-                      </IconButton>
-                    </Box>
-                  ))}
-                  <Button variant="contained" color="secondary" onClick={() => setIsModalOpen(true)}>
-                    상품 검색
-                  </Button>
-                </Box>
+                <Controller
+                  as={
+                    <Select variant="outlined" displayEmpty fullWidth>
+                      <MenuItem value="">이벤트를 선택해주세요</MenuItem>
+                      <MenuItem value="1">친구초대이벤트</MenuItem>
+                      <MenuItem value="2">겨울맞이세일</MenuItem>
+                      <MenuItem value="3">1000만다운로드 감사이벤트</MenuItem>
+                    </Select>
+                  }
+                  name="event"
+                  control={control}
+                  defaultValue=""
+                />
               </TableCell>
             </TableRow>
 

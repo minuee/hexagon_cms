@@ -32,17 +32,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const CategoryDetail = () => {
+export const CategoryDetail = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
   const { category_pk } = useParams();
-  const { state } = history.location;
+  const { category_type } = location.state;
   const { control, register, watch, setValue, reset, handleSubmit } = useForm();
 
   const [normalCategoryList, setNormalCategoryList] = useState();
 
   async function getCategoryDetail() {
-    let data = await apiObject.getCategoryDetail({ category_pk, category_type: state?.category_type });
+    let data = await apiObject.getCategoryDetail({ category_pk, category_type: category_type });
 
     reset({
       ...data,
@@ -56,7 +56,7 @@ export const CategoryDetail = () => {
     setNormalCategoryList(data);
   }
 
-  async function handleAddCategory(data) {
+  async function registCategory(data) {
     // console.log(data);
 
     // let path = "https://hg-prod-file.s3-ap-northeast-1.amazonaws.com/public/default/photo.jpg";
@@ -87,7 +87,7 @@ export const CategoryDetail = () => {
 
     history.push(`product/category`);
   }
-  async function handleUpdateCategory(data) {
+  async function updateCategory(data) {
     console.log(data);
 
     let path = await apiObject.uploadImageSingle({
@@ -128,7 +128,7 @@ export const CategoryDetail = () => {
     if (category_pk !== "add") {
       getCategoryDetail();
     }
-  }, [category_pk, state?.category_type]);
+  }, [category_pk, category_type]);
 
   return (
     <Box>
@@ -253,11 +253,11 @@ export const CategoryDetail = () => {
 
       <Box mt={4} textAlign="center">
         {category_pk === "add" ? (
-          <Button variant="contained" color="primary" onClick={handleSubmit(handleAddCategory)}>
+          <Button variant="contained" color="primary" onClick={handleSubmit(registCategory)}>
             추가
           </Button>
         ) : (
-          <Button variant="contained" color="primary" onClick={handleSubmit(handleUpdateCategory)}>
+          <Button variant="contained" color="primary" onClick={handleSubmit(updateCategory)}>
             수정
           </Button>
         )}
