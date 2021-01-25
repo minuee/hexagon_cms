@@ -1,1 +1,0 @@
-export { EventProductList } from "./List";
