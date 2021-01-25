@@ -73,11 +73,7 @@ export const CategoryList = ({ location }) => {
 
   const [categoryList, setCategoryList] = useState();
   const [selectedCategorys, setSelectedCategorys] = useState([]);
-  const [listContext, setListContext] = useState({
-    page: 1,
-    search_word: "",
-    category_type: "B",
-  });
+  const [searchWord, setSearchWord] = useState("");
 
   const category_list_columns = [
     {
@@ -92,10 +88,9 @@ export const CategoryList = ({ location }) => {
   ];
 
   async function getCategoryList() {
-    let data = await apiObject.getCategoryList({ ...listContext });
+    let data = await apiObject.getCategoryList({ ...query });
 
     setCategoryList(data);
-    console.log(data);
   }
   async function removeCategorys() {
     let category_array = [];
@@ -113,17 +108,14 @@ export const CategoryList = ({ location }) => {
     }
   }
 
-  function handleContextChange(name, value) {
-    setListContext({
-      ...listContext,
-      [name]: value,
-    });
+  function handleQueryChange(q, v) {
+    query[q] = v;
+    history.push("/product/category?" + qs.stringify(query));
   }
 
   useEffect(() => {
     getCategoryList();
-    // console.log(query);
-  }, []);
+  }, [query.search_word]);
 
   return (
     <Box>
@@ -143,8 +135,8 @@ export const CategoryList = ({ location }) => {
             displayEmpty
             name="category_type"
             variant="outlined"
-            value={listContext.category_type}
-            onChange={(e) => handleContextChange("category_type", e.target.value)}
+            value={query.category_type || "B"}
+            onChange={(e) => handleQueryChange("category_type", e.target.value)}
             startAdornment={
               <InputAdornment position="start">
                 <Search />
@@ -169,13 +161,10 @@ export const CategoryList = ({ location }) => {
       <Box mt={2} mb={3}>
         <ColumnTable
           columns={category_list_columns}
-          data={listContext.category_type === "B" ? categoryList?.categoryBrandList : categoryList?.categoryNormalList}
-          onRowClick={(row) =>
-            history.push({
-              pathname: `/product/category/${row.category_pk}`,
-              state: { category_type: listContext.category_type },
-            })
+          data={
+            (query.category_type || "B") === "B" ? categoryList?.categoryBrandList : categoryList?.categoryNormalList
           }
+          onRowClick={(row) => history.push(`/product/category/${row.category_pk}`)}
           selection
           onSelectionChange={setSelectedCategorys}
         />
@@ -195,13 +184,13 @@ export const CategoryList = ({ location }) => {
           <TextField
             name="search_word"
             variant="outlined"
-            value={listContext.search_word}
-            onChange={(e) => handleContextChange("search_word", e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && getCategoryList()}
+            value={searchWord}
+            onChange={(e) => setSearchWord(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleQueryChange("search_word", searchWord)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <IconButton onClick={getCategoryList}>
+                  <IconButton onClick={() => handleQueryChange("search_word", searchWord)}>
                     <Search />
                   </IconButton>
                 </InputAdornment>
