@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { price } from "common";
 import { apiObject } from "api";
+import qs from "query-string";
 
 import { Grid, Box, makeStyles, TextField, InputAdornment, IconButton } from "@material-ui/core";
 import { DescriptionOutlined, Search, ArrowDropDown, ArrowDropUp } from "@material-ui/icons";
@@ -32,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 
 const user_list_columns = [
   { title: "이름", field: "name" },
-  { title: "코드값", field: "member_pk" },
+  { title: "코드값", field: "special_code" },
   { title: "휴대폰번호", field: "phone" },
   { title: "이메일주소", field: "email" },
   {
@@ -48,34 +49,49 @@ const user_list_columns = [
   { title: "등급", field: "grade_name" },
   {
     title: "비고",
-    render: ({ approval, special_code }) => (approval ? special_code : "회원가입 미승인"),
+    render: ({ approval, agent_code }) => (approval ? agent_code : "회원가입 미승인"),
+  },
+];
+const header_button_list = [
+  {
+    label: "이름순",
+    value: "uname",
+  },
+  {
+    label: "가입일자순",
+    value: "reg",
+  },
+  {
+    label: "번호순",
+    value: "no",
+  },
+  {
+    label: "구매액순",
+    value: "order",
+  },
+  {
+    label: "리워드액순",
+    value: "reward",
   },
 ];
 
-export const UserList = () => {
+export const UserList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
+  const query = qs.parse(location.search);
 
   const [userList, setUserList] = useState();
   const [selectedUsers, setSelectedUsers] = useState([]);
-  const [listContext, setListContext] = useState({
-    page: 1,
-    search_word: "",
-    sort_item: "",
-    sort_type: "",
-  });
+  const [searchWord, setSearchWord] = useState("");
 
   async function getUserList() {
     let data = await apiObject.getMemberList({
-      ...listContext,
+      ...query,
     });
 
     setUserList(data);
-    console.log(data);
   }
   async function approveSignIn() {
-    console.log(selectedUsers);
-
     let member_array = [];
     selectedUsers.forEach((item) => {
       member_array.push({
@@ -91,31 +107,22 @@ export const UserList = () => {
     }
   }
 
-  function handleSortClicked(value) {
-    if (listContext.sort_item === value) {
-      if (listContext.sort_type === "DESC") {
-        handleContextChange("sort_type", "ASC");
+  function handleQueryChange(q, v) {
+    if (q == "sort_item") {
+      if (query[q] == v) {
+        query.sort_type = query?.sort_type === "DESC" ? "ASC" : "DESC";
       } else {
-        handleContextChange("sort_type", "DESC");
+        query.sort_type = "DESC";
       }
-    } else {
-      setListContext({
-        ...listContext,
-        sort_item: value,
-        sort_type: "DESC",
-      });
     }
-  }
-  function handleContextChange(name, value) {
-    setListContext({
-      ...listContext,
-      [name]: value,
-    });
+
+    query[q] = v;
+    history.push("/user?" + qs.stringify(query));
   }
 
   useEffect(() => {
     getUserList();
-  }, [listContext.page, listContext.sort_item, listContext.sort_type]);
+  }, [query.page, query.search_word, query.sort_item, query.sort_type]);
 
   return (
     <Box>
@@ -125,36 +132,15 @@ export const UserList = () => {
         </Typography>
 
         <Box className={classes.header_buttons}>
-          <Button onClick={() => handleSortClicked("uname")}>
-            <Typography fontWeight={listContext.sort_item === "uname" ? "700" : undefined}>이름순</Typography>
-            {listContext.sort_item === "uname" && (
-              <>{listContext.sort_type === "DESC" ? <ArrowDropDown /> : <ArrowDropUp />}</>
-            )}
-          </Button>
-          <Button onClick={() => handleSortClicked("reg")}>
-            <Typography fontWeight={listContext.sort_item === "reg" ? "700" : undefined}>가입일자순</Typography>
-            {listContext.sort_item === "reg" && (
-              <>{listContext.sort_type === "DESC" ? <ArrowDropDown /> : <ArrowDropUp />}</>
-            )}
-          </Button>
-          <Button onClick={() => handleSortClicked("no")}>
-            <Typography fontWeight={listContext.sort_item === "no" ? "700" : undefined}>번호순</Typography>
-            {listContext.sort_item === "no" && (
-              <>{listContext.sort_type === "DESC" ? <ArrowDropDown /> : <ArrowDropUp />}</>
-            )}
-          </Button>
-          <Button onClick={() => handleSortClicked("order")}>
-            <Typography fontWeight={listContext.sort_item === "order" ? "700" : undefined}>구매액순</Typography>
-            {listContext.sort_item === "order" && (
-              <>{listContext.sort_type === "DESC" ? <ArrowDropDown /> : <ArrowDropUp />}</>
-            )}
-          </Button>
-          <Button onClick={() => handleSortClicked("reward")}>
-            <Typography fontWeight={listContext.sort_item === "reward" ? "700" : undefined}>리워드액순</Typography>
-            {listContext.sort_item === "reward" && (
-              <>{listContext.sort_type === "DESC" ? <ArrowDropDown /> : <ArrowDropUp />}</>
-            )}
-          </Button>
+          {header_button_list.map((item, index) => (
+            <Button onClick={() => handleQueryChange("sort_item", item.value)} key={index}>
+              <Typography fontWeight={query.sort_item === item.value ? "700" : undefined}>{item.label}</Typography>
+              {query.sort_item === item.value && (
+                <>{query.sort_type === "DESC" ? <ArrowDropDown /> : <ArrowDropUp />}</>
+              )}
+            </Button>
+          ))}
+
           <Button variant="contained" color="primary" ml={3} onClick={approveSignIn}>
             회원가입 승인
           </Button>
@@ -177,22 +163,18 @@ export const UserList = () => {
           엑셀저장
         </Button>
 
-        <Pagination
-          page={listContext.page}
-          setPage={handleContextChange}
-          count={Math.ceil(+userList?.[0]?.total / 10)}
-        />
+        <Pagination page={query.page || 1} setPage={handleQueryChange} count={Math.ceil(+userList?.[0]?.total / 10)} />
 
         <TextField
           name="search_word"
           variant="outlined"
-          value={listContext.search_word}
-          onChange={(e) => handleContextChange("search_word", e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && getUserList()}
+          value={searchWord}
+          onChange={(e) => setSearchWord(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleQueryChange("search_word", searchWord)}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <IconButton onClick={getUserList}>
+                <IconButton onClick={() => handleQueryChange("search_word", searchWord)}>
                   <Search />
                 </IconButton>
               </InputAdornment>
