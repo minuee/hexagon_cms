@@ -1,6 +1,7 @@
 import React, { useState, useEffect, Fragment } from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { useForm, Controller } from "react-hook-form";
 import dayjs from "dayjs";
 
 import { price } from "common";
@@ -9,7 +10,10 @@ import {
   Box,
   makeStyles,
   TextField,
+  Select,
   MenuItem,
+  Radio,
+  RadioGroup,
   Avatar,
   TableRow,
   TableCell,
@@ -55,8 +59,50 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const delivery_state = [
+  {
+    no: 1,
+    label: "입금대기",
+  },
+  {
+    no: 2,
+    label: "입금확인",
+  },
+  {
+    no: 3,
+    label: "출고완료",
+  },
+];
+const shipping_state_list = [
+  {
+    label: "입금대기",
+    code: "WAIT",
+  },
+  {
+    label: "입금완료",
+    code: "INCOME",
+  },
+  {
+    label: "출고완료",
+    code: "TRANSING",
+  },
+  {
+    label: "결제취소",
+    code: "CANCEL_A",
+  },
+  {
+    label: "주문취소",
+    code: "CANCEL_B",
+  },
+  {
+    label: "교환요청",
+    code: "RETURN",
+  },
+];
+
 export const PurchaseDetail = () => {
   const classes = useStyles();
+  const { control, handleSubmit } = useForm();
 
   const [purchaseInfo, setPurchaseInfo] = useState({
     items: [
@@ -137,28 +183,9 @@ export const PurchaseDetail = () => {
     },
   });
 
-  const delivery_state = [
-    {
-      no: 1,
-      label: "입금대기",
-    },
-    {
-      no: 2,
-      label: "입금확인",
-    },
-    {
-      no: 3,
-      label: "상품준비완료",
-    },
-    {
-      no: 4,
-      label: "배송시작",
-    },
-    {
-      no: 5,
-      label: "배송완료",
-    },
-  ];
+  async function updatePurchaseDetail(data) {
+    console.log(data);
+  }
 
   return (
     <Box>
@@ -181,6 +208,24 @@ export const PurchaseDetail = () => {
                 </Box>
               );
             })}
+            <Box>
+              <Avatar variant="square" src={`/image/exchange_request.png`} />
+              <Box px={2} py={1} mt={2} bgcolor="#003a7b" color="#fff">
+                교환요청
+              </Box>
+            </Box>
+            {/* <Box>
+              <Box />
+              <Box px={2} py={1} mt={2} bgcolor="#003a7b" color="#fff">
+                주문취소
+              </Box>
+            </Box> */}
+            {/* <Box>
+              <Box />
+              <Box px={2} py={1} mt={2} bgcolor="#003a7b" color="#fff">
+                결제취소
+              </Box>
+            </Box> */}
           </Box>
           <Box className={classes.shipping_indicator} />
         </Box>
@@ -197,19 +242,21 @@ export const PurchaseDetail = () => {
         {purchaseInfo?.items.map((item) => (
           <Fragment key={item.no}>
             <TableRow>
-              <TableCell>상품명</TableCell>
+              <TableCell style={{ paddingLeft: "30px" }}>상품명</TableCell>
               <TableCell>{item.name}</TableCell>
               <TableCell>총 금액</TableCell>
-              <TableCell colSpan={3}>{price(item.tot_price)}원</TableCell>
+              <TableCell colSpan={3} align="right">
+                {price(item.tot_price)}원
+              </TableCell>
             </TableRow>
             {item.detail.map((chunk, index) => (
               <TableRow key={index}>
-                <TableCell>금액</TableCell>
-                <TableCell>{price(chunk.price)}</TableCell>
-                <TableCell>단위</TableCell>
+                <TableCell style={{ paddingLeft: "45px" }}>단위</TableCell>
                 <TableCell>{chunk.unit}</TableCell>
                 <TableCell>수량</TableCell>
                 <TableCell>{chunk.amount}</TableCell>
+                <TableCell>금액</TableCell>
+                <TableCell align="right">{price(chunk.price)}</TableCell>
               </TableRow>
             ))}
           </Fragment>
@@ -227,19 +274,19 @@ export const PurchaseDetail = () => {
 
         <TableRow>
           <TableCell>상품가</TableCell>
-          <TableCell>{price(purchaseInfo?.order.event_price)}원</TableCell>
+          <TableCell align="right">{price(purchaseInfo?.order.event_price)}원</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>할인금액</TableCell>
-          <TableCell>{price(purchaseInfo?.order.discount_amount)}원</TableCell>
+          <TableCell align="right">{price(purchaseInfo?.order.discount_amount)}원</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>배송비</TableCell>
-          <TableCell>{price(purchaseInfo?.order.shipping_fee)}원</TableCell>
+          <TableCell align="right">{price(purchaseInfo?.order.shipping_fee)}원</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>총 주문금액</TableCell>
-          <TableCell>{price(purchaseInfo?.order.total_price)}원</TableCell>
+          <TableCell align="right"> {price(purchaseInfo?.order.total_price)}원</TableCell>
         </TableRow>
       </RowTable>
 
@@ -276,7 +323,18 @@ export const PurchaseDetail = () => {
         <TableRow>
           <TableCell>미출고시 조치방법</TableCell>
           <TableCell>
-            <FormControlLabel
+            <Controller
+              as={
+                <RadioGroup row>
+                  <FormControlLabel value="Product" control={<Radio color="primary" />} label="상품 입고시 배송" />
+                  <FormControlLabel value="Cash" control={<Radio color="primary" />} label="결제수단으로 환불" />
+                </RadioGroup>
+              }
+              name="refund_type"
+              control={control}
+              defaultValue="Product"
+            />
+            {/* <FormControlLabel
               control={<Checkbox name="rank_bronze" color="primary" />}
               checked={purchaseInfo?.payment.not_shipped_type === 1}
               label="결제수단으로 환불"
@@ -285,7 +343,7 @@ export const PurchaseDetail = () => {
               control={<Checkbox name="rank_bronze" color="primary" />}
               checked={purchaseInfo?.payment.not_shipped_type === 2}
               label="상품 입고시 배송"
-            />
+            /> */}
           </TableCell>
         </TableRow>
       </RowTable>
@@ -313,21 +371,30 @@ export const PurchaseDetail = () => {
         <TableRow>
           <TableCell>배송상태</TableCell>
           <TableCell>
-            <TextField size="small" variant="outlined" select value={purchaseInfo?.shipping.status}>
-              {delivery_state.map((item) => {
-                return (
-                  <MenuItem value={item.no} key={item.no}>
-                    {item.label}
-                  </MenuItem>
-                );
-              })}
-            </TextField>
+            <Controller
+              as={
+                <Select margin="dense" variant="outlined" displayEmpty>
+                  <MenuItem value="">주문상태를 선택해주세요</MenuItem>
+                  {shipping_state_list.map((item, index) => {
+                    return (
+                      <MenuItem value={item.code} key={index}>
+                        {item.label}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              }
+              control={control}
+              name="shipping_status"
+              defaultValue=""
+              rules={{ required: true }}
+            />
           </TableCell>
         </TableRow>
       </RowTable>
 
       <Box py={2} display="flex" justifyContent="center">
-        <Button px={3} variant="contained" color="primary">
+        <Button px={3} variant="contained" color="primary" onClick={handleSubmit(updatePurchaseDetail)}>
           수정
         </Button>
       </Box>

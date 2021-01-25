@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     display: "flex",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
 
     "& >:first-child, >:last-child": {
       background: "#fff",
@@ -30,29 +30,21 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const notice_list_columns = [
-  { field: "notice_no", title: "번호", width: "80px" },
+  { title: "번호", field: "notice_no", width: 80 },
   {
-    field: "notice_title",
     title: "제목",
     render: ({ notice_title }) => (notice_title?.length > 20 ? notice_title?.substring(0, 20) : notice_title),
     cellStyle: { textAlign: "left" },
   },
   {
-    field: "notice_content",
-    title: "내용",
-    render: ({ notice_content }) =>
-      notice_content?.length > 20 ? `${notice_content?.substring(0, 20)}...` : notice_content,
-    cellStyle: { textAlign: "left" },
-  },
-  {
-    field: "register_dt",
-    title: "업로드 일시",
+    title: "등록일시",
     render: ({ register_dt }) => dayjs.unix(register_dt).format("YYYY-MM-DD hh:mm"),
+    width: 240,
   },
   {
-    field: "push_yn",
-    title: "Push 알림 발송",
+    title: "발송여부",
     render: ({ push_yn }) => (push_yn ? "Y" : "N"),
+    width: 120,
   },
 ];
 const notice_list_rows = [
@@ -136,10 +128,10 @@ export const NoticeList = () => {
       </Box>
 
       <Grid container className={classes.table_footer}>
-        <Button variant="contained" p={1}>
+        {/* <Button variant="contained" p={1}>
           <DescriptionOutlined />
           엑셀저장
-        </Button>
+        </Button> */}
 
         <Pagination page={listContext.page} setPage={handleContextChange} />
 

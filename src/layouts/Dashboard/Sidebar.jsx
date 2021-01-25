@@ -27,8 +27,8 @@ const page = [
     path: `/product`,
   },
   {
-    label: `이벤트상품관리`,
-    path: `/eventproduct`,
+    label: `이벤트관리`,
+    path: `/event`,
   },
   {
     label: `팝업관리`,

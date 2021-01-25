@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     display: "flex",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
 
     "& >:first-child, >:last-child": {
       background: "#fff",
@@ -122,10 +122,10 @@ export const CouponList = () => {
       </Box>
 
       <Grid container className={classes.table_footer}>
-        <Button variant="contained" p={1}>
+        {/* <Button variant="contained" p={1}>
           <DescriptionOutlined />
           엑셀저장
-        </Button>
+        </Button> */}
 
         <Pagination
           page={listContext.page}

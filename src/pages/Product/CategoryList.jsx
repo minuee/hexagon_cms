@@ -83,7 +83,13 @@ export const CategoryList = ({ location }) => {
       ),
     },
     { title: "카테고리구분", render: ({ category_type }) => (category_type === "B" ? "브랜드" : "제품군") },
-    { title: "카테고리명", field: "category_name" },
+    {
+      title: "카테고리명",
+      render: (props) =>
+        props.category_type === "N"
+          ? `${props.depth1name} > ${props.depth2name} > ${props.depth3name}`
+          : props.category_name,
+    },
     // { field: "exposure_priority", title: "노출순위" },
   ];
 
@@ -91,6 +97,7 @@ export const CategoryList = ({ location }) => {
     let data = await apiObject.getCategoryList({ ...query });
 
     setCategoryList(data);
+    console.log(data);
   }
   async function removeCategorys() {
     let category_array = [];
