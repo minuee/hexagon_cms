@@ -101,6 +101,10 @@ export const CouponDetail = () => {
     setUserList(_.differenceBy(userList, fields, [user], "special_code"));
     append(user);
   }
+  function handleRemoveTarget(index) {
+    setUserList(_.differenceBy(user_list_sample, fields.slice(0, index), fields.slice(index + 1), "special_code"));
+    remove(index);
+  }
 
   useEffect(() => {
     if (coupon_pk !== "add") {
@@ -179,7 +183,7 @@ export const CouponDetail = () => {
                     <Box px={2} display="flex" alignItems="center">
                       <Typography display="inline">{value.name}</Typography>
                       {/* <Typography display="inline">{value.special_code}</Typography> */}
-                      <IconButton onClick={() => remove(index)}>
+                      <IconButton onClick={() => handleRemoveTarget(index)}>
                         <HighlightOff />
                       </IconButton>
                     </Box>
