@@ -2,14 +2,22 @@ import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useForm, Controller } from "react-hook-form";
-
-import dayjs from "dayjs";
 import { price, getFullImgURL } from "common";
+import dayjs from "dayjs";
+import qs from "query-string";
 
-import { Grid, Box, makeStyles, TextField, InputAdornment, Avatar, Select, MenuItem } from "@material-ui/core";
+import {
+  Grid,
+  Box,
+  makeStyles,
+  TextField,
+  InputAdornment,
+  Avatar,
+  Select,
+  MenuItem,
+  IconButton,
+} from "@material-ui/core";
 import { DescriptionOutlined, Search, EventNote } from "@material-ui/icons";
-import { DatePicker } from "@material-ui/pickers";
-
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, Pagination } from "components";
 import { apiObject } from "api";
@@ -56,23 +64,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const ItemList = () => {
+export const ItemList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
+  const query = qs.parse(location.search);
   const { control, watch } = useForm();
 
   const [itemList, setItemList] = useState();
   const [selectedItems, setSelectedItems] = useState([]);
   const [categoryList, setCategoryList] = useState();
-  const [listContext, setListContext] = useState({
-    page: 1,
-    search_word: "",
-    search_category: "",
-    category_pk: "",
-  });
+  const [searchWord, setSearchWord] = useState("");
 
   const item_list_columns = [
-    { title: "카테고리구분", render: ({ is_brand }) => (is_brand ? "브랜드" : "제품군") },
+    { title: "카테고리구분", render: ({ category_yn }) => (category_yn ? "브랜드" : "제품군") },
     { title: "제조사", field: "category_name" },
     {
       title: "상품 이미지",
@@ -95,46 +99,36 @@ export const ItemList = () => {
 
   async function getItemList() {
     let data = await apiObject.getItemList({
-      ...listContext,
+      ...query,
     });
 
     setItemList(data);
-    console.log(data);
   }
   async function getCategoryList() {
     let data = await apiObject.getCategoryList({});
 
     setCategoryList(data);
-    console.log(data);
   }
 
   function handleDeleteItems() {
     console.log(selectedItems);
   }
-  function handleContextChange(name, value) {
-    setListContext({
-      ...listContext,
-      [name]: value,
-    });
+  function handleQueryChange(q, v) {
+    query[q] = v;
+    history.push("/product/item?" + qs.stringify(query));
   }
 
   useEffect(() => {
-    // console.log("listContext", listContext);
     getItemList();
-  }, [listContext.page, listContext.search_category, listContext.category_pk]);
+  }, [query.page, query.search_word, query.category_pk]);
 
   useEffect(() => {
-    // getItemList();
     getCategoryList();
   }, []);
 
   useEffect(() => {
-    handleContextChange("category_pk", "");
+    handleQueryChange("category_pk", "");
   }, [watch("category_type", "")]);
-
-  useEffect(() => {
-    console.log(listContext.category_pk);
-  }, [listContext.category_pk]);
 
   return (
     <Box>
@@ -168,8 +162,8 @@ export const ItemList = () => {
               displayEmpty
               margin="dense"
               variant="outlined"
-              value={listContext.category_pk}
-              onChange={(e) => handleContextChange("category_pk", e.target.value)}
+              value={query.category_pk}
+              onChange={(e) => handleQueryChange("category_pk", e.target.value)}
             >
               <MenuItem value="">카테고리 분류</MenuItem>
               {categoryList.categoryBrandList.map((item, index) => (
@@ -184,8 +178,8 @@ export const ItemList = () => {
               displayEmpty
               margin="dense"
               variant="outlined"
-              value={listContext.category_pk}
-              onChange={(e) => handleContextChange("category_pk", e.target.value)}
+              value={query.category_pk}
+              onChange={(e) => handleQueryChange("category_pk", e.target.value)}
             >
               <MenuItem value="">카테고리 분류</MenuItem>
               {categoryList.categoryNormalList.map((item, index) => (
@@ -227,22 +221,20 @@ export const ItemList = () => {
           엑셀저장
         </Button>
 
-        <Pagination
-          page={listContext.page}
-          setPage={handleContextChange}
-          count={Math.ceil(itemList?.[0]?.total / 10)}
-        />
+        <Pagination page={query.page || 1} setPage={handleQueryChange} count={Math.ceil(itemList?.[0]?.total / 10)} />
 
         <TextField
           name="search_word"
           variant="outlined"
-          value={listContext.search_word}
-          onChange={(e) => handleContextChange("search_word", e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && getItemList()}
+          value={searchWord}
+          onChange={(e) => setSearchWord(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleQueryChange("search_word", searchWord)}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Search />
+                <IconButton onClick={() => handleQueryChange("search_word", searchWord)}>
+                  <Search />
+                </IconButton>
               </InputAdornment>
             ),
           }}
