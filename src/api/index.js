@@ -4,8 +4,7 @@ import { encrypt, decrypt, getFullImgURL } from "common";
 import dayjs from "dayjs";
 import _ from "lodash";
 
-// let token = localStorage.getItem("token");
-// axios.defaults.headers.common.Authorization = token;
+axios.defaults.headers.common.Authorization = localStorage.hexagon_cms_token;
 // axios.defaults.headers.common["Access-Control-Allow-Origin"] = "*";
 
 //  const instance = axios.create({
@@ -36,6 +35,11 @@ axios.interceptors.response.use(
       type: "SET_IS_LOADING",
       payload: false,
     });
+
+    // if (response.data.code === "1025 ") {
+    //   alert("토큰 오류");
+    // }
+
     return response;
   },
 
@@ -94,6 +98,20 @@ export const apiObject = {
     } catch (e) {
       console.log({ e });
       return [];
+    }
+  },
+
+  // Auth
+  signIn: async ({ user_id = "superbinder", password = "hexagon12!@" }) => {
+    try {
+      let data = await axios.post("/v1/auth/signin", {
+        user_id,
+        password,
+      });
+
+      return data.data.token;
+    } catch (e) {
+      console.log({ e });
     }
   },
 

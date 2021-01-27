@@ -1,6 +1,7 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { apiObject } from "api";
 
 import { makeStyles, Avatar, Box, Container, TextField, InputAdornment } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
@@ -36,8 +37,10 @@ export const SignIn = ({}) => {
   const dispatch = useDispatch();
   const { register, errors, handleSubmit } = useForm();
 
-  function handleSignin(data) {
-    console.log(data);
+  async function signIn(data) {
+    let token = await apiObject.signIn(data);
+    localStorage.setItem("hexagon_cms_token", token);
+
     dispatch({
       type: "SIGN_IN",
     });
@@ -49,10 +52,11 @@ export const SignIn = ({}) => {
         <Avatar className={classes.logo} variant="square" src="/image/logo_color.png" />
 
         <TextField
+          defaultValue="superbinder"
           className={classes.input}
-          variant="outlined"
           name="email"
           placeholder="Email"
+          variant="outlined"
           inputRef={register({ required: true })}
           InputProps={{
             startAdornment: (
@@ -64,10 +68,12 @@ export const SignIn = ({}) => {
           error={!!errors?.email}
         />
         <TextField
+          defaultValue="hexagon12!@"
           className={classes.input}
-          variant="outlined"
           name="password"
           placeholder="Password"
+          variant="outlined"
+          type="password"
           inputRef={register({ required: true })}
           InputProps={{
             startAdornment: (
@@ -76,17 +82,19 @@ export const SignIn = ({}) => {
               </InputAdornment>
             ),
           }}
-          onKeyDown={(e) => e.key === "Enter" && handleSubmit(handleSignin)()}
+          onKeyDown={(e) => e.key === "Enter" && handleSubmit(signIn)()}
           error={!!errors?.password}
         />
 
         <Box display="flex" alignItems="center" mt={2} mb={6}>
-          <Button onClick={() => history.push("/finduserinfo")}>아이디/패스워드 찾기</Button>
+          {/* <Button onClick={() => history.push("/finduserinfo")}>아이디/패스워드 찾기</Button> */}
+          <Button>아이디/패스워드 찾기</Button>
           &#x0007C;
-          <Button onClick={() => history.push("/signup")}>회원가입</Button>
+          <Button>회원가입</Button>
+          {/* <Button onClick={() => history.push("/signup")}>회원가입</Button> */}
         </Box>
 
-        <Button variant="contained" color="primary" px={18} py={2} onClick={handleSubmit(handleSignin)}>
+        <Button variant="contained" color="primary" px={18} py={2} onClick={handleSubmit(signIn)}>
           <Typography variant="h6" fontWeight={"700"}>
             로그인
           </Typography>

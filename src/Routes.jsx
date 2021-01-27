@@ -1,10 +1,9 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 
-import { SignIn, SignUp, FindUserInfo } from "./pages/Auth";
-
 import { Layout } from "./layouts";
+import { SignIn, SignUp, FindUserInfo } from "./pages/Auth";
 import { Home } from "./pages/Home";
 import { UserList, UserDetail } from "./pages/User";
 import { SalesmanList, SalesmanDetail, SalesmanRegister, SalesmanIncentive } from "./pages/Salesman";
@@ -17,6 +16,17 @@ import { CouponList, CouponDetail } from "./pages/Coupon";
 
 const Routes = () => {
   const { userState } = useSelector((state) => state.reducer);
+  const dispatch = useDispatch();
+
+  let token = localStorage.hexagon_cms_token;
+
+  useEffect(() => {
+    if (!token) {
+      dispatch({
+        type: "SIGN_OUT",
+      });
+    }
+  }, [token]);
 
   return <BrowserRouter>{userState === "NOT_SIGN" ? <AuthRoutes /> : <MainRoutes />}</BrowserRouter>;
 };

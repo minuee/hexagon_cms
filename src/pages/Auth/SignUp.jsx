@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
+import { useForm, Controller } from "react-hook-form";
 
 import {
   makeStyles,
@@ -12,7 +13,6 @@ import {
   InputLabel,
 } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
-import { useForm, Controller } from "react-hook-form";
 import { Label } from "@material-ui/icons";
 
 const useStyles = makeStyles({
@@ -58,12 +58,7 @@ export const SignUp = ({}) => {
   const history = useHistory();
   const { register, control, errors, setValue, watch, handleSubmit } = useForm();
 
-  function handleWholeTermCheck(e) {
-    setValue("agree_vital", e.target.checked);
-    setValue("agree_marketing", e.target.checked);
-  }
-
-  function handleSignUp(data) {
+  async function handleSignUp(data) {
     console.log(data);
 
     alert("회원가입 신청 완료!");
@@ -92,28 +87,32 @@ export const SignUp = ({}) => {
             })}
             error={!!errors?.user_id}
           />
+
           <TextField
             className={classes.input}
             variant="outlined"
-            name="password_1"
+            type="password"
+            name="password"
             placeholder="비밀번호 (8자 이상 영문+숫자+특수문자)"
             inputRef={register({
               required: true,
               pattern: /^\S{8,}$/,
             })}
-            error={!!errors?.password_1}
+            error={!!errors?.password}
           />
           <TextField
             className={classes.input}
             variant="outlined"
-            name="password_2"
-            placeholder="비밀번호 재확인"
+            type="password"
+            name="password_confirm"
+            placeholder="비밀번호 확인"
             inputRef={register({
               required: true,
-              pattern: /^\S{8,}$/,
+              validate: (v) => v == watch("password"),
             })}
-            error={!!errors?.password_2}
+            error={watch("password") !== watch("password_confirm")}
           />
+
           <TextField
             className={classes.input}
             variant="outlined"
@@ -126,7 +125,7 @@ export const SignUp = ({}) => {
             error={!!errors?.email}
           />
 
-          <InputLabel
+          {/* <InputLabel
             className={classes.lisence_input}
             htmlFor="lisence_img"
             style={{ color: watch("lisence_img", false)[0]?.name ? "#000" : "#8a8a8a" }}
@@ -142,7 +141,7 @@ export const SignUp = ({}) => {
               required: true,
             })}
             style={{ display: "none" }}
-          />
+          /> */}
 
           <TextField
             className={classes.input}
@@ -157,38 +156,44 @@ export const SignUp = ({}) => {
           <TextField
             className={classes.input}
             variant="outlined"
-            name="phone_number"
-            placeholder="휴대폰 번호 (-를 빼고 입력)"
+            name="phone"
+            placeholder="휴대폰번호 (-를 빼고 입력)"
             inputRef={register({
               required: true,
               pattern: /^\d{10,11}$/,
             })}
-            error={!!errors?.phone_number}
+            error={!!errors?.phone}
           />
         </>
 
         {/* terms */}
         <Box my={5} ml={1}>
-          {/* <Box mb={1}>
+          <Box mb={1}>
             <FormControlLabel
               className={classes.flex}
               control={<Checkbox color="primary" />}
               label="전체 약관에 동의합니다"
+              onChange={(e) => {
+                setValue("agree_vital", e.target.checked);
+                setValue("agree_marketing", e.target.checked);
+              }}
             />
-          </Box> */}
+          </Box>
           <Box mb={2}>
-            <FormControlLabel
-              className={classes.flex}
-              control={
-                <Checkbox
-                  name="agree_vital"
-                  color="primary"
-                  inputRef={register({
-                    required: true,
-                  })}
+            <Controller
+              render={({ value, onChange }) => (
+                <FormControlLabel
+                  className={classes.flex}
+                  control={<Checkbox color="primary" />}
+                  label="필수 항목에 동의합니다."
+                  onChange={(e) => onChange(e.target.checked)}
+                  checked={value}
                 />
-              }
-              label="필수 항목에 동의합니다."
+              )}
+              name="agree_vital"
+              control={control}
+              defaultValue={false}
+              rules={{ required: true }}
             />
 
             <Button className={classes.flex} color="secondary" ml={3}>
@@ -199,10 +204,19 @@ export const SignUp = ({}) => {
             </Button>
           </Box>
 
-          <FormControlLabel
-            className={classes.flex}
-            control={<Checkbox name="agree_marketing" color="primary" inputRef={register} />}
-            label="마케팅 정보 수신 동의 (선택)"
+          <Controller
+            render={({ value, onChange }) => (
+              <FormControlLabel
+                className={classes.flex}
+                control={<Checkbox color="primary" />}
+                label="마케팅 정보 수신 동의 (선택)"
+                onChange={(e) => onChange(e.target.checked)}
+                checked={value}
+              />
+            )}
+            name="agree_marketing"
+            control={control}
+            defaultValue={false}
           />
         </Box>
 

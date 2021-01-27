@@ -52,6 +52,7 @@ const Header = () => {
     dispatch({
       type: "SIGN_OUT",
     });
+    localStorage.removeItem("hexagon_cms_token");
   }
 
   return (
