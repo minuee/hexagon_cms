@@ -40,18 +40,52 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(4),
     padding: theme.spacing(3),
   },
-  rank_content: {
+  grade_content: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "flex-end",
 
     "& .MuiAvatar-root": {
-      marginLeft: theme.spacing(8),
+      // marginLeft: theme.spacing(4),
       width: "7rem",
       height: "7rem",
     },
   },
 }));
+
+const grade_benefits = {
+  Bronze: {
+    grade_code: "Bronze",
+    grade_name: "브론즈",
+    delivery: 5500,
+    free_amount: 1500000,
+    rate: 0.005,
+  },
+  Silver: {
+    grade_code: "Silver",
+    grade_name: "실버",
+    delivery: 5500,
+    free_amount: 1000000,
+    rate: 0.01,
+    coupon: 50000,
+  },
+  Gold: {
+    grade_code: "Gold",
+    grade_name: "골드",
+    delivery: 0,
+    free_amount: 0,
+    rate: 0.015,
+    coupon: 100000,
+  },
+  Platinum: {
+    grade_code: "Platinum",
+    grade_name: "플래티넘",
+    delivery: 0,
+    free_amount: 0,
+    rate: 0.02,
+    coupon: 200000,
+  },
+};
 
 const reward_history_column = [
   {
@@ -72,20 +106,19 @@ const reward_history_column = [
 export const UserDetail = () => {
   const classes = useStyles();
   const { member_pk } = useParams();
-  const { control, reset, handleSubmit } = useForm();
+  const { control, register, reset, watch, handleSubmit } = useForm();
+  const cur_grade = grade_benefits[watch("grade_code")];
 
   const [userInfo, setUserInfo] = useState();
   const [rewardList, setRewardList] = useState();
   const [rewardPage, setRewardPage] = useState(1);
-  const [isModify, setIsModify] = useState(false);
 
   async function getUserDetail() {
     let data = await apiObject.getMemberDetail({ member_pk });
 
     setUserInfo(data);
-    console.log(data);
-
     reset({
+      ...data,
       grade_code: data.grade_code,
       member_type: data.member_type,
       lisence_img: [{ file: null, path: data.img_url }],
@@ -95,17 +128,16 @@ export const UserDetail = () => {
     let data = await apiObject.getMemberRewardList({ member_pk, page: 1 });
 
     setRewardList(data);
-    console.log(data);
   }
 
-  async function handleApprove() {
+  async function approveUser() {
     await apiObject.approveMembers({
       member_array: [{ member_pk }],
     });
 
     getUserDetail();
   }
-  async function handleUpdate(data) {
+  async function updateUser(data) {
     await apiObject.updateMemberDetail({
       ...data,
       member_pk,
@@ -138,13 +170,17 @@ export const UserDetail = () => {
             등급
           </Typography>
 
-          <Box className={classes.rank_content}>
-            <Avatar src={`/image/rank_${userInfo?.grade_code?.toLowerCase()}.png`} />
+          <Box className={classes.grade_content}>
+            <Avatar src={`/image/rank_${cur_grade?.grade_code?.toLowerCase()}.png`} />
             <Box textAlign="right">
               <Typography variant="h6" fontWeight="700">
-                {userInfo?.grade_name || "-"}
+                {cur_grade?.grade_name || "-"}
               </Typography>
-              <Typography>적립률 {userInfo?.rate || "-"}% 적용</Typography>
+              <Typography>적립률 {cur_grade?.rate * 100 || "-"}% 적용</Typography>
+              {cur_grade?.coupon && <Typography>{cur_grade?.coupon}원 쿠폰 1회 제공</Typography>}
+              <Typography>
+                {cur_grade?.delivery === 0 ? "배송비 무료" : `${cur_grade?.free_amount}이상 주문시 배송비 무료`}
+              </Typography>
             </Box>
           </Box>
         </Box>
@@ -177,11 +213,27 @@ export const UserDetail = () => {
         )}
         <TableRow>
           <TableCell>휴대폰번호</TableCell>
-          <TableCell>{userInfo?.phone}</TableCell>
+          <TableCell>
+            <TextField
+              size="small"
+              variant="outlined"
+              name="phone"
+              placeholder="휴대폰번호"
+              inputRef={register({ required: true })}
+            />
+          </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>이메일</TableCell>
-          <TableCell>{userInfo?.email}</TableCell>
+          <TableCell>
+            <TextField
+              size="small"
+              variant="outlined"
+              name="email"
+              placeholder="이메일"
+              inputRef={register({ required: true })}
+            />
+          </TableCell>
         </TableRow>
         {/* <TableRow>
           <TableCell>권한</TableCell>
@@ -232,7 +284,7 @@ export const UserDetail = () => {
         )} */}
         <TableRow>
           <TableCell>적립률</TableCell>
-          <TableCell>{userInfo?.rate} %</TableCell>
+          <TableCell>{cur_grade?.rate * 100} %</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>사업자등록증 첨부</TableCell>
@@ -254,11 +306,11 @@ export const UserDetail = () => {
         // justifyContent="center"
       >
         {userInfo?.approval_dt ? (
-          <Button variant="contained" color="primary" onClick={handleSubmit(handleUpdate)}>
+          <Button variant="contained" color="primary" onClick={handleSubmit(updateUser)}>
             정보 수정
           </Button>
         ) : (
-          <Button variant="contained" color="primary" onClick={handleApprove}>
+          <Button variant="contained" color="primary" onClick={approveUser}>
             회원가입 승인
           </Button>
         )}

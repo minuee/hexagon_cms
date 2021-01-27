@@ -76,15 +76,15 @@ export const ItemList = ({ location }) => {
   const [searchWord, setSearchWord] = useState("");
 
   const item_list_columns = [
-    { title: "카테고리구분", render: ({ category_yn }) => (category_yn ? "브랜드" : "제품군") },
-    { title: "제조사", field: "category_name" },
     {
       title: "상품 이미지",
       render: ({ thumb_img }) => (
         <Avatar variant="square" src={getFullImgURL(thumb_img)} className={classes.logo_box} />
       ),
     },
-    { title: "상품명", field: "product_name" },
+    { title: "카테고리구분", render: ({ category_yn }) => (category_yn ? "브랜드" : "제품군") },
+    { title: "카테고리명", field: "category_name" },
+    { title: "상품명", field: "product_name", cellStyle: { textAlign: "left" } },
     {
       title: "가격",
       render: ({ item_price }) => (
@@ -124,6 +124,10 @@ export const ItemList = ({ location }) => {
 
   useEffect(() => {
     getCategoryList();
+    const ddd = async () => {
+      let data = await apiObject.signIn({});
+    };
+    ddd();
   }, []);
 
   useEffect(() => {

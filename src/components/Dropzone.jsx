@@ -100,7 +100,7 @@ export const Dropzone = ({ control, name, width, ratio = 1, maxFiles = 1, minFil
               <Controller
                 as={
                   <Avatar
-                    src={getFullImgURL(item.path) || "/image/default.jpg"}
+                    src={(item.file ? item.path : getFullImgURL(item.path)) || "/image/default.jpg"}
                     variant="square"
                     className={classes.image}
                   />
