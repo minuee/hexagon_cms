@@ -26,22 +26,14 @@ import {
   IconButton,
 } from "@material-ui/core";
 import { EventNote, Search, HighlightOff } from "@material-ui/icons";
-import { DatePicker, TimePicker } from "@material-ui/pickers";
+import { DateTimePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
 import { RowTable, Dropzone } from "components";
 
 const useStyles = makeStyles((theme) => ({
-  datetimepicker_wrapper: {
-    display: "inline",
-    "& > *": {
-      display: "inline-block",
-      width: theme.spacing(20),
-      background: "#f5f5f5",
-    },
-    "& > :nth-child(2)": {
-      marginLeft: theme.spacing(1),
-      width: theme.spacing(15),
-    },
+  datetimepicker: {
+    display: "inline-block",
+    background: "#f5f5f5",
   },
 
   item_wrapper: {
@@ -117,14 +109,8 @@ export const PopupDetail = () => {
     if (popup_no !== "add") {
       reset({
         popup_location: "2",
-        popup_start_dt: {
-          date: dayjs.unix(1488203944),
-          time: dayjs.unix(1098290345),
-        },
-        popup_end_dt: {
-          date: dayjs.unix(1988203944),
-          time: dayjs.unix(1098290345),
-        },
+        popup_start_dt: dayjs.unix(1488203944),
+        popup_end_dt: dayjs.unix(1988203944),
       });
     }
   }, [popup_no]);
@@ -162,65 +148,59 @@ export const PopupDetail = () => {
         <TableRow>
           <TableCell>{popup_type_2 === "cur" ? "시작 기간" : "게시 기간"}</TableCell>
           <TableCell>
-            <Box className={classes.datetimepicker_wrapper}>
-              <Controller
-                as={
-                  <DatePicker
-                    format="YYYY.MM.DD"
-                    inputVariant="outlined"
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <EventNote />
-                        </InputAdornment>
-                      ),
-                    }}
-                    size="small"
-                  />
-                }
-                name={"popup_start_dt.date"}
-                control={control}
-                defaultValue={dayjs()}
-              />
-              <Controller
-                as={<TimePicker format="hh:mm" inputVariant="outlined" size="small" />}
-                name={"popup_start_dt.time"}
-                control={control}
-                defaultValue={dayjs()}
-              />
-            </Box>
+            <Controller
+              render={({ ref, ...props }) => (
+                <DateTimePicker
+                  {...props}
+                  inputRef={ref}
+                  className={classes.datetimepicker}
+                  format={`YYYY.MM.DD  HH:mm`}
+                  minutesStep={10}
+                  inputVariant="outlined"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <EventNote />
+                      </InputAdornment>
+                    ),
+                  }}
+                  size="small"
+                />
+              )}
+              name={"popup_start_dt"}
+              control={control}
+              defaultValue={null}
+            />
 
             {popup_type_2 === "prev" && (
-              <Box ml={2} display="inline-flex" alignItems="center">
+              <Box display="inline-flex" alignItems="center">
+                <Box mr={1} />
                 <Typography display="inline">부터</Typography>
-                <Box mx={2} className={classes.datetimepicker_wrapper}>
-                  <Controller
-                    as={
-                      <DatePicker
-                        format="YYYY.MM.DD"
-                        inputVariant="outlined"
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <EventNote />
-                            </InputAdornment>
-                          ),
-                        }}
-                        size="small"
-                      />
-                    }
-                    name={"popup_end_dt.date"}
-                    control={control}
-                    defaultValue={dayjs()}
-                  />
-
-                  <Controller
-                    as={<TimePicker format="hh:mm" inputVariant="outlined" size="small" />}
-                    name={"popup_end_dt.time"}
-                    control={control}
-                    defaultValue={dayjs()}
-                  />
-                </Box>
+                <Box mr={2} />
+                <Controller
+                  render={({ ref, ...props }) => (
+                    <DateTimePicker
+                      {...props}
+                      inputRef={ref}
+                      className={classes.datetimepicker}
+                      format={`YYYY.MM.DD  HH:mm`}
+                      minutesStep={10}
+                      inputVariant="outlined"
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <EventNote />
+                          </InputAdornment>
+                        ),
+                      }}
+                      size="small"
+                    />
+                  )}
+                  name={"popup_end_dt"}
+                  control={control}
+                  defaultValue={null}
+                />
+                <Box mr={1} />
                 <Typography display="inline">까지</Typography>
               </Box>
             )}

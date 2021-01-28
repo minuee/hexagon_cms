@@ -19,7 +19,7 @@ import {
   FormControlLabel,
 } from "@material-ui/core";
 import { EventNote } from "@material-ui/icons";
-import { DatePicker, TimePicker } from "@material-ui/pickers";
+import { DateTimePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
 import { RowTable, Dropzone } from "components";
 
@@ -51,10 +51,7 @@ dddddd
         줄바꿈테스트
         ㅇㅇㅇ
         `,
-        register_dt: {
-          date: dayjs(),
-          time: dayjs(),
-        },
+        register_dt: dayjs(),
       });
     }
   }, [notice_no]);
@@ -72,10 +69,14 @@ dddddd
           <TableCell>업로드 일시</TableCell>
           <TableCell>
             <Controller
-              as={
-                <DatePicker
-                  format="YYYY.MM.DD"
+              render={({ ref, ...props }) => (
+                <DateTimePicker
+                  {...props}
+                  inputRef={ref}
+                  format={`YYYY.MM.DD  HH:mm`}
+                  minutesStep={10}
                   inputVariant="outlined"
+                  size="small"
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
@@ -84,19 +85,11 @@ dddddd
                     ),
                   }}
                 />
-              }
-              name={"register_dt.date"}
+              )}
+              name={"register_dt"}
               control={control}
               defaultValue={null}
             />
-            <Box display="inline-block" ml={2}>
-              <Controller
-                as={<TimePicker format="hh:mm" inputVariant="outlined" />}
-                name={"register_dt.time"}
-                control={control}
-                defaultValue={null}
-              />
-            </Box>
           </TableCell>
         </TableRow>
         <TableRow>

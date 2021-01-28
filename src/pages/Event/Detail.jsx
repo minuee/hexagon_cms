@@ -175,8 +175,10 @@ export const EventDetail = () => {
           <TableCell>
             <Box className={classes.datetimepicker_wrapper}>
               <Controller
-                as={
+                render={({ ref, ...props }) => (
                   <DateTimePicker
+                    {...props}
+                    inputRef={ref}
                     format={`YYYY.MM.DD   HH:mm`}
                     minutesStep={10}
                     inputVariant="outlined"
@@ -190,7 +192,7 @@ export const EventDetail = () => {
                     size="small"
                     disabled={eventDetail?.terminate_yn}
                   />
-                }
+                )}
                 name={"event_start_dt"}
                 control={control}
                 defaultValue={null}
@@ -204,8 +206,10 @@ export const EventDetail = () => {
                   </Box>
 
                   <Controller
-                    as={
+                    render={({ ref, ...props }) => (
                       <DateTimePicker
+                        {...props}
+                        inputRef={ref}
                         format={`YYYY.MM.DD   HH:mm`}
                         minutesStep={10}
                         inputVariant="outlined"
@@ -219,7 +223,7 @@ export const EventDetail = () => {
                         size="small"
                         disabled={eventDetail?.terminate_yn}
                       />
-                    }
+                    )}
                     name={"event_end_dt"}
                     control={control}
                     defaultValue={null}
@@ -271,7 +275,7 @@ export const EventDetail = () => {
         )}
       </RowTable>
 
-      <EventItemModal
+      <ProductModal
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onAdd={append}
@@ -279,7 +283,7 @@ export const EventDetail = () => {
       />
 
       <Box mt={4} textAlign="center">
-        <Button mr={2} variant="contained" onClick={() => history.push("/notice")}>
+        <Button mr={2} variant="contained" onClick={() => history.push("/event")}>
           목록
         </Button>
 
@@ -307,7 +311,7 @@ export const EventDetail = () => {
   );
 };
 
-const EventItemModal = ({ open, onClose }) => {
+const ProductModal = ({ open, onClose }) => {
   const classes = useStyles();
 
   const [searchText, setSearchText] = useState("");
