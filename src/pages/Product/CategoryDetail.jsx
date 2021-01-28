@@ -36,13 +36,12 @@ export const CategoryDetail = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
   const { category_pk } = useParams();
-  const { category_type } = location.state;
-  const { control, register, watch, setValue, reset, handleSubmit } = useForm();
+  const { control, watch, setValue, reset, handleSubmit, errors } = useForm();
 
   const [normalCategoryList, setNormalCategoryList] = useState();
 
   async function getCategoryDetail() {
-    let data = await apiObject.getCategoryDetail({ category_pk, category_type: category_type });
+    let data = await apiObject.getCategoryDetail({ category_pk, category_type: location.state?.category_type });
 
     reset({
       ...data,
@@ -128,7 +127,7 @@ export const CategoryDetail = ({ location }) => {
     if (category_pk !== "add") {
       getCategoryDetail();
     }
-  }, [category_pk, category_type]);
+  }, [category_pk, location.state?.category_type]);
 
   return (
     <Box>
@@ -144,14 +143,23 @@ export const CategoryDetail = ({ location }) => {
           <TableCell>
             <Controller
               as={
-                <TextField select variant="outlined" disabled={category_pk !== "add"}>
+                <Select
+                  className={classes.category_input}
+                  variant="outlined"
+                  margin="dense"
+                  displayEmpty
+                  disabled={category_pk !== "add"}
+                  error={!!errors?.category_type}
+                >
+                  <MenuItem value="">카테고리 구분</MenuItem>
                   <MenuItem value="B">브랜드</MenuItem>
                   <MenuItem value="N">제품군</MenuItem>
-                </TextField>
+                </Select>
               }
               name="category_type"
               control={control}
-              defaultValue="B"
+              defaultValue=""
+              rules={{ required: true }}
             />
           </TableCell>
         </TableRow>
@@ -160,16 +168,17 @@ export const CategoryDetail = ({ location }) => {
           {watch("category_type") === "N" ? (
             <TableCell>
               <Controller
-                render={({ value, onChange }) => (
+                render={({ onChange, ...props }) => (
                   <Select
-                    variant="outlined"
-                    displayEmpty
                     className={classes.category_input}
-                    value={value}
+                    {...props}
                     onChange={(e) => {
                       onCategoryChange("d1");
                       onChange(e);
                     }}
+                    displayEmpty
+                    variant="outlined"
+                    error={!!errors?.d1}
                   >
                     <MenuItem value="">-</MenuItem>
                     {normalCategoryList?.d1.map((item, index) => (
@@ -182,18 +191,20 @@ export const CategoryDetail = ({ location }) => {
                 name="d1"
                 control={control}
                 defaultValue=""
+                rules={{ required: true }}
               />
               <Controller
-                render={({ value, onChange }) => (
+                render={({ onChange, ...props }) => (
                   <Select
-                    variant="outlined"
-                    displayEmpty
                     className={classes.category_input}
-                    value={value}
+                    {...props}
                     onChange={(e) => {
                       onCategoryChange("d2");
                       onChange(e);
                     }}
+                    variant="outlined"
+                    displayEmpty
+                    error={!!errors?.d2}
                   >
                     <MenuItem value="">-</MenuItem>
                     {normalCategoryList?.d2[watch("d1")]?.map((item, index) => (
@@ -206,10 +217,11 @@ export const CategoryDetail = ({ location }) => {
                 name="d2"
                 control={control}
                 defaultValue=""
+                rules={{ required: true }}
               />
               <Controller
                 as={
-                  <Select variant="outlined" displayEmpty className={classes.category_input}>
+                  <Select className={classes.category_input} variant="outlined" displayEmpty error={!!errors?.d3}>
                     <MenuItem value="">-</MenuItem>
                     {normalCategoryList?.d3[watch("d2")]?.map((item, index) => (
                       <MenuItem key={index} value={item.code}>
@@ -221,12 +233,13 @@ export const CategoryDetail = ({ location }) => {
                 name="d3"
                 control={control}
                 defaultValue=""
+                rules={{ required: true }}
               />
             </TableCell>
           ) : (
             <TableCell>
               <Controller
-                as={<TextField variant="outlined" />}
+                as={<TextField variant="outlined" error={!!errors?.category_name} />}
                 placeholder="카테고리명"
                 name="category_name"
                 control={control}
