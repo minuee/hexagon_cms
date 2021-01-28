@@ -33,9 +33,9 @@ const useStyles = makeStyles((theme) => ({
 
 const user_list_columns = [
   { title: "이름", field: "name" },
-  { title: "코드값", field: "special_code" },
-  { title: "휴대폰번호", field: "phone" },
-  { title: "이메일주소", field: "email" },
+  { title: "코드값", field: "special_code", width: 100 },
+  { title: "휴대폰번호", field: "phone", width: 160 },
+  // { title: "이메일주소", field: "email" },
   {
     title: "구매액",
     render: ({ total_amount }) => `${price(total_amount) || 0}원`,
@@ -46,10 +46,10 @@ const user_list_columns = [
     render: ({ reward_point }) => `${price(reward_point) || 0}원`,
     cellStyle: { textAlign: "right" },
   },
-  { title: "등급", field: "grade_name" },
+  { title: "등급", field: "grade_name", width: 100 },
   {
     title: "비고",
-    render: ({ approval, agent_code }) => (approval ? agent_code : "회원가입 미승인"),
+    render: ({ approval, agent_code }) => (approval ? `영업사원코드:  ${agent_code}` : "회원가입 미승인"),
   },
 ];
 const header_button_list = [

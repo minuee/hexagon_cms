@@ -226,7 +226,7 @@ export const apiObject = {
       return [];
     }
   },
-  removeCategorys: async ({ category_array }) => {
+  removeCategories: async ({ category_array }) => {
     try {
       let response = await axios.delete(`/cms/category/remove/`, {
         data: {

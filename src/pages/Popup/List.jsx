@@ -90,26 +90,24 @@ export const PopupList = () => {
 
   const popup_list_columns_1 = [
     {
-      field: "cur_popup_img",
       title: "이미지",
       render: ({ cur_popup_img }) => <Avatar variant="square" src={cur_popup_img} className={classes.table_image} />,
+      width: 180,
     },
-    { field: "popup_type_text", title: "팝업 종류" },
+    { title: "팝업 종류", field: "popup_type_text" },
     {
-      field: "popup_start_dt",
       title: "시작 시간",
       render: ({ popup_start_dt }) => `${dayjs.unix(popup_start_dt).format("YYYY-MM-DD hh:mm")}부터 적용`,
     },
   ];
   const popup_list_columns_2 = [
     {
-      field: "prev_popup_img",
       title: "이미지",
       render: ({ prev_popup_img }) => <Avatar variant="square" src={prev_popup_img} className={classes.table_image} />,
+      width: 180,
     },
-    { field: "popup_type_text", title: "팝업 종류" },
+    { title: "팝업 종류", field: "popup_type_text" },
     {
-      field: "popup_post_dt",
       title: "게시 시간",
       render: ({ popup_start_dt, popup_end_dt }) =>
         `${dayjs.unix(popup_start_dt).format("YYYY-MM-DD hh:mm")}부터 

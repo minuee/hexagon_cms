@@ -31,22 +31,20 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const salesman_list_columns = [
-  { field: "salesman_name", title: "이름" },
-  { field: "salesman_code", title: "코드값" },
-  { field: "salesman_phone", title: "휴대폰번호" },
+  { title: "이름", field: "salesman_name", width: 100 },
+  { title: "코드값", field: "salesman_code", width: 100 },
+  { title: "휴대폰번호", field: "salesman_phone", width: 160 },
   {
-    field: "salesman_total_amount",
     title: "구매대행액",
     render: ({ salesman_total_amount }) => `${price(salesman_total_amount)}원`,
     cellStyle: { textAlign: "right" },
   },
   {
-    field: "salesman_total_incentive",
     title: "인센티브액",
     render: ({ salesman_total_incentive }) => `${price(salesman_total_incentive)}원`,
     cellStyle: { textAlign: "right" },
   },
-  { field: "salesman_status_text", title: "상태" },
+  { title: "상태", field: "salesman_status_text", width: 100 },
 ];
 const salesman_list_rows = [
   {

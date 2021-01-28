@@ -47,14 +47,15 @@ const header_button_list = [
   },
 ];
 const coupon_list_columns = [
-  { title: "번호", field: "coupon_pk" },
+  { title: "번호", field: "coupon_pk", width: 80 },
   { title: "사용자", field: "coupon_user" },
   { title: "금액", render: ({ coupon_type }) => price(coupon_type) },
   {
     title: "발행일자",
     render: ({ coupon_regist_dt }) => dayjs.unix(coupon_regist_dt).format("YYYY-MM-DD"),
+    width: 160,
   },
-  { title: "사용여부", render: ({ use_yn }) => (use_yn ? "Y" : "N") },
+  { title: "사용여부", render: ({ use_yn }) => (use_yn ? "Y" : "N"), width: 120 },
 ];
 const coupon_list_rows = [
   {

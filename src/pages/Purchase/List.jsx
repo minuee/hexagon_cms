@@ -36,21 +36,20 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const purchase_list_columns = [
-  { field: "purchase_no", title: "번호" },
-  { field: "purchase_code", title: "구매번호" },
+  { title: "번호", field: "purchase_no", width: 80 },
+  { title: "구매번호", field: "purchase_code", width: 160 },
   {
-    field: "purchase_dt",
     title: "구매일자",
     render: ({ purchase_dt }) => dayjs.unix(purchase_dt).format("YYYY-MM-DD"),
+    width: 160,
   },
-  { field: "user_name", title: "유저명" },
+  { title: "유저명", field: "user_name", width: 100 },
   {
-    field: "purchase_price",
     title: "구매액",
     render: ({ purchase_price }) => `${price(purchase_price)}원`,
     cellStyle: { textAlign: "right" },
   },
-  { field: "order_status", title: "주문상태" },
+  { title: "주문상태", field: "order_status", width: 100 },
 ];
 const purchase_list_rows = [
   {

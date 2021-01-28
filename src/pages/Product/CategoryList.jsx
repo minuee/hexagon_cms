@@ -81,8 +81,9 @@ export const CategoryList = ({ location }) => {
       render: ({ category_logo }) => (
         <Avatar variant="square" src={getFullImgURL(category_logo)} className={classes.logo_box} />
       ),
+      width: 180,
     },
-    { title: "카테고리구분", render: ({ category_type }) => (category_type === "B" ? "브랜드" : "제품군") },
+    { title: "카테고리구분", render: ({ category_type }) => (category_type === "B" ? "브랜드" : "제품군"), width: 120 },
     {
       title: "카테고리명",
       render: (props) =>
@@ -99,7 +100,7 @@ export const CategoryList = ({ location }) => {
     setCategoryList(data);
     console.log(data);
   }
-  async function removeCategorys() {
+  async function removeCategories() {
     let category_array = [];
     selectedCategorys.forEach((item) => {
       category_array.push({
@@ -108,7 +109,7 @@ export const CategoryList = ({ location }) => {
     });
 
     if (window.confirm("선택한 카테고리들을 삭제하시겠습니까?")) {
-      let resp = await apiObject.removeCategorys({ category_array });
+      let resp = await apiObject.removeCategories({ category_array });
       console.log(resp);
 
       getCategoryList();
@@ -142,6 +143,7 @@ export const CategoryList = ({ location }) => {
             displayEmpty
             name="category_type"
             variant="outlined"
+            margin="dense"
             value={query.category_type || "B"}
             onChange={(e) => handleQueryChange("category_type", e.target.value)}
             startAdornment={
@@ -159,7 +161,7 @@ export const CategoryList = ({ location }) => {
           <Button variant="contained" onClick={() => history.push("/product/category/add")}>
             추가
           </Button>
-          <Button ml={2} variant="contained" onClick={removeCategorys}>
+          <Button ml={2} variant="contained" onClick={removeCategories}>
             삭제
           </Button>
         </Box>

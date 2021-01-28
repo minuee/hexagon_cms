@@ -41,10 +41,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const user_reward_columns = [
-  { field: "user_no", title: "번호", width: 80 },
-  { field: "user_name", title: "유저명" },
+  { title: "번호", field: "user_no", width: 80 },
+  { title: "유저명", field: "user_name", width: 100 },
   {
-    field: "reward_amount",
     title: "리워드액",
     render: ({ reward_amount }) => `${price(reward_amount)}원`,
     cellStyle: { textAlign: "right" },

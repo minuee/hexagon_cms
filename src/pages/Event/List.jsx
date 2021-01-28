@@ -47,22 +47,25 @@ const header_button_list = [
   },
 ];
 const event_list_columns = [
-  { title: "번호", field: "event_pk" },
-  { title: "종류", field: "event_type" },
-  { title: "제목", field: "title" },
+  { title: "번호", field: "event_pk", width: 80 },
+  { title: "종류", field: "event_type", width: 100 },
+  { title: "제목", field: "title", cellStyle: { textAlign: "left" } },
   {
     title: "등록일",
     render: ({ event_regist_dt }) => dayjs.unix(event_regist_dt).format("YYYY-MM-DD"),
+    width: 120,
   },
   {
     title: "시작일",
     render: ({ event_start_dt }) => dayjs.unix(event_start_dt).format("YYYY-MM-DD"),
+    width: 120,
   },
   {
     title: "종료일",
     render: ({ event_end_dt }) => dayjs.unix(event_end_dt).format("YYYY-MM-DD"),
+    width: 120,
   },
-  { title: "종료여부", render: ({ termination_yn }) => (termination_yn ? "Y" : "N") },
+  { title: "종료여부", render: ({ termination_yn }) => (termination_yn ? "Y" : "N"), width: 100 },
 ];
 const event_list_rows = [
   {

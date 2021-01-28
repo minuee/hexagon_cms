@@ -24,6 +24,13 @@ import { Typography, Button } from "components/materialui";
 import { RowTable } from "components";
 
 const useStyles = makeStyles((theme) => ({
+  product_divider: {
+    height: "10px",
+    padding: 0,
+    borderBottom: "solid 1px #e8e8e8",
+    background: "rgba(223, 223, 223, 0.2)",
+  },
+
   shipping_status: {
     display: "flex",
     justifyContent: "space-between",
@@ -239,24 +246,30 @@ export const PurchaseDetail = () => {
           <TableCell>주문번호</TableCell>
           <TableCell colSpan={5}>{purchaseInfo?.order.order_no}</TableCell>
         </TableRow>
+
         {purchaseInfo?.items.map((item) => (
           <Fragment key={item.no}>
             <TableRow>
-              <TableCell style={{ paddingLeft: "30px" }}>상품명</TableCell>
+              <TableCell colSpan={6} className={classes.product_divider} />
+            </TableRow>
+
+            <TableRow>
+              <TableCell>상품명</TableCell>
               <TableCell>{item.name}</TableCell>
               <TableCell>총 금액</TableCell>
               <TableCell colSpan={3} align="right">
                 {price(item.tot_price)}원
               </TableCell>
             </TableRow>
+
             {item.detail.map((chunk, index) => (
               <TableRow key={index}>
-                <TableCell style={{ paddingLeft: "45px" }}>단위</TableCell>
+                <TableCell>단위</TableCell>
                 <TableCell>{chunk.unit}</TableCell>
                 <TableCell>수량</TableCell>
                 <TableCell>{chunk.amount}</TableCell>
                 <TableCell>금액</TableCell>
-                <TableCell align="right">{price(chunk.price)}</TableCell>
+                <TableCell align="right">{price(chunk.price)}원</TableCell>
               </TableRow>
             ))}
           </Fragment>
