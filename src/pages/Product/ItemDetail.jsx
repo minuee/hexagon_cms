@@ -27,6 +27,13 @@ import { Typography, Button } from "components/materialui";
 import { RowTable, ColumnTable, Pagination, Dropzone } from "components";
 
 const useStyles = makeStyles((theme) => ({
+  category_wrapper: {
+    "& > *": {
+      display: "inline-block",
+      width: theme.spacing(20),
+      marginRight: theme.spacing(2),
+    },
+  },
   price_cell: {
     display: "flex",
     alignItems: "center",
@@ -64,44 +71,31 @@ export const ItemDetail = () => {
   async function getItemDetail() {
     let data = await apiObject.getItemDetail({ product_pk });
 
+    console.log(data.category_pk);
     reset({
       ...data,
       material: data.material || "",
       thumb_img: [],
       detail_img: [],
     });
+    setValue("category_pk", data.category_pk);
     setValue("thumb_img", data.thumb_img);
     setValue("detail_img", data.detail_img);
   }
+
   async function registItem(form) {
-    const { detail_img, thumb_img, ...data } = form;
+    if (!form.thumb_img || !form.detail_img) return;
 
-    if (!thumb_img || !detail_img) return;
-    if (!window.confirm("기재한 정보로 상품을 추가하시겠습니까?")) return;
-
-    let detail_img_paths = await apiObject.uploadImageMultiple({ img_arr: detail_img, page: "product" });
-    console.log(detail_img_paths);
-    for (let i = 1; i <= detail_img_paths.length; i++) {
-      data[`detail_img${i}`] = detail_img_paths[i];
+    if (window.confirm("기재한 정보로 상품을 추가하시겠습니까?")) {
+      let resp = await apiObject.registItem(form);
     }
-
-    let thumb_img_path = await apiObject.uploadImageSingle({ img: thumb_img?.[0], page: "product" });
-    data.thumb_img = thumb_img_path;
-
-    let resp = await apiObject.registItem(data);
   }
   async function updateItem(form) {
     if (!form.thumb_img || !form.detail_img) return;
 
-    let detail_img_paths = await apiObject.uploadImageMultiple({ img_arr: form.detail_img, page: "product" });
-    for (let i = 1; i <= detail_img_paths; i++) {
-      form[`detail_img${i}`] = detail_img_paths[i];
+    if (window.confirm("기재한 정보로 상품을 수정하시겠습니까?")) {
+      let resp = await apiObject.updateItem({ form, product_pk });
     }
-
-    let thumb_img_path = await apiObject.uploadImageSingle({ img: form.thumb_img?.[0], page: "product" });
-    form.thumb_img = thumb_img_path;
-
-    console.log(form);
   }
 
   useEffect(() => {
@@ -109,10 +103,10 @@ export const ItemDetail = () => {
   }, [watch("category_type", "B")]);
 
   useEffect(() => {
+    getCategoryList();
     if (product_pk !== "add") {
       getItemDetail();
     }
-    getCategoryList();
   }, [product_pk]);
 
   return (
@@ -127,23 +121,58 @@ export const ItemDetail = () => {
         <TableRow>
           <TableCell>카테고리</TableCell>
           <TableCell>
-            <Controller
-              as={
-                <Select margin="dense" variant="outlined">
-                  {/* <MenuItem value="">카테고리선택</MenuItem> */}
-                  <MenuItem value="B">브랜드</MenuItem>
-                  <MenuItem value="N">제품군</MenuItem>
-                </Select>
-              }
-              name="category_type"
-              control={control}
-              defaultValue={"B"}
-            />
-            <Box display="inline-block" ml={2}>
+            <Box className={classes.category_wrapper}>
               <Controller
                 as={
                   <Select margin="dense" variant="outlined" displayEmpty>
-                    <MenuItem value="">카테고리 분류 선택</MenuItem>
+                    <MenuItem value="">카테고리선택</MenuItem>
+                    <MenuItem value="B">브랜드</MenuItem>
+                    <MenuItem value="N">제품군</MenuItem>
+                  </Select>
+                }
+                name="category_type"
+                control={control}
+                defaultValue={""}
+              />
+
+              {watch("category_type", "") === "B" && (
+                <Controller
+                  as={
+                    <Select margin="dense" variant="outlined" displayEmpty>
+                      <MenuItem value="">브랜드 선택</MenuItem>
+                      {categoryList?.categoryBrandList.map((item, index) => (
+                        <MenuItem value={item.category_pk} key={index}>
+                          {item.category_name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  }
+                  name="category_pk"
+                  control={control}
+                  defaultValue={""}
+                />
+              )}
+              {watch("category_type", "") === "N" && (
+                <Controller
+                  as={
+                    <Select margin="dense" variant="outlined" displayEmpty>
+                      <MenuItem value="">제품군 선택</MenuItem>
+                      {categoryList?.categoryNormalList.map((item, index) => (
+                        <MenuItem value={item.category_pk} key={index}>
+                          {item.category_name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  }
+                  name="category_pk"
+                  control={control}
+                  defaultValue={""}
+                />
+              )}
+              {/* <Controller
+                as={
+                  <Select margin="dense" variant="outlined" displayEmpty>
+                    <MenuItem value="">카테고리 선택</MenuItem>
                     {watch("category_type", "B") === "B" &&
                       categoryList?.categoryBrandList.map((item, index) => (
                         <MenuItem value={item.category_pk} key={index}>
@@ -161,7 +190,7 @@ export const ItemDetail = () => {
                 name="category_pk"
                 control={control}
                 defaultValue={""}
-              />
+              /> */}
             </Box>
           </TableCell>
         </TableRow>
@@ -417,13 +446,13 @@ export const ItemDetail = () => {
           <TableCell>품절 여부</TableCell>
           <TableCell>
             <Controller
-              as={
-                <RadioGroup row>
-                  <FormControlLabel value={true} control={<Radio color="primary" />} label="품절" />
-                  <Box display="inline" ml={2} />
+              render={({ onChange, ...props }) => (
+                <RadioGroup {...props} onChange={(e) => onChange(JSON.parse(e.target.value))} row>
                   <FormControlLabel value={false} control={<Radio color="primary" />} label="재고있음" />
+                  <Box display="inline" ml={2} />
+                  <FormControlLabel value={true} control={<Radio color="primary" />} label="품절" />
                 </RadioGroup>
-              }
+              )}
               name="is_soldout"
               control={control}
               defaultValue={false}
@@ -434,13 +463,13 @@ export const ItemDetail = () => {
           <TableCell>적립금 사용 가능 여부</TableCell>
           <TableCell>
             <Controller
-              as={
-                <RadioGroup row>
-                  <FormControlLabel value={true} control={<Radio color="primary" />} label="적립금 사용 가능 상품" />
+              render={({ onChange, ...props }) => (
+                <RadioGroup {...props} onChange={(e) => onChange(JSON.parse(e.target.value))} row>
+                  <FormControlLabel value={false} control={<Radio color="primary" />} label="적립금 사용 가능 상품" />
                   <Box display="inline" ml={2} />
-                  <FormControlLabel value={false} control={<Radio color="primary" />} label="적립금 사용 불가 상품" />
+                  <FormControlLabel value={true} control={<Radio color="primary" />} label="적립금 사용 불가 상품" />
                 </RadioGroup>
-              }
+              )}
               name="is_nonpoint"
               control={control}
               defaultValue={false}

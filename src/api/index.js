@@ -4,7 +4,8 @@ import { encrypt, decrypt, getFullImgURL } from "common";
 import dayjs from "dayjs";
 import _ from "lodash";
 
-axios.defaults.headers.common.Authorization = localStorage.hexagon_cms_token;
+let token = localStorage.hexagon_cms_token;
+axios.defaults.headers.common.Authorization = token;
 // axios.defaults.headers.common["Access-Control-Allow-Origin"] = "*";
 
 //  const instance = axios.create({
@@ -36,9 +37,12 @@ axios.interceptors.response.use(
       payload: false,
     });
 
-    // if (response.data.code === "1025 ") {
-    //   alert("토큰 오류");
-    // }
+    if (response.data.code === "1024") {
+      alert("인증이 만료되어 로그인 페이지로 이동합니다");
+      store.dispatch({
+        type: "SIGN_OUT",
+      });
+    }
 
     return response;
   },
@@ -55,13 +59,13 @@ axios.interceptors.response.use(
 export const apiObject = {
   // Common
   uploadImageSingle: async ({ img, page }) => {
-    if (!img?.file) return img?.path;
-
-    let formData = new FormData();
-    formData.append("img", img.file);
-    formData.append("folder", page);
-
     try {
+      if (!img?.file) return img?.path;
+
+      let formData = new FormData();
+      formData.append("img", img.file);
+      formData.append("folder", page);
+
       let response = await axios.post("/v1/img/single", formData, {
         headers: { "content-type": "multipart/form-data" },
       });
@@ -74,23 +78,31 @@ export const apiObject = {
     }
   },
   uploadImageMultiple: async ({ img_arr, page }) => {
-    if (!img_arr.length) return [];
-
-    let formData = new FormData();
-    formData.append("folder", page);
-    img_arr.forEach((item) => {
-      formData.append("img", item.file);
-    });
-
     try {
-      let response = await axios.post("/v1/img/multiple", formData, {
-        headers: { "content-type": "multipart/form-data" },
-      });
+      if (!img_arr.length) return [];
 
       let ret = [];
-      for (let i = 0; i < response.data.data.length; i++) {
-        if (i % 2 !== 0) {
-          ret.push(response.data.data[i]);
+
+      let formData = new FormData();
+      formData.append("folder", page);
+
+      img_arr.forEach((item) => {
+        if (item.file) {
+          formData.append("img", item.file);
+        } else {
+          ret.push(item.path);
+        }
+      });
+
+      if (formData.get("img")) {
+        let response = await axios.post("/v1/img/multiple", formData, {
+          headers: { "content-type": "multipart/form-data" },
+        });
+
+        for (let i = 0; i < response.data.data.length; i++) {
+          if (i % 2) {
+            ret.push(response.data.data[i]);
+          }
         }
       }
 
@@ -206,16 +218,7 @@ export const apiObject = {
       let data = await axios.get("/cms/category/list", {
         params: { search_word },
       });
-
       let ret = data.data.data;
-      // ret.categoryBrandList.forEach((item) => {
-      //   item.category_logo = getFullImgURL(item.category_logo);
-      // });
-      // ret.categoryNormalList.forEach((item) => {
-      //   item.category_logo = getFullImgURL(item.category_logo);
-      // });
-
-      console.log(ret);
 
       return ret;
     } catch (e) {
@@ -344,9 +347,6 @@ export const apiObject = {
       });
 
       let ret = data.data.data.productList;
-      // ret.forEach((item) => {
-      //   item.thumb_img = getFullImgURL(item.thumb_img);
-      // });
 
       return ret;
     } catch (e) {
@@ -372,12 +372,49 @@ export const apiObject = {
       return {};
     }
   },
+  deleteItems: async ({ product_array }) => {
+    try {
+      let response = await axios.delete("/cms/product/remove", {
+        data: { product_array },
+      });
+
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
   registItem: async (form) => {
     try {
+      let thumb_img_path = await apiObject.uploadImageSingle({ img: form.thumb_img?.[0], page: "product" });
+      form.thumb_img = thumb_img_path;
+
+      let detail_img_paths = await apiObject.uploadImageMultiple({ img_arr: form.detail_img, page: "product" });
+      for (let i = 0; i < detail_img_paths.length; i++) {
+        form[`detail_img${i + 1}`] = detail_img_paths[i];
+      }
+
       let response = await axios.post("/cms/product/regist", {
         ...form,
       });
 
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+  updateItem: async ({ form, product_pk }) => {
+    try {
+      let thumb_img_path = await apiObject.uploadImageSingle({ img: form.thumb_img?.[0], page: "product" });
+      form.thumb_img = thumb_img_path;
+
+      let detail_img_paths = await apiObject.uploadImageMultiple({ img_arr: form.detail_img, page: "product" });
+      for (let i = 0; i < detail_img_paths.length; i++) {
+        form[`detail_img${i + 1}`] = detail_img_paths[i];
+      }
+
+      let response = await axios.put(`/cms/product/modify/${product_pk}`, {
+        ...form,
+      });
       return response;
     } catch (e) {
       console.log({ e });
