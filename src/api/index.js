@@ -372,7 +372,7 @@ export const apiObject = {
       return {};
     }
   },
-  deleteItems: async ({ product_array }) => {
+  removeItems: async ({ product_array }) => {
     try {
       let response = await axios.delete("/cms/product/remove", {
         data: { product_array },

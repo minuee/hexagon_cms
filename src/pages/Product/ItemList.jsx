@@ -81,17 +81,18 @@ export const ItemList = ({ location }) => {
       render: ({ thumb_img }) => (
         <Avatar variant="square" src={getFullImgURL(thumb_img)} className={classes.logo_box} />
       ),
+      width: 180,
     },
-    { title: "카테고리구분", render: ({ category_yn }) => (category_yn ? "브랜드" : "제품군") },
+    { title: "카테고리구분", render: ({ category_yn }) => (category_yn ? "브랜드" : "제품군"), width: 120 },
     { title: "카테고리명", field: "category_name" },
     { title: "상품명", field: "product_name", cellStyle: { textAlign: "left" } },
     {
       title: "가격",
-      render: ({ item_price }) => (
+      render: ({ each_price, box_price, carton_price }) => (
         <p style={{ whiteSpace: "pre-wrap" }}>
-          {`낱개(${price(item_price?.piece) || "-"})
-박스(${price(item_price?.box) || "-"})
-카톤(${price(item_price?.carton) || "-"})`}
+          {`낱개(${each_price ? price(each_price) : "-"})
+박스(${box_price ? price(box_price) : "-"})
+카톤(${carton_price ? price(carton_price) : "-"})`}
         </p>
       ),
     },
@@ -101,22 +102,32 @@ export const ItemList = ({ location }) => {
     let data = await apiObject.getItemList({
       ...query,
     });
-
     setItemList(data);
   }
   async function getCategoryList() {
     let data = await apiObject.getCategoryList({});
-
     setCategoryList(data);
   }
+  async function removeItems() {
+    if (!window.confirm("선택한 상품들을 삭제하시겠습니까?")) return;
 
-  function handleDeleteItems() {
-    console.log(selectedItems);
+    let product_array = [];
+    selectedItems.forEach((item) => {
+      product_array.push({ product_pk: item.product_pk });
+    });
+
+    let resp = await apiObject.removeItems({ product_array });
+    getItemList();
   }
+
   function handleQueryChange(q, v) {
     query[q] = v;
     history.push("/product/item?" + qs.stringify(query));
   }
+
+  useEffect(() => {
+    handleQueryChange("category_pk", "");
+  }, [watch("category_type", "")]);
 
   useEffect(() => {
     getItemList();
@@ -124,15 +135,7 @@ export const ItemList = ({ location }) => {
 
   useEffect(() => {
     getCategoryList();
-    const ddd = async () => {
-      let data = await apiObject.signIn({});
-    };
-    ddd();
   }, []);
-
-  useEffect(() => {
-    handleQueryChange("category_pk", "");
-  }, [watch("category_type", "")]);
 
   return (
     <Box>
@@ -188,7 +191,8 @@ export const ItemList = ({ location }) => {
               <MenuItem value="">카테고리 분류</MenuItem>
               {categoryList.categoryNormalList.map((item, index) => (
                 <MenuItem value={item.category_pk} key={index}>
-                  {item.category_name}
+                  {/* {item.category_name} */}
+                  {`${item.depth1name}  >  ${item.depth2name}  >  ${item.depth3name}`}
                 </MenuItem>
               ))}
             </Select>
@@ -203,7 +207,7 @@ export const ItemList = ({ location }) => {
           <Button variant="contained" onClick={() => history.push("/product/item/add")}>
             추가
           </Button>
-          <Button ml={2} variant="contained" onClick={handleDeleteItems}>
+          <Button ml={2} variant="contained" onClick={removeItems}>
             삭제
           </Button>
         </Box>
@@ -232,7 +236,7 @@ export const ItemList = ({ location }) => {
           variant="outlined"
           value={searchWord}
           onChange={(e) => setSearchWord(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleQueryChange("search_word", searchWord)}
+          onKeyPress={(e) => e.key === "Enter" && handleQueryChange("search_word", searchWord)}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
