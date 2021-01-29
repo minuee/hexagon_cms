@@ -4,8 +4,8 @@ import { encrypt, decrypt, getFullImgURL } from "common";
 import dayjs from "dayjs";
 import _ from "lodash";
 
-let token = localStorage.hexagon_cms_token;
-axios.defaults.headers.common.Authorization = token;
+// let token = localStorage.hexagon_cms_token;
+axios.defaults.headers.common.Authorization = localStorage.hexagon_cms_token;
 // axios.defaults.headers.common["Access-Control-Allow-Origin"] = "*";
 
 //  const instance = axios.create({
@@ -112,8 +112,6 @@ export const apiObject = {
       return [];
     }
   },
-
-  // Auth
   signIn: async ({ user_id = "superbinder", password = "hexagon12!@" }) => {
     try {
       let data = await axios.post("/v1/auth/signin", {
@@ -121,6 +119,7 @@ export const apiObject = {
         password,
       });
 
+      axios.defaults.headers.common.Authorization = data.data.token;
       return data.data.token;
     } catch (e) {
       console.log({ e });
