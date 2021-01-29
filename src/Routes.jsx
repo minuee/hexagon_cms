@@ -17,6 +17,7 @@ import { NoticeList, NoticeDetail } from "./pages/Admin/Notice";
 import { CouponList, CouponDetail } from "./pages/Admin/Coupon";
 
 import { SalesmanHome } from "./pages/Salesman/Home";
+import { MemberList, MemberDetail } from "./pages/Salesman/Member";
 
 const Routes = () => {
   const { userState, isSalesman } = useSelector((state) => state.reducer);
@@ -102,6 +103,9 @@ const SalesmanRoutes = () => {
     <Dashboard>
       <Switch>
         <Route exact path="/" component={SalesmanHome} />
+
+        <Route exact path="/member/:member_pk" component={MemberDetail} />
+        <Route path="/member" component={MemberList} />
 
         <Redirect to="/" />
       </Switch>
