@@ -1,34 +1,48 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 
-import { Layout } from "./layouts";
+import { Dashboard } from "./layouts";
+
 import { SignIn, SignUp, FindUserInfo } from "./pages/Auth";
-import { Home } from "./pages/Home";
-import { UserList, UserDetail } from "./pages/User";
-import { SalesmanList, SalesmanDetail, SalesmanRegister, SalesmanIncentive } from "./pages/Salesman";
-import { PurchaseList, PurchaseDetail } from "./pages/Purchase";
-import { CategoryList, CategoryDetail, ItemList, ItemDetail } from "./pages/Product";
-import { EventList, EventDetail } from "./pages/Event";
-import { PopupList, PopupDetail } from "./pages/Popup";
-import { NoticeList, NoticeDetail } from "./pages/Notice";
-import { CouponList, CouponDetail } from "./pages/Coupon";
+
+import { AdminHome } from "./pages/Admin/Home";
+import { UserList, UserDetail } from "./pages/Admin/User";
+import { SalesmanList, SalesmanDetail, SalesmanRegister, SalesmanIncentive } from "./pages/Admin/Salesman";
+import { PurchaseList, PurchaseDetail } from "./pages/Admin/Purchase";
+import { CategoryList, CategoryDetail, ItemList, ItemDetail } from "./pages/Admin/Product";
+import { EventList, EventDetail } from "./pages/Admin/Event";
+import { PopupList, PopupDetail } from "./pages/Admin/Popup";
+import { NoticeList, NoticeDetail } from "./pages/Admin/Notice";
+import { CouponList, CouponDetail } from "./pages/Admin/Coupon";
+
+import { SalesmanHome } from "./pages/Salesman/Home";
 
 const Routes = () => {
-  const { userState } = useSelector((state) => state.reducer);
+  const { userState, isSalesman } = useSelector((state) => state.reducer);
   const dispatch = useDispatch();
 
-  let token = localStorage.hexagon_cms_token;
+  let token = localStorage.getItem("hexagon_cms_token");
+  let is_salesman = localStorage.getItem("hexagon_is_salesman");
 
   useEffect(() => {
     if (!token) {
-      dispatch({
-        type: "SIGN_OUT",
-      });
+      dispatch({ type: "SIGN_OUT" });
     }
   }, [token]);
 
-  return <BrowserRouter>{userState === "NOT_SIGN" ? <AuthRoutes /> : <MainRoutes />}</BrowserRouter>;
+  useEffect(() => {
+    dispatch({
+      type: "SET_IS_SALESMAN",
+      payload: JSON.parse(is_salesman),
+    });
+  }, [is_salesman]);
+
+  return (
+    <BrowserRouter>
+      {userState === "NOT_SIGN" ? <AuthRoutes /> : isSalesman ? <SalesmanRoutes /> : <AdminRoutes />}
+    </BrowserRouter>
+  );
 };
 
 const AuthRoutes = () => {
@@ -42,19 +56,14 @@ const AuthRoutes = () => {
   );
 };
 
-const MainRoutes = () => {
+const AdminRoutes = () => {
   return (
-    <Layout>
+    <Dashboard>
       <Switch>
-        <Route exact path="/" component={Home} />
+        <Route exact path="/" component={AdminHome} />
 
         <Route exact path="/user/:member_pk" component={UserDetail} />
         <Route path="/user" component={UserList} />
-
-        <Route exact path="/salesman/add" component={SalesmanRegister} />
-        <Route exact path="/salesman/incentive/:month_no" component={SalesmanIncentive} />
-        <Route exact path="/salesman/:member_pk" component={SalesmanDetail} />
-        <Route path="/salesman" component={SalesmanList} />
 
         <Route exact path="/purchase/:purchase_no" component={PurchaseDetail} />
         <Route path="/purchase" component={PurchaseList} />
@@ -77,9 +86,26 @@ const MainRoutes = () => {
         <Route path="/coupon/:coupon_pk" component={CouponDetail} />
         <Route path="/coupon" component={CouponList} />
 
+        <Route exact path="/salesman/add" component={SalesmanRegister} />
+        <Route exact path="/salesman/incentive/:month_no" component={SalesmanIncentive} />
+        <Route exact path="/salesman/:member_pk" component={SalesmanDetail} />
+        <Route path="/salesman" component={SalesmanList} />
+
         <Redirect to="/" />
       </Switch>
-    </Layout>
+    </Dashboard>
+  );
+};
+
+const SalesmanRoutes = () => {
+  return (
+    <Dashboard>
+      <Switch>
+        <Route exact path="/" component={SalesmanHome} />
+
+        <Redirect to="/" />
+      </Switch>
+    </Dashboard>
   );
 };
 

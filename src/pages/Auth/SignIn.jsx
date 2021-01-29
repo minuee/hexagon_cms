@@ -3,7 +3,16 @@ import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { apiObject } from "api";
 
-import { makeStyles, Avatar, Box, Container, TextField, InputAdornment } from "@material-ui/core";
+import {
+  makeStyles,
+  Avatar,
+  Box,
+  Container,
+  TextField,
+  InputAdornment,
+  Checkbox,
+  FormControlLabel,
+} from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
 import { PersonOutline, LockOutlined } from "@material-ui/icons";
 import { useForm } from "react-hook-form";
@@ -39,11 +48,15 @@ export const SignIn = ({}) => {
 
   async function signIn(data) {
     let token = await apiObject.signIn(data);
-    localStorage.setItem("hexagon_cms_token", token);
 
-    dispatch({
-      type: "SIGN_IN",
-    });
+    if (token) {
+      localStorage.setItem("hexagon_cms_token", token);
+      localStorage.setItem("hexagon_is_salesman", data.is_salesman + "");
+
+      dispatch({
+        type: "SIGN_IN",
+      });
+    }
   }
 
   return (
@@ -86,12 +99,20 @@ export const SignIn = ({}) => {
           error={!!errors?.password}
         />
 
-        <Box display="flex" alignItems="center" mt={2} mb={6}>
+        <Box display="flex" alignItems="center" mt={2}>
           {/* <Button onClick={() => history.push("/finduserinfo")}>아이디/패스워드 찾기</Button> */}
           <Button>아이디/패스워드 찾기</Button>
           &#x0007C;
           <Button>회원가입</Button>
           {/* <Button onClick={() => history.push("/signup")}>회원가입</Button> */}
+        </Box>
+
+        <Box mb={4}>
+          <FormControlLabel
+            control={<Checkbox inputRef={register} color="primary" />}
+            name="is_salesman"
+            label="영업사원으로 로그인하기"
+          />
         </Box>
 
         <Button variant="contained" color="primary" px={18} py={2} onClick={handleSubmit(signIn)}>

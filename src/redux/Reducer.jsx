@@ -4,6 +4,7 @@ const INITIAL_STATE = {
   isLoading: false,
   // userState: UserState.NOT_SIGN, // 인증 상태
   userState: UserState.SIGNED, // 인증 상태
+  isSalesman: false,
 };
 
 export default (state = INITIAL_STATE, { type, payload }) => {
@@ -14,6 +15,8 @@ export default (state = INITIAL_STATE, { type, payload }) => {
       return { ...state, userState: UserState.SIGNED };
     case "SIGN_OUT":
       return { ...state, userState: UserState.NOT_SIGN };
+    case "SET_IS_SALESMAN":
+      return { ...state, isSalesman: payload };
 
     default:
       return state;
