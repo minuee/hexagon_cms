@@ -1,6 +1,6 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { Grid, Box, Avatar, makeStyles } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
@@ -47,12 +47,16 @@ const Header = () => {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
+  const { isSalesman } = useSelector((state) => state.reducer);
 
   function handleSignOut() {
-    dispatch({
-      type: "SIGN_OUT",
-    });
-    localStorage.removeItem("hexagon_cms_token");
+    if (window.confirm("로그아웃 하시겠습니까?")) {
+      dispatch({
+        type: "SIGN_OUT",
+      });
+      localStorage.removeItem("hexagon_cms_token");
+      localStorage.removeItem("hexagon_is_salesman");
+    }
   }
 
   return (
@@ -64,7 +68,7 @@ const Header = () => {
       <Box display="flex" alignItems="stretch" mr={2}>
         <Grid container alignItems="center" className={classes.account}>
           <AccountCircle color="inherit" />
-          <Typography fontWeight={500}>관리자</Typography>
+          <Typography fontWeight={500}>{isSalesman ? "영업사원" : "관리자"}</Typography>
         </Grid>
 
         <Button p={3} variant="contained" color="primary" onClick={handleSignOut}>
