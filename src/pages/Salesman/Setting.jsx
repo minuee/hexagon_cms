@@ -90,7 +90,8 @@ const ModifyInfo = () => {
         <TableRow>
           <TableCell>이름</TableCell>
           <TableCell>
-            <TextField
+            <Typography>전지현</Typography>
+            {/* <TextField
               size="small"
               variant="outlined"
               fullWidth
@@ -98,14 +99,15 @@ const ModifyInfo = () => {
               placeholder="이름을 입력해주세요"
               inputRef={register({ required: true })}
               error={!!errors.name}
-            />
+            /> */}
           </TableCell>
         </TableRow>
 
         <TableRow>
           <TableCell>아이디</TableCell>
           <TableCell>
-            <TextField
+            <Typography>jhlove1030</Typography>
+            {/* <TextField
               size="small"
               variant="outlined"
               fullWidth
@@ -113,7 +115,7 @@ const ModifyInfo = () => {
               placeholder="아이디를 입력해주세요"
               inputRef={register({ required: true })}
               error={!!errors.id}
-            />
+            /> */}
           </TableCell>
         </TableRow>
 

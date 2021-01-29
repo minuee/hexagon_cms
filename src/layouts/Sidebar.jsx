@@ -16,10 +16,6 @@ const admin_page = [
     path: `/user`,
   },
   {
-    label: `영업사원관리`,
-    path: `/salesman`,
-  },
-  {
     label: `구매내역`,
     path: `/purchase`,
   },
@@ -42,6 +38,10 @@ const admin_page = [
   {
     label: `쿠폰관리`,
     path: `/coupon`,
+  },
+  {
+    label: `영업사원관리`,
+    path: `/salesman`,
   },
 ];
 const salesman_page = [

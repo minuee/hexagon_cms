@@ -38,19 +38,19 @@ const incentive_list_columns = [
     width: 80,
   },
   {
-    title: "해당 인센티브 월",
+    title: "년월",
     render: ({ incentive_dt }) => dayjs.unix(incentive_dt).format("YYYY.MM"),
     width: 180,
   },
   {
-    title: "총 인센티브 액",
-    render: ({ incentive_amount }) => `${price(incentive_amount)}원`,
+    title: "구매총액",
+    render: ({ purchase_amount }) => `${price(purchase_amount)}원`,
     cellStyle: { textAlign: "right" },
   },
   {
-    title: "구매고객 수",
-    render: ({ purchase_member_num }) => `${price(purchase_member_num)}명`,
-    width: 120,
+    title: "인센티브액",
+    render: ({ incentive_amount }) => `${price(incentive_amount)}원`,
+    cellStyle: { textAlign: "right" },
   },
 ];
 const incentive_list_rows = [
@@ -58,22 +58,22 @@ const incentive_list_rows = [
     no: 1,
     incentive_pk: 1,
     incentive_dt: 1794000000,
-    incentive_amount: 2131220019820,
-    purchase_member_num: 1022,
+    incentive_amount: 21312200,
+    purchase_amount: 2131220019820,
   },
   {
     no: 2,
     incentive_pk: 2,
     incentive_dt: 1791000000,
-    incentive_amount: 9789820,
-    purchase_member_num: 11,
+    incentive_amount: 9720,
+    purchase_amount: 9789820,
   },
   {
     no: 3,
     incentive_pk: 3,
     incentive_dt: 1789000000,
-    incentive_amount: 2001982009,
-    purchase_member_num: 97,
+    incentive_amount: 18600,
+    purchase_amount: 18792300,
   },
 ];
 
