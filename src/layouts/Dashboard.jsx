@@ -3,7 +3,7 @@ import Header from "./Header";
 import Sidebar from "./Sidebar";
 import { Box } from "@material-ui/core";
 
-export const Layout = ({ children, ...props }) => {
+export const Dashboard = ({ children, ...props }) => {
   return (
     <Box minWidth="1280px" {...props}>
       <Header />

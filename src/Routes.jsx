@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 
-import { Layout } from "./layouts";
+import { Dashboard } from "./layouts";
 
 import { SignIn, SignUp, FindUserInfo } from "./pages/Auth";
 
@@ -58,7 +58,7 @@ const AuthRoutes = () => {
 
 const AdminRoutes = () => {
   return (
-    <Layout>
+    <Dashboard>
       <Switch>
         <Route exact path="/" component={AdminHome} />
 
@@ -93,19 +93,19 @@ const AdminRoutes = () => {
 
         <Redirect to="/" />
       </Switch>
-    </Layout>
+    </Dashboard>
   );
 };
 
 const SalesmanRoutes = () => {
   return (
-    <Layout>
+    <Dashboard>
       <Switch>
         <Route exact path="/" component={SalesmanHome} />
 
         <Redirect to="/" />
       </Switch>
-    </Layout>
+    </Dashboard>
   );
 };
 

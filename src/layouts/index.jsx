@@ -1,1 +1,1 @@
-export { Layout } from "./Dashboard";
+export { Dashboard } from "./Dashboard";
