@@ -1,11 +1,12 @@
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import { Box, makeStyles } from "@material-ui/core";
 import { KeyboardArrowRight } from "@material-ui/icons";
 import { Typography } from "components/materialui";
 
-const page = [
+const admin_page = [
   {
     label: `홈`,
     path: `/`,
@@ -43,6 +44,24 @@ const page = [
     path: `/coupon`,
   },
 ];
+const salesman_page = [
+  {
+    label: `홈`,
+    path: `/`,
+  },
+  {
+    label: `회원관리`,
+    path: `/member`,
+  },
+  {
+    label: `인센티브내역`,
+    path: `/incentive`,
+  },
+  {
+    label: `설정`,
+    path: `/setting`,
+  },
+];
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -68,6 +87,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Sidebar = () => {
+  const { isSalesman } = useSelector((state) => state.reducer);
   const classes = useStyles();
   const location = useLocation();
 
@@ -80,7 +100,7 @@ const Sidebar = () => {
 
   return (
     <Box className={classes.container}>
-      {page.map((nav) => {
+      {(isSalesman ? salesman_page : admin_page).map((nav) => {
         let isCur = nav.path.substring(1) === location.pathname.split("/")[1];
         return (
           <NavLink to={nav.path} activeClassName={classes.nav_selected} key={nav.label} isActive={checkIsActive}>

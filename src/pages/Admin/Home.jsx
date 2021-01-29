@@ -105,7 +105,7 @@ const salesman_incentive_rows = [
   },
 ];
 
-export const Home = () => {
+export const AdminHome = () => {
   const classes = useStyles();
   const history = useHistory();
 
