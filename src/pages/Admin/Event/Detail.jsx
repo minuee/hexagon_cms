@@ -164,12 +164,11 @@ export const EventDetail = () => {
               }
               name="event_type"
               control={control}
-              defaultValue=""
+              defaultValue="LIMIT"
               rules={{ required: true }}
             />
           </TableCell>
         </TableRow>
-
         <TableRow>
           <TableCell>이벤트일정</TableCell>
           <TableCell>
@@ -234,19 +233,18 @@ export const EventDetail = () => {
             </Box>
           </TableCell>
         </TableRow>
-
-        {watch("event_type", "") === "LIMIT" && (
-          <TableRow>
-            <TableCell>이벤트 상품 선택</TableCell>
-            <TableCell>
-              <Box>
-                {smaple_item_list.map((item, index) => (
-                  <Box className={classes.item_wrapper} key={index}>
-                    <Avatar variant="square" src="/image/item_sample.png" />
-                    <Box ml={2}>
-                      <Typography fontWeight="500">{item.name}</Typography>
-                      <Typography fontWeight="500">{price(item.price)}원</Typography>
-                    </Box>
+        <TableRow>
+          <TableCell>이벤트 상품 선택</TableCell>
+          <TableCell>
+            <Box>
+              {smaple_item_list.map((item, index) => (
+                <Box className={classes.item_wrapper} key={index}>
+                  <Avatar variant="square" src="/image/item_sample.png" />
+                  <Box ml={2}>
+                    <Typography fontWeight="500">{item.name}</Typography>
+                    <Typography fontWeight="500">{price(item.price)}원</Typography>
+                  </Box>
+                  {watch("event_type", "LIMIT") === "LIMIT" && (
                     <TextField
                       inputRef={register({ required: true })}
                       name={`item_amount[${index}]`}
@@ -256,23 +254,23 @@ export const EventDetail = () => {
                       type="number"
                       disabled={eventDetail?.terminate_yn}
                     />
-                    <IconButton onClick={() => console.log("delete click")} disabled={eventDetail?.terminate_yn}>
-                      <HighlightOff />
-                    </IconButton>
-                  </Box>
-                ))}
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => setIsModalOpen(true)}
-                  disabled={eventDetail?.terminate_yn}
-                >
-                  상품 검색
-                </Button>
-              </Box>
-            </TableCell>
-          </TableRow>
-        )}
+                  )}
+                  <IconButton onClick={() => console.log("delete click")} disabled={eventDetail?.terminate_yn}>
+                    <HighlightOff />
+                  </IconButton>
+                </Box>
+              ))}
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => setIsModalOpen(true)}
+                disabled={eventDetail?.terminate_yn}
+              >
+                상품 검색
+              </Button>
+            </Box>
+          </TableCell>
+        </TableRow>
       </RowTable>
 
       <ProductModal

@@ -90,9 +90,9 @@ export const ItemList = ({ location }) => {
       title: "가격",
       render: ({ each_price, box_price, carton_price }) => (
         <p style={{ whiteSpace: "pre-wrap" }}>
-          {`낱개(${each_price ? price(each_price) : "-"})
-박스(${box_price ? price(box_price) : "-"})
-카톤(${carton_price ? price(carton_price) : "-"})`}
+          {each_price !== 0 && <p>{`낱개(${price(each_price)})`}</p>}
+          {box_price !== 0 && <p>{`박스(${price(box_price)})`}</p>}
+          {carton_price !== 0 && <p>{`카톤(${price(carton_price)})`}</p>}
         </p>
       ),
     },

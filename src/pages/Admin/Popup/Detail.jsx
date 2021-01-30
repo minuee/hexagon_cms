@@ -217,7 +217,7 @@ export const PopupDetail = () => {
         {popup_type_1 === "event" && (
           <>
             <TableRow>
-              <TableCell>이벤트 적용 상품</TableCell>
+              <TableCell>적용 이벤트 선택</TableCell>
               <TableCell>
                 <Controller
                   as={
@@ -235,7 +235,7 @@ export const PopupDetail = () => {
               </TableCell>
             </TableRow>
 
-            <TableRow>
+            {/* <TableRow>
               <TableCell>이벤트 배너 등록</TableCell>
               <TableCell>
                 <Box>
@@ -273,7 +273,7 @@ export const PopupDetail = () => {
                   />
                 </Box>
               </TableCell>
-            </TableRow>
+            </TableRow> */}
           </>
         )}
       </RowTable>

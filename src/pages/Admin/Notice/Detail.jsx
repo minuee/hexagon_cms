@@ -127,7 +127,8 @@ dddddd
         <TableRow>
           <TableCell>Push 발송 여부</TableCell>
           <TableCell>
-            <Controller
+            <Checkbox color="primary" />
+            {/* <Controller
               as={
                 <FormControlLabel
                   control={<Checkbox color="primary" />}
@@ -145,7 +146,7 @@ dddddd
               name="push_yn"
               control={control}
               defaultValue={false}
-            />
+            /> */}
           </TableCell>
         </TableRow>
       </RowTable>

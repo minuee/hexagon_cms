@@ -201,7 +201,7 @@ export const CouponDetail = () => {
           <TableCell>사용가능일자</TableCell>
           <TableCell>
             <Box display="flex" alignItems="center">
-              <Controller
+              {/* <Controller
                 render={({ value, onChange, ref }) => (
                   <DatePicker
                     value={value}
@@ -225,13 +225,12 @@ export const CouponDetail = () => {
                 control={control}
                 defaultValue={null}
                 rules={{ required: true }}
-              />
+              /> */}
+              <Typography display="inline">{dayjs().format("YYYY.MM.DD")}</Typography>
               <Box mx={2} display="inline">
                 ~
               </Box>
-              <Typography display="inline">
-                {watch("coupon_start_dt")?.add(90, "day").format("YYYY.MM.DD") || "시작일을 선택해주세요"}
-              </Typography>
+              <Typography display="inline">{dayjs().add(90, "day").format("YYYY.MM.DD")}</Typography>
             </Box>
           </TableCell>
         </TableRow>

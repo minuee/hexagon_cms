@@ -129,6 +129,7 @@ export const SalesmanDetail = () => {
     });
     setUserInfo({
       code_no: "81JK3D",
+      id: "jhlove1030",
       register_dt: 3333333333,
     });
   }
@@ -165,12 +166,30 @@ export const SalesmanDetail = () => {
           </TableCell>
         </TableRow>
         <TableRow>
+          <TableCell>아이디</TableCell>
+          <TableCell>{salesmanInfo?.id}</TableCell>
+        </TableRow>
+        <TableRow>
           <TableCell>코드번호</TableCell>
           <TableCell>{salesmanInfo?.code_no}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>등록일자</TableCell>
           <TableCell>{dayjs.unix(salesmanInfo?.register_dt).format("YYYY-MM-DD")}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>비밀번호</TableCell>
+          <TableCell>
+            <TextField
+              size="small"
+              variant="outlined"
+              type="password"
+              fullWidth
+              name="password"
+              placeholder="변경 시에만 입력해주세요"
+              inputRef={register({ required: true })}
+            />
+          </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>휴대폰번호</TableCell>
@@ -219,12 +238,12 @@ export const SalesmanDetail = () => {
           <TableCell>인센티브율</TableCell>
           <TableCell>{salesmanInfo?.accumulate_rate} %</TableCell>
         </TableRow> */}
-        <TableRow>
+        {/* <TableRow>
           <TableCell>사업자등록증 첨부</TableCell>
           <TableCell>
             <Dropzone control={control} name="lisence_img" width="90px" ratio={1} />
           </TableCell>
-        </TableRow>
+        </TableRow> */}
       </RowTable>
 
       <Box
