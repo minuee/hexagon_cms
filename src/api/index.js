@@ -419,4 +419,65 @@ export const apiObject = {
       console.log({ e });
     }
   },
+
+  // Banner
+  getBannerList: async ({ page, search_word, paginate = 10 }) => {
+    try {
+      let data = await axios.get("/cms/banner/list", {
+        params: {
+          page,
+          search_word,
+          paginate,
+        },
+      });
+      let ret = data.data.data.bannerList;
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return [];
+    }
+  },
+  getBannerDetail: async ({ banner_pk }) => {
+    try {
+      let data = await axios.get(`/cms/banner/view/${banner_pk}`);
+      let ret = data.data.data.bannerDetail;
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return {};
+    }
+  },
+  registBanner: async ({ banner_type, img_url, title, content }) => {
+    try {
+      let response = await axios.post("/cms/banner/regist", {
+        banner_type,
+        img_url,
+        title,
+        content,
+      });
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+  updateBanner: async ({ banner_pk, banner_type, img_url, title, content }) => {
+    try {
+      let response = await axios.put(`/cms/banner/modify/${banner_pk}`, {
+        banner_type,
+        img_url,
+        title,
+        content,
+      });
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+  removeBanner: async ({ banner_pk }) => {
+    try {
+      let response = await axios.delete(`/cms/banner/remove/${banner_pk}`);
+    } catch (e) {
+      console.log({ e });
+    }
+  },
 };

@@ -40,6 +40,10 @@ const admin_page = [
     path: `/coupon`,
   },
   {
+    label: `배너관리`,
+    path: `/banner`,
+  },
+  {
     label: `영업사원관리`,
     path: `/salesman`,
   },
