@@ -544,4 +544,99 @@ export const apiObject = {
       console.log({ e });
     }
   },
+
+  // Coupon
+  getValidCouponList: async ({ page, paginate = 10 }) => {
+    try {
+      let data = await axios.get(`/cms/coupon/list/ing`, {
+        params: {
+          page,
+          paginate,
+        },
+      });
+      let ret = data.data.data.validCouponList;
+
+      ret.forEach((item) => {
+        item.coupon_type = item.price;
+      });
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return [];
+    }
+  },
+  getPassCouponList: async ({ page, paginate = 10 }) => {
+    try {
+      let data = await axios.get(`/cms/coupon/list/old`, {
+        params: {
+          page,
+          paginate,
+        },
+      });
+      let ret = data.data.data.passCouponList;
+
+      ret.forEach((item) => {
+        item.coupon_type = item.price;
+      });
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return [];
+    }
+  },
+  getCouponDetail: async ({ coupon_pk }) => {
+    try {
+      let data = await axios.get(`/cms/coupon/view/${coupon_pk}`);
+      let ret = data.data.data.couponDetail;
+
+      ret.coupon_type = ret.price;
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return {};
+    }
+  },
+  registerCoupon: async ({ coupon_type, price, end_dt, target_array, issue_reason, is_first }) => {
+    try {
+      let response = await axios.post("/cms/coupon/regist", {
+        coupon_type,
+        price,
+        end_dt,
+        target_array,
+        issue_reason,
+        is_first,
+      });
+
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+  updateCoupon: async ({ coupon_pk, coupon_type, price, end_dt, member_pk, update_reason, is_first }) => {
+    try {
+      let response = await axios.put(`/cms/coupon/modify/${coupon_pk}`, {
+        coupon_type,
+        price,
+        end_dt,
+        member_pk,
+        update_reason,
+        is_first,
+      });
+
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+  removeCoupon: async ({ coupon_pk }) => {
+    try {
+      let response = await axios.delete(`/cms/coupon/remove/${coupon_pk}`);
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
 };

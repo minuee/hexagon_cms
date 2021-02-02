@@ -14,7 +14,7 @@ import { CategoryList, CategoryDetail, ItemList, ItemDetail } from "./pages/Admi
 import { EventList, EventDetail } from "./pages/Admin/Event";
 import { PopupList, PopupDetail } from "./pages/Admin/Popup";
 import { NoticeList, NoticeDetail } from "./pages/Admin/Notice";
-import { CouponList, CouponDetail } from "./pages/Admin/Coupon";
+import { CouponList, CouponRegister, CouponDetail } from "./pages/Admin/Coupon";
 import { BannerList, BannerDetail } from "./pages/Admin/Banner";
 
 import { SalesmanHome } from "./pages/Salesman/Home";
@@ -87,6 +87,7 @@ const AdminRoutes = () => {
         <Route exact path="/notice/:notice_pk" component={NoticeDetail} />
         <Route path="/notice" component={NoticeList} />
 
+        <Route path="/coupon/add" component={CouponRegister} />
         <Route path="/coupon/:coupon_pk" component={CouponDetail} />
         <Route path="/coupon" component={CouponList} />
 

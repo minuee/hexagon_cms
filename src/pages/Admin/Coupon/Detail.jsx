@@ -25,7 +25,7 @@ import {
 import { EventNote, Search, HighlightOff } from "@material-ui/icons";
 import { DatePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
-import { RowTable, ColumnTable, Pagination, Dropzone } from "components";
+import { RowTable } from "components";
 
 const useStyles = makeStyles((theme) => ({
   category_input: {
@@ -34,91 +34,50 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const user_list_sample = [
-  {
-    special_code: "xs2987",
-    name: "전지현",
-  },
-  {
-    special_code: "k9801d",
-    name: "김범수",
-  },
-  {
-    special_code: "98dl1d",
-    name: "김태희",
-  },
-  {
-    special_code: "2lx31d",
-    name: "손예진",
-  },
-  {
-    special_code: "0mf2x2",
-    name: "김범석",
-  },
-];
-
 export const CouponDetail = () => {
   const classes = useStyles();
   const history = useHistory();
   const { coupon_pk } = useParams();
-  const { control, register, watch, setValue, reset, handleSubmit, errors } = useForm();
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "target_user",
-  });
+  const { control, register, reset, handleSubmit, errors } = useForm();
 
-  const [userFilter, setUserFilter] = useState("");
-  const [userList, setUserList] = useState([]);
+  const [couponDetail, setCouponDetail] = useState();
 
   async function getCouponDetail() {
-    let tmp_users = [
-      {
-        special_code: "98dl1d",
-        name: "김태희",
-      },
-      {
-        special_code: "0mf2x2",
-        name: "김범석",
-      },
-    ];
-    setUserList(_.differenceBy(user_list_sample, tmp_users, "special_code"));
+    let data = await apiObject.getCouponDetail({ coupon_pk });
 
+    setCouponDetail(data);
     reset({
-      coupon_type: 10000,
-      target_user: [],
-      coupon_start_dt: dayjs.unix(1982091826),
+      ...data,
+      end_dt: dayjs.unix(data.end_dt),
     });
-    setValue("target_user", tmp_users);
   }
-  async function registCoupon(data) {
-    console.log(data);
-  }
-  async function updateCoupon(data) {
-    console.log(data);
-  }
+  async function updateCoupon(form) {
+    let resp = await apiObject.updateCoupon({
+      coupon_pk,
+      ...form,
+      price: form.coupon_type,
+      end_dt: form.end_dt?.unix(),
+      member_pk: couponDetail?.member_pk,
+    });
 
-  function handleAppendTarget(user) {
-    setUserList(_.differenceBy(userList, fields, [user], "special_code"));
-    append(user);
+    reset({ update_reason: "" });
   }
-  function handleRemoveTarget(index) {
-    setUserList(_.differenceBy(user_list_sample, fields.slice(0, index), fields.slice(index + 1), "special_code"));
-    remove(index);
+  async function removeCoupon() {
+    if (!window.confirm("해당 쿠폰을 삭제하시겠습니까?")) return;
+
+    await apiObject.removeCoupon({ coupon_pk });
+    history.push("/coupon");
   }
 
   useEffect(() => {
-    if (coupon_pk !== "add") {
-      getCouponDetail();
-    } else {
-      setUserList(user_list_sample);
-    }
+    getCouponDetail();
   }, [coupon_pk]);
 
   return (
     <Box>
       <Box mb={1}>
         <Typography variant="h5" fontWeight="500">
-          쿠폰 {coupon_pk === "add" ? "등록" : "정보"}
+          쿠폰 상세정보
         </Typography>
       </Box>
 
@@ -147,53 +106,7 @@ export const CouponDetail = () => {
         <TableRow>
           <TableCell>대상자</TableCell>
           <TableCell>
-            <Box display="flex" alignItems="center">
-              <TextField
-                name="search_word"
-                placeholder="대상자 검색"
-                variant="outlined"
-                value={userFilter}
-                onChange={(e) => setUserFilter(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && {}}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton onClick={() => {}}>
-                        <Search />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <Box mx={1} display="inline-block" />
-              <Select value="" variant="outlined" displayEmpty>
-                <MenuItem value="">쿠폰대상 선택</MenuItem>
-                {userList.map((item, index) => (
-                  <MenuItem value={item.special_code} key={index} onClick={() => handleAppendTarget(item)}>
-                    {item.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </Box>
-            <Box mt={2}>
-              {fields.map((item, index) => (
-                <Controller
-                  key={item.id}
-                  render={({ value }) => (
-                    <Box px={2} display="flex" alignItems="center">
-                      <Typography display="inline">{value.name}</Typography>
-                      {/* <Typography display="inline">{value.special_code}</Typography> */}
-                      <IconButton onClick={() => handleRemoveTarget(index)}>
-                        <HighlightOff />
-                      </IconButton>
-                    </Box>
-                  )}
-                  control={control}
-                  name={`target_user.[${index}]`}
-                  defaultValue={item}
-                />
-              ))}
-            </Box>
+            <Typography>{couponDetail?.member_name}</Typography>
           </TableCell>
         </TableRow>
 
@@ -201,51 +114,44 @@ export const CouponDetail = () => {
           <TableCell>사용가능일자</TableCell>
           <TableCell>
             <Box display="flex" alignItems="center">
-              {/* <Controller
-                render={({ value, onChange, ref }) => (
-                  <DatePicker
-                    value={value}
-                    onChange={onChange}
-                    inputRef={ref}
-                    error={!!errors?.coupon_start_dt}
-                    format={`YYYY.MM.DD`}
-                    placeholder={"사용시작일자 선택"}
-                    inputVariant="outlined"
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <EventNote />
-                        </InputAdornment>
-                      ),
-                    }}
-                    size="small"
-                  />
-                )}
-                name={"coupon_start_dt"}
-                control={control}
-                defaultValue={null}
-                rules={{ required: true }}
-              /> */}
-              <Typography display="inline">{dayjs().format("YYYY.MM.DD")}</Typography>
+              <Typography display="inline">{dayjs.unix(couponDetail?.reg_dt).format("YYYY.MM.DD")}</Typography>
               <Box mx={2} display="inline">
                 ~
               </Box>
-              <Typography display="inline">{dayjs().add(90, "day").format("YYYY.MM.DD")}</Typography>
+              <Controller
+                render={({ ref, ...props }) => (
+                  <DatePicker {...props} inputRef={ref} format="YYYY.MM.DD" inputVariant="outlined" size="small" />
+                )}
+                control={control}
+                name="end_dt"
+                defaultValue={dayjs().add(90, "day")}
+              />
             </Box>
+          </TableCell>
+        </TableRow>
+
+        <TableRow>
+          <TableCell>수정사유</TableCell>
+          <TableCell>
+            <TextField
+              size="small"
+              variant="outlined"
+              name="update_reason"
+              placeholder="수정사유 입력"
+              inputRef={register({ required: true })}
+              error={!!errors.update_reason}
+            />
           </TableCell>
         </TableRow>
       </RowTable>
 
       <Box mt={4} textAlign="center">
-        {coupon_pk === "add" ? (
-          <Button variant="contained" color="primary" onClick={handleSubmit(registCoupon)}>
-            등록
-          </Button>
-        ) : (
-          <Button variant="contained" color="primary" onClick={handleSubmit(updateCoupon)}>
-            수정
-          </Button>
-        )}
+        <Button variant="contained" color="primary" onClick={handleSubmit(updateCoupon)}>
+          수정
+        </Button>
+        <Button ml={2} variant="contained" color="secondary" onClick={removeCoupon}>
+          삭제
+        </Button>
       </Box>
     </Box>
   );

@@ -34,37 +34,24 @@ const useStyles = makeStyles((theme) => ({
 
 const header_button_list = [
   {
-    label: "전체",
-    // value: "",
-  },
-  {
     label: "미사용",
-    value: "N",
+    value: "ing",
   },
   {
     label: "사용완료",
-    value: "Y",
+    value: "old",
   },
 ];
 const coupon_list_columns = [
   { title: "번호", field: "coupon_pk", width: 80 },
-  { title: "사용자", field: "coupon_user" },
-  { title: "금액", render: ({ coupon_type }) => price(coupon_type) },
+  { title: "사용자", field: "member_name" },
+  { title: "금액", render: ({ coupon_type }) => price(coupon_type), width: 160, cellStyle: { textAlign: "right" } },
   {
     title: "발행일자",
-    render: ({ coupon_regist_dt }) => dayjs.unix(coupon_regist_dt).format("YYYY-MM-DD"),
+    render: ({ reg_dt }) => dayjs.unix(reg_dt).format("YYYY-MM-DD"),
     width: 160,
   },
-  { title: "사용여부", render: ({ use_yn }) => (use_yn ? "Y" : "N"), width: 120 },
-];
-const coupon_list_rows = [
-  {
-    coupon_pk: 1,
-    coupon_user: "업체",
-    coupon_type: 5000,
-    coupon_regist_dt: 1099287399,
-    use_yn: false,
-  },
+  // { title: "사용여부", render: ({ use_yn }) => (use_yn ? "Y" : "N"), width: 120 },
 ];
 
 export const CouponList = ({ location }) => {
@@ -76,10 +63,15 @@ export const CouponList = ({ location }) => {
   const [searchWord, setSearchWord] = useState("");
 
   async function getCouponList() {
-    console.log({
-      ...query,
-    });
-    setCouponList(coupon_list_rows);
+    let data;
+
+    if (query.filter_item === "old") {
+      data = await apiObject.getPassCouponList({ ...query });
+    } else {
+      data = await apiObject.getValidCouponList({ ...query });
+    }
+
+    setCouponList(data);
   }
 
   function handleQueryChange(q, v) {
@@ -99,11 +91,14 @@ export const CouponList = ({ location }) => {
         </Typography>
 
         <Box className={classes.header_buttons}>
-          {header_button_list.map((item, index) => (
-            <Button onClick={() => handleQueryChange("filter_item", item.value)} key={index}>
-              <Typography fontWeight={query.filter_item === item.value ? "700" : undefined}>{item.label}</Typography>
-            </Button>
-          ))}
+          {header_button_list.map((item, index) => {
+            let is_cur_filter = item.value === (query.filter_item || "ing");
+            return (
+              <Button onClick={() => handleQueryChange("filter_item", item.value)} key={index}>
+                <Typography fontWeight={is_cur_filter ? "700" : undefined}>{item.label}</Typography>
+              </Button>
+            );
+          })}
 
           <Button variant="contained" ml={3} onClick={() => history.push(`/coupon/add`)}>
             쿠폰 등록
@@ -128,11 +123,11 @@ export const CouponList = ({ location }) => {
         <Pagination
           page={query.page || 1}
           setPage={handleQueryChange}
-          count={10}
-          // count={Math.ceil(+userList?.[0]?.total / 10)}
+          // count={10}
+          count={Math.ceil(+couponList?.[0]?.total / 10)}
         />
 
-        <TextField
+        {/* <TextField
           name="search_word"
           variant="outlined"
           value={searchWord}
@@ -147,7 +142,7 @@ export const CouponList = ({ location }) => {
               </InputAdornment>
             ),
           }}
-        />
+        /> */}
       </Grid>
     </Box>
   );

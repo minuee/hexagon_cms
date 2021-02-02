@@ -2,8 +2,8 @@ import { CurrentAuthUiState, UserState } from "@psyrenpark/auth";
 
 const INITIAL_STATE = {
   isLoading: false,
-  // userState: UserState.NOT_SIGN, // 인증 상태
-  userState: UserState.SIGNED, // 인증 상태
+  // userState: UserState.NOT_SIGN,
+  userState: UserState.SIGNED,
   isSalesman: false,
 };
 
