@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
+import { price, getFullImgURL } from "common";
+import { apiObject } from "api";
 import dayjs from "dayjs";
-import { price } from "common";
 
 import {
   Grid,
@@ -24,37 +25,67 @@ import { Typography, Button } from "components/materialui";
 import { RowTable, Dropzone } from "components";
 
 export const NoticeDetail = () => {
-  const { notice_no } = useParams();
   const history = useHistory();
-  const { control, reset, handleSubmit } = useForm();
+  const { notice_pk } = useParams();
+  const { control, register, reset, setValue, handleSubmit, errors } = useForm();
 
-  function handleAddNotice(data) {
-    console.log("add", data);
+  async function getNoticeDetail() {
+    let data = await apiObject.getNoticeDetail({ notice_pk });
+
+    reset({
+      ...data,
+      start_dt: dayjs.unix(data.start_dt),
+      img_url: [],
+    });
+    setValue("img_url", [{ file: null, path: data.img_url }]);
   }
-  function handleRemoveNotice() {
-    console.log("remove", notice_no);
+  async function registerNotice(form) {
+    if (!window.confirm("입력한 정보로 공지를 등록하시겠습니까?")) return;
+
+    let img_url = "";
+    if (form.img_url) {
+      img_url = await apiObject.uploadImageSingle({
+        img: form.img_url[0],
+        page: "etc",
+      });
+    }
+
+    let resp = await apiObject.registerNotice({
+      ...form,
+      img_url,
+      start_dt: form.start_dt?.unix(),
+    });
   }
-  function handleUpdateNotice(data) {
-    console.log("update", data);
+  async function updateNotice(form) {
+    if (!window.confirm("입력한 정보로 공지를 수정하시겠습니까?")) return;
+
+    let img_url = "";
+    if (form.img_url) {
+      img_url = await apiObject.uploadImageSingle({
+        img: form.img_url[0],
+        page: "etc",
+      });
+    }
+
+    let resp = await apiObject.updateNotice({
+      notice_pk,
+      ...form,
+      img_url,
+      start_dt: form.start_dt?.unix(),
+    });
   }
-  function handleSendNotice() {
-    console.log("notice");
+  async function removeNotice() {
+    if (!window.confirm("공지를 삭제하시겠습니까?")) return;
+
+    await apiObject.removeNotice({ notice_pk });
+    history.push("/notice");
   }
 
   useEffect(() => {
-    if (notice_no !== "add") {
-      reset({
-        notice_title: "설연휴?",
-        notice_content: `
-dddddd
-      ddddd
-        줄바꿈테스트
-        ㅇㅇㅇ
-        `,
-        register_dt: dayjs(),
-      });
+    if (notice_pk !== "add") {
+      getNoticeDetail();
     }
-  }, [notice_no]);
+  }, [notice_pk]);
 
   return (
     <Box>
@@ -84,69 +115,68 @@ dddddd
                       </InputAdornment>
                     ),
                   }}
+                  error={!!errors?.start_dt}
                 />
               )}
-              name={"register_dt"}
+              name={"start_dt"}
               control={control}
               defaultValue={null}
+              rules={{ required: true }}
             />
           </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>제목</TableCell>
           <TableCell>
-            <Controller
-              as={<TextField variant="outlined" fullWidth />}
+            <TextField
+              size="small"
+              variant="outlined"
+              fullWidth
+              name="title"
               placeholder="공지 제목을 입력해주세요"
-              name="notice_title"
-              control={control}
-              rules={{ required: true }}
-              defaultValue=""
+              inputRef={register({ required: true })}
+              error={!!errors?.title}
             />
           </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>내용</TableCell>
           <TableCell>
-            <Controller
-              as={<TextField variant="outlined" fullWidth multiline rows={10} />}
+            <TextField
+              size="small"
+              variant="outlined"
+              fullWidth
+              multiline
+              rows={10}
+              name="content"
               placeholder="공지 내용을 입력해주세요"
-              name="notice_content"
-              control={control}
-              rules={{ required: true }}
-              defaultValue=""
+              inputRef={register({ required: true })}
+              error={!!errors?.content}
             />
           </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>이미지</TableCell>
           <TableCell>
-            <Dropzone control={control} name="notice_img" width="90px" ratio={1} />
+            <Dropzone control={control} name="img_url" width="90px" ratio={1} />
           </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>Push 발송 여부</TableCell>
           <TableCell>
-            <Checkbox color="primary" />
-            {/* <Controller
-              as={
+            <Controller
+              render={({ value, onChange }) => (
                 <FormControlLabel
                   control={<Checkbox color="primary" />}
-                  label={
-                    notice_no !== "add" ? (
-                      <p style={{ fontFamily: "Montserrat", fontWeight: "ital,wght@1,300", display: "inline" }}>
-                        최근발송: {dayjs.unix(1889883723).format("YYYY-MM-DD hh:mm")}
-                      </p>
-                    ) : (
-                      "체크시 푸시알림이 발송됩니다"
-                    )
-                  }
+                  label={notice_pk === "add" && "체크시 푸시알림이 발송됩니다"}
+                  checked={value}
+                  onChange={(e) => onChange(e.target.checked)}
                 />
-              }
-              name="push_yn"
+              )}
+              name="send_push"
               control={control}
               defaultValue={false}
-            /> */}
+            />
           </TableCell>
         </TableRow>
       </RowTable>
@@ -156,16 +186,16 @@ dddddd
           목록
         </Button>
 
-        {notice_no === "add" ? (
-          <Button variant="contained" color="primary" onClick={handleSubmit(handleAddNotice)}>
+        {notice_pk === "add" ? (
+          <Button variant="contained" color="primary" onClick={handleSubmit(registerNotice)}>
             등록
           </Button>
         ) : (
           <>
-            <Button variant="contained" color="primary" onClick={handleRemoveNotice}>
+            <Button variant="contained" color="primary" onClick={removeNotice}>
               삭제
             </Button>
-            <Button mx={2} variant="contained" color="primary" onClick={handleSubmit(handleUpdateNotice)}>
+            <Button mx={2} variant="contained" color="primary" onClick={handleSubmit(updateNotice)}>
               수정
             </Button>
             {/* <Box display="inline-block">

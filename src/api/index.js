@@ -420,8 +420,72 @@ export const apiObject = {
     }
   },
 
+  // Notice
+  getNoticeList: async ({ page, search_word, paginate = 10 }) => {
+    try {
+      let data = await axios.get("/cms/notice/list", {
+        params: {
+          page,
+          search_word,
+          paginate,
+        },
+      });
+      let ret = data.data.data.noticeList;
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return [];
+    }
+  },
+  getNoticeDetail: async ({ notice_pk }) => {
+    try {
+      let data = await axios.get(`/cms/notice/view/${notice_pk}`);
+      let ret = data.data.data.noticeDetail;
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return {};
+    }
+  },
+  registerNotice: async ({ title, content, start_dt, img_url, send_push }) => {
+    try {
+      let response = await axios.post("/cms/notice/regist", {
+        title,
+        content,
+        start_dt,
+        img_url,
+        send_push,
+      });
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+  updateNotice: async ({ notice_pk, title, content, start_dt, img_url, send_push }) => {
+    try {
+      let response = await axios.put(`/cms/notice/modify/${notice_pk}`, {
+        title,
+        content,
+        start_dt,
+        img_url,
+        send_push,
+      });
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+  removeNotice: async ({ notice_pk }) => {
+    try {
+      let response = await axios.delete(`/cms/notice/remove/${notice_pk}`);
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+
   // Banner
-  getBannerList: async ({ page, search_word, paginate = 10 }) => {
+  getBannerList: async ({ page = 1, search_word, paginate = 10 }) => {
     try {
       let data = await axios.get("/cms/banner/list", {
         params: {

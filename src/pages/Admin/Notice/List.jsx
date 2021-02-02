@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { apiObject } from "api";
 import dayjs from "dayjs";
+import qs from "query-string";
 
-import { Grid, Box, makeStyles, TextField, InputAdornment } from "@material-ui/core";
+import { Grid, Box, makeStyles, TextField, InputAdornment, IconButton } from "@material-ui/core";
 import { DescriptionOutlined, Search } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, Pagination } from "components";
@@ -30,82 +32,46 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const notice_list_columns = [
-  { title: "번호", field: "notice_no", width: 80 },
+  { title: "번호", field: "notice_pk", width: 80 },
   {
     title: "제목",
-    render: ({ notice_title }) => (notice_title?.length > 20 ? notice_title?.substring(0, 20) : notice_title),
+    render: ({ title }) => (title?.length > 20 ? title?.substring(0, 20) : title),
     cellStyle: { textAlign: "left" },
   },
   {
     title: "등록일시",
-    render: ({ register_dt }) => dayjs.unix(register_dt).format("YYYY-MM-DD hh:mm"),
+    render: ({ reg_dt }) => dayjs.unix(reg_dt).format("YYYY-MM-DD hh:mm"),
     width: 240,
   },
   {
     title: "발송여부",
-    render: ({ push_yn }) => (push_yn ? "Y" : "N"),
+    render: ({ send_push }) => (send_push ? "Y" : "N"),
     width: 120,
   },
 ];
-const notice_list_rows = [
-  {
-    notice_no: 1,
-    notice_title: "설 연휴 배송 일정 지연 공지",
-    notice_content:
-      "설 연휴 배송량 급증에 의한 배송 일정 지연을 공지드립니다. 설 연휴 배송량 급증에 의한 배송 일정 지연을 공지드립니다. 설 연휴 배송량 급증에 의한 배송 일정 지연을 공지드립니다.",
-    register_dt: 1605215112,
-    push_yn: true,
-  },
-  {
-    notice_no: 2,
-    notice_title: "추석 연휴 배송 일정 지연 공지",
-    notice_content:
-      "추석 연휴 배송량 급증에 의한 배송 일정 지연을 공지드립니다. 추석 연휴 배송량 급증에 의한 배송 일정 지연을 공지드립니다. 추석 연휴 배송량 급증에 의한 배송 일정 지연을 공지드립니다.",
-    register_dt: 1605298112,
-    push_yn: false,
-  },
-  {
-    notice_no: 3,
-    notice_title: "크리스마스 연휴 배송 일정 지연 공지",
-    notice_content:
-      "크리스마스 연휴 배송량 급증에 의한 배송 일정 지연을 공지드립니다. 크리스마스 연휴 배송량 급증에 의한 배송 일정 지연을 공지드립니다. 크리스마스 연휴 배송량 급증에 의한 배송 일정 지연을 공지드립니다.",
-    register_dt: 1610915112,
-    push_yn: false,
-  },
-  {
-    notice_no: 4,
-    notice_title: "추수감사절 연휴 배송 일정 지연 공지",
-    notice_content:
-      "추수감사절 연휴 배송량 급증에 의한 배송 일정 지연을 공지드립니다. 추수감사절 연휴 배송량 급증에 의한 배송 일정 지연을 공지드립니다. 추수감사절 연휴 배송량 급증에 의한 배송 일정 지연을 공지드립니다.",
-    register_dt: 1605276912,
-    push_yn: false,
-  },
-];
 
-export const NoticeList = () => {
+export const NoticeList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
+  const query = qs.parse(location.search);
 
   const [noticeList, setNoticeList] = useState();
-  const [listContext, setListContext] = useState({
-    page: 1,
-    search_text: "",
-  });
+  const [searchWord, setSearchWord] = useState("");
 
-  function handleContextChange(name, value) {
-    setListContext({
-      ...listContext,
-      [name]: value,
-    });
+  async function getNoticeList() {
+    let data = await apiObject.getNoticeList({ ...query });
+
+    setNoticeList(data);
+  }
+
+  function handleQueryChange(q, v) {
+    query[q] = v;
+    history.push("/notice?" + qs.stringify(query));
   }
 
   useEffect(() => {
-    console.log("listContext", listContext);
-  }, [listContext]);
-
-  useEffect(() => {
-    setNoticeList(notice_list_rows);
-  }, []);
+    getNoticeList();
+  }, [query.page, query.search_word]);
 
   return (
     <Box>
@@ -123,7 +89,7 @@ export const NoticeList = () => {
         <ColumnTable
           columns={notice_list_columns}
           data={noticeList}
-          onRowClick={(row) => history.push(`/notice/${row.notice_no}`)}
+          onRowClick={(row) => history.push(`/notice/${row.notice_pk}`)}
         />
       </Box>
 
@@ -133,17 +99,24 @@ export const NoticeList = () => {
           엑셀저장
         </Button> */}
 
-        <Pagination page={listContext.page} setPage={handleContextChange} />
+        <Pagination
+          page={query.page || 1}
+          setPage={handleQueryChange}
+          count={Math.ceil(+noticeList?.[0]?.total / 10)}
+        />
 
         <TextField
-          name="search_text"
+          name="search_word"
           variant="outlined"
-          value={listContext.search_text}
-          onChange={(e) => handleContextChange("search_text", e.target.value)}
+          value={searchWord}
+          onChange={(e) => setSearchWord(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleQueryChange("search_word", searchWord)}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Search />
+                <IconButton onClick={() => handleQueryChange("search_word", searchWord)}>
+                  <Search />
+                </IconButton>
               </InputAdornment>
             ),
           }}
