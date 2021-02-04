@@ -114,13 +114,13 @@ export const apiObject = {
   },
   signIn: async ({ user_id = "superbinder", password = "hexagon12!@" }) => {
     try {
-      let data = await axios.post("/v1/auth/signin", {
+      let response = await axios.post("/v1/auth/signin", {
         user_id,
         password,
       });
 
-      axios.defaults.headers.common.Authorization = data.data.token;
-      return data.data.token;
+      axios.defaults.headers.common.Authorization = response.data.token;
+      return response.data;
     } catch (e) {
       console.log({ e });
     }

@@ -47,16 +47,19 @@ export const SignIn = ({}) => {
   const { register, errors, handleSubmit } = useForm();
 
   async function signIn(data) {
-    let token = await apiObject.signIn(data);
+    let resp = await apiObject.signIn(data);
 
-    if (token) {
-      localStorage.setItem("hexagon_cms_token", token);
-      localStorage.setItem("hexagon_is_salesman", data.is_salesman + "");
-
-      dispatch({
-        type: "SIGN_IN",
-      });
+    if (resp.code === "1015") {
+      alert("로그인 정보가 잘못되었습니다");
+      return;
     }
+
+    localStorage.setItem("hexagon_cms_token", resp.token);
+    localStorage.setItem("hexagon_is_salesman", data.is_salesman + "");
+
+    dispatch({
+      type: "SIGN_IN",
+    });
   }
 
   return (
@@ -65,10 +68,11 @@ export const SignIn = ({}) => {
         <Avatar className={classes.logo} variant="square" src="/image/logo_color.png" />
 
         <TextField
-          defaultValue="superbinder"
+          // defaultValue="superbinder"
+          defaultValue="123456789"
           className={classes.input}
-          name="email"
-          placeholder="Email"
+          name="user_id"
+          placeholder="ID"
           variant="outlined"
           inputRef={register({ required: true })}
           InputProps={{
@@ -78,10 +82,11 @@ export const SignIn = ({}) => {
               </InputAdornment>
             ),
           }}
-          error={!!errors?.email}
+          error={!!errors?.user_id}
         />
         <TextField
-          defaultValue="hexagon12!@"
+          // defaultValue="hexagon12!@"
+          defaultValue="lenapark47##"
           className={classes.input}
           name="password"
           placeholder="Password"
