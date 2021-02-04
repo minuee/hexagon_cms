@@ -42,35 +42,29 @@ export const NoticeDetail = () => {
   async function registerNotice(form) {
     if (!window.confirm("입력한 정보로 공지를 등록하시겠습니까?")) return;
 
-    let img_url = "";
     if (form.img_url) {
-      img_url = await apiObject.uploadImageSingle({
-        img: form.img_url[0],
-        page: "etc",
-      });
+      let paths = await apiObject.uploadImageMultiple({ img_arr: form.img_url, page: "etc" });
+      form.img_url = paths?.[0];
     }
 
-    let resp = await apiObject.registerNotice({
+    await apiObject.registNotice({
       ...form,
-      img_url,
       start_dt: form.start_dt?.unix(),
     });
+
+    history.push("/notice");
   }
   async function updateNotice(form) {
     if (!window.confirm("입력한 정보로 공지를 수정하시겠습니까?")) return;
 
-    let img_url = "";
     if (form.img_url) {
-      img_url = await apiObject.uploadImageSingle({
-        img: form.img_url[0],
-        page: "etc",
-      });
+      let paths = await apiObject.uploadImageMultiple({ img_arr: form.img_url, page: "etc" });
+      form.img_url = paths?.[0];
     }
 
-    let resp = await apiObject.updateNotice({
+    await apiObject.updateNotice({
       notice_pk,
       ...form,
-      img_url,
       start_dt: form.start_dt?.unix(),
     });
   }

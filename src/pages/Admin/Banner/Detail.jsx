@@ -100,30 +100,42 @@ export const BannerDetail = () => {
     setValue("banner_img", [{ file: null, path: data.img_url }]);
   }
   async function registBanner(form) {
-    if (!form.banner_img || !window.confirm("입력한 내용으로 배너를 등록하시겠습니까?")) return;
+    if (!form.banner_img) {
+      alert("배너이미지를 등록해주세요");
+      return;
+    }
+    if (!window.confirm("입력한 내용으로 배너를 등록하시겠습니까?")) {
+      return;
+    }
 
-    let img_url = await apiObject.uploadImageSingle({
-      img: form.banner_img?.[0],
+    let paths = await apiObject.uploadImageMultiple({
+      img_arr: form.banner_img,
       page: "etc",
     });
 
     await apiObject.registBanner({
       ...form,
-      img_url,
+      img_url: paths?.[0],
     });
   }
   async function updateBanner(form) {
-    if (!form.banner_img || !window.confirm("입력한 내용으로 배너를 수정하시겠습니까?")) return;
+    if (!form.banner_img) {
+      alert("배너이미지를 등록해주세요");
+      return;
+    }
+    if (!window.confirm("입력한 내용으로 배너를 수정하시겠습니까?")) {
+      return;
+    }
 
-    let img_url = await apiObject.uploadImageSingle({
-      img: form.banner_img?.[0],
+    let paths = await apiObject.uploadImageMultiple({
+      img_arr: form.banner_img,
       page: "etc",
     });
 
     await apiObject.updateBanner({
       banner_pk,
       ...form,
-      img_url,
+      img_url: paths?.[0],
     });
   }
   async function removeBanner() {

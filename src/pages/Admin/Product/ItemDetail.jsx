@@ -84,18 +84,52 @@ export const ItemDetail = () => {
   }
 
   async function registItem(form) {
-    if (!form.thumb_img || !form.detail_img) return;
-
-    if (window.confirm("기재한 정보로 상품을 추가하시겠습니까?")) {
-      let resp = await apiObject.registItem(form);
+    if (!form.thumb_img) {
+      alert("대표이미지를 추가해주세요");
+      return;
+    } else if (!form.detail_img) {
+      alert("상세이미지를 한 개 이상 추가해주세요");
+      return;
+    } else if (!window.confirm("입력한 정보로 상품을 등록하시겠습니까?")) {
+      return;
     }
+
+    let paths;
+
+    paths = await apiObject.uploadImageMultiple({ img_arr: form.thumb_img, page: "product" });
+    form.thumb_img = paths?.[0];
+
+    paths = await apiObject.uploadImageMultiple({ img_arr: form.detail_img, page: "product" });
+    for (let i = 0; i < paths.length; i++) {
+      form[`detail_img${i + 1}`] = paths[i];
+    }
+
+    console.log(form);
+    //  await apiObject.registItem(form);
   }
   async function updateItem(form) {
-    if (!form.thumb_img || !form.detail_img) return;
-
-    if (window.confirm("기재한 정보로 상품을 수정하시겠습니까?")) {
-      let resp = await apiObject.updateItem({ form, product_pk });
+    if (!form.thumb_img) {
+      alert("대표이미지를 추가해주세요");
+      return;
+    } else if (!form.detail_img) {
+      alert("상세이미지를 한 개 이상 추가해주세요");
+      return;
+    } else if (!window.confirm("입력한 정보로 상품을 수정하시겠습니까?")) {
+      return;
     }
+
+    let paths;
+
+    paths = await apiObject.uploadImageMultiple({ img_arr: form.thumb_img, page: "product" });
+    form.thumb_img = paths?.[0];
+
+    paths = await apiObject.uploadImageMultiple({ img_arr: form.detail_img, page: "product" });
+    for (let i = 0; i < paths.length; i++) {
+      form[`detail_img${i + 1}`] = paths[i];
+    }
+
+    console.log(form);
+    // await apiObject.updateItem({ form, product_pk });
   }
 
   useEffect(() => {

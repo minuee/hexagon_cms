@@ -55,61 +55,57 @@ export const CategoryDetail = ({ location }) => {
     setNormalCategoryList(data);
   }
 
-  async function registCategory(data) {
-    // console.log(data);
-
-    // let path = "https://hg-prod-file.s3-ap-northeast-1.amazonaws.com/public/default/photo.jpg";
-    // if (data.category_logo) {
-    //   path = await apiObject.uploadImageSingle({
-    //     img: data.category_logo?.[0],
-    //     page: "product",
-    //   });
-    // }
-    let path = await apiObject.uploadImageSingle({
-      img: data.category_logo?.[0],
-      page: "product",
-    });
-
-    let normalcategory_pk = data.d3?.normalcategory_pk;
-    let category_name = data.category_name || data.d3?.name;
-
-    let resp = await apiObject.registCategory({
-      category_name,
-      category_type: data.category_type,
-      category_logo: path,
-      normalcategory_pk,
-      // category_logo:
-      //   data.category_type === "N"
-      //     ? `http://placehold.it/60X60/${getRandomColor()}/ffffff?text=${normalcategory_pk}`
-      //     : `http://placehold.it/60X60/${getRandomColor()}/ffffff?text=test_image`,
-    });
-
-    history.push(`product/category`);
-  }
-  async function updateCategory(data) {
-    console.log(data);
-
-    let path = await apiObject.uploadImageSingle({
-      img: data.category_logo?.[0],
-      page: "product",
-    });
-
-    if (data.category_type !== "B") {
-      for (let c of normalCategoryList.d3[watch("d2")]) {
-        if (c.code == data.d3) {
-          data.normalcategory_pk = c.normalcategory_pk;
-          data.category_name = c.name;
-          break;
-        }
-      }
+  async function registCategory(form) {
+    if (!form.category_logo) {
+      alert("카테고리 이미지를 추가해주세요");
+      return;
+    } else if (!window.confirm("입력한 정보로 카테고리를 추가하시겠습니까?")) {
+      return;
     }
 
-    let resp = await apiObject.updateCategoryDetail({
-      ...data,
-      category_pk,
-      category_logo: path,
+    let paths = await apiObject.uploadImageMultiple({
+      img_arr: form.category_logo,
+      page: "product",
     });
+    form.category_logo = paths?.[0];
 
+    if (form.category_type !== "B") {
+      let d3_item = _.find(normalCategoryList.d3[form.d2], (item) => item.code === form.d3);
+
+      form.normalcategory_pk = d3_item.normalcategory_pk;
+      form.category_name = d3_item.name;
+    }
+
+    await apiObject.registCategory({
+      ...form,
+    });
+    history.push(`product/category`);
+  }
+  async function updateCategory(form) {
+    if (!form.category_logo) {
+      alert("카테고리 이미지를 추가해주세요");
+      return;
+    } else if (!window.confirm("입력한 정보로 카테고리를 수정하시겠습니까?")) {
+      return;
+    }
+
+    let paths = await apiObject.uploadImageMultiple({
+      img_arr: form.category_logo,
+      page: "product",
+    });
+    form.category_logo = paths?.[0];
+
+    if (form.category_type !== "B") {
+      let d3_item = _.find(normalCategoryList.d3[form.d2], (item) => item.code === form.d3);
+
+      form.normalcategory_pk = d3_item.normalcategory_pk;
+      form.category_name = d3_item.name;
+    }
+
+    await apiObject.updateCategoryDetail({
+      category_pk,
+      ...form,
+    });
     getCategoryDetail();
   }
 

@@ -325,7 +325,7 @@ export const apiObject = {
     normalcategory_pk,
   }) => {
     try {
-      let data = await axios.put(`/cms/category/modify/${category_pk}`, {
+      let response = await axios.put(`/cms/category/modify/${category_pk}`, {
         category_name,
         category_logo,
         category_type,
@@ -333,6 +333,7 @@ export const apiObject = {
         category_yn,
         normalcategory_pk,
       });
+      return response;
     } catch (e) {
       console.log({ e });
     }
@@ -384,14 +385,6 @@ export const apiObject = {
   },
   registItem: async (form) => {
     try {
-      let thumb_img_path = await apiObject.uploadImageSingle({ img: form.thumb_img?.[0], page: "product" });
-      form.thumb_img = thumb_img_path;
-
-      let detail_img_paths = await apiObject.uploadImageMultiple({ img_arr: form.detail_img, page: "product" });
-      for (let i = 0; i < detail_img_paths.length; i++) {
-        form[`detail_img${i + 1}`] = detail_img_paths[i];
-      }
-
       let response = await axios.post("/cms/product/regist", {
         ...form,
       });
@@ -403,14 +396,6 @@ export const apiObject = {
   },
   updateItem: async ({ form, product_pk }) => {
     try {
-      let thumb_img_path = await apiObject.uploadImageSingle({ img: form.thumb_img?.[0], page: "product" });
-      form.thumb_img = thumb_img_path;
-
-      let detail_img_paths = await apiObject.uploadImageMultiple({ img_arr: form.detail_img, page: "product" });
-      for (let i = 0; i < detail_img_paths.length; i++) {
-        form[`detail_img${i + 1}`] = detail_img_paths[i];
-      }
-
       let response = await axios.put(`/cms/product/modify/${product_pk}`, {
         ...form,
       });
@@ -449,7 +434,7 @@ export const apiObject = {
       return {};
     }
   },
-  registerNotice: async ({ title, content, start_dt, img_url, send_push }) => {
+  registNotice: async ({ title, content, start_dt, img_url, send_push }) => {
     try {
       let response = await axios.post("/cms/notice/regist", {
         title,
@@ -471,6 +456,7 @@ export const apiObject = {
         img_url,
         send_push,
       });
+      return response;
     } catch (e) {
       console.log({ e });
     }
@@ -521,6 +507,7 @@ export const apiObject = {
         title,
         content,
       });
+      return response;
     } catch (e) {
       console.log({ e });
     }
@@ -533,6 +520,7 @@ export const apiObject = {
         title,
         content,
       });
+      return response;
     } catch (e) {
       console.log({ e });
     }
@@ -540,6 +528,7 @@ export const apiObject = {
   removeBanner: async ({ banner_pk }) => {
     try {
       let response = await axios.delete(`/cms/banner/remove/${banner_pk}`);
+      return response;
     } catch (e) {
       console.log({ e });
     }
@@ -599,7 +588,7 @@ export const apiObject = {
       return {};
     }
   },
-  registerCoupon: async ({ coupon_type, price, end_dt, target_array, issue_reason, is_first }) => {
+  registCoupon: async ({ coupon_type, price, end_dt, target_array, issue_reason, is_first }) => {
     try {
       let response = await axios.post("/cms/coupon/regist", {
         coupon_type,
