@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Controller, useForm, useFieldArray } from "react-hook-form";
+import { price, getFullImgURL } from "common";
+import { apiObject } from "api";
 import dayjs from "dayjs";
-import { price } from "common";
+import _ from "lodash";
 
 import {
   Grid,
@@ -28,7 +30,7 @@ import {
 import { EventNote, Search, HighlightOff } from "@material-ui/icons";
 import { DatePicker, TimePicker, DateTimePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
-import { RowTable, Dropzone } from "components";
+import { Pagination, ColumnTable, RowTable, Dropzone } from "components";
 
 const useStyles = makeStyles((theme) => ({
   datetimepicker_wrapper: {
@@ -41,7 +43,6 @@ const useStyles = makeStyles((theme) => ({
       background: "#f5f5f5",
     },
   },
-
   item_wrapper: {
     display: "flex",
     alignItems: "center",
@@ -60,68 +61,126 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
-}));
 
-const smaple_item_list = [
-  {
-    no: 1,
-    name: "돌수세미",
-    price: 111222,
+  logo_box: {
+    display: "inline-block",
+    width: "60px",
+    height: "60px",
+
+    "& img": {
+      objectFit: "contain",
+    },
   },
-  {
-    no: 2,
-    name: "철수세미",
-    price: 121222,
+  product_list_header: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+
+    "& > *": {
+      display: "inline-block",
+    },
+    "& > :first-child": {
+      "& > *": {
+        marginRight: theme.spacing(2),
+      },
+    },
   },
-  {
-    no: 3,
-    name: "스펀지수세미",
-    price: 133332,
-  },
-  {
-    no: 4,
-    name: "종이수세미",
-    price: 14455452,
-  },
-];
+}));
 
 export const EventDetail = () => {
   const { event_pk } = useParams();
   const history = useHistory();
   const classes = useStyles();
-  const { control, register, reset, watch, handleSubmit } = useForm();
+  const { control, register, reset, setValue, watch, handleSubmit } = useForm();
   const { fields, append, remove } = useFieldArray({
-    name: "event_item",
+    name: "event_product",
     control: control,
   });
 
-  const [eventDetail, setEventDetail] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  function handleAddNotice(data) {
-    console.log("add", data);
+  async function getEventDetail() {
+    let data = await apiObject.getEventDetail({ event_pk });
+
+    reset({
+      ...data,
+      start_dt: dayjs.unix(data.start_dt),
+      end_dt: data.end_dt ? dayjs.unix(data.end_dt) : null,
+      event_product: [],
+    });
+
+    let tmp = [];
+    data.product_array.forEach((item) => {
+      tmp.push(item);
+    });
+    setValue("event_product", tmp);
+    console.log(data);
+    // setEventDetail(data);
   }
-  function handleRemoveNotice() {
-    console.log("remove", event_pk);
+  async function registEvent(form) {
+    if (!form.event_product) {
+      alert("이벤트 상품을 선택해주세요");
+      return;
+    } else if (!window.confirm("입력한 정보로 이벤트를 등록하시겠습니까?")) {
+      return;
+    }
+
+    form.product = [];
+    form.event_product.forEach((item) => {
+      form.product.push({
+        product_pk: item.product_pk,
+      });
+    });
+
+    form.start_dt = form.start_dt.unix();
+    form.end_dt = form.end_dt?.unix();
+
+    await apiObject.registEvent({ ...form });
+    history.push("/event");
   }
-  function handleUpdateNotice(data) {
-    console.log("update", data);
+  async function modifyEvent(form) {
+    if (!form.event_product) {
+      alert("이벤트 상품을 선택해주세요");
+      return;
+    } else if (!window.confirm("입력한 정보로 이벤트를 수정하시겠습니까?")) {
+      return;
+    }
+
+    form.product = [];
+    form.event_product.forEach((item) => {
+      form.product.push({
+        product_pk: item.product_pk,
+      });
+    });
+
+    form.start_dt = form.start_dt.unix();
+    form.end_dt = form.end_dt?.unix();
+
+    await apiObject.modifyEvent({ event_pk, ...form });
+    getEventDetail();
+  }
+  async function removeEvent() {
+    if (!window.confirm("현재 이벤트를 삭제하시겠습니까?")) return;
+
+    await apiObject.removeEvent({ event_pk });
+    history.push("/event");
   }
 
-  function handleRemoveItem(item) {
-    console.log("item", item);
+  function handleAppendProduct(selected_list) {
+    let tmp = _.differenceBy(selected_list, fields, "product_pk");
+    tmp.forEach((item) => {
+      item.amount = "";
+    });
+
+    append(tmp);
   }
 
   useEffect(() => {
     if (event_pk !== "add") {
-      reset({
-        event_type: "LIMIT",
-        event_start_dt: dayjs.unix(1488203944),
-        event_end_dt: dayjs.unix(1988203944),
-      });
-      setEventDetail({
-        terminate_yn: true,
-      });
+      getEventDetail();
     }
   }, [event_pk]);
 
@@ -135,34 +194,31 @@ export const EventDetail = () => {
 
       <RowTable>
         <TableRow>
+          <TableCell>이벤트 제목</TableCell>
+          <TableCell>
+            <TextField
+              inputRef={register({ required: true })}
+              variant="outlined"
+              size="small"
+              name="title"
+              placeholder="제목 입력"
+            />
+          </TableCell>
+        </TableRow>
+        <TableRow>
           <TableCell>이벤트 종류</TableCell>
           <TableCell>
             <Controller
               as={
                 <RadioGroup row>
-                  <FormControlLabel
-                    value="LIMIT"
-                    control={<Radio color="primary" />}
-                    label="한정특가"
-                    disabled={eventDetail?.terminate_yn}
-                  />
+                  <FormControlLabel value="LIMIT" control={<Radio color="primary" />} label="한정특가" />
                   <Box display="inline" ml={2} />
-                  <FormControlLabel
-                    value="TERM"
-                    control={<Radio color="primary" />}
-                    label="기간할인이벤트"
-                    disabled={eventDetail?.terminate_yn}
-                  />
+                  <FormControlLabel value="TERM" control={<Radio color="primary" />} label="기간할인이벤트" />
                   <Box display="inline" ml={2} />
-                  <FormControlLabel
-                    value="SALE"
-                    control={<Radio color="primary" />}
-                    label="할인이벤트"
-                    disabled={eventDetail?.terminate_yn}
-                  />
+                  <FormControlLabel value="SALE" control={<Radio color="primary" />} label="할인이벤트" />
                 </RadioGroup>
               }
-              name="event_type"
+              name="event_gubun"
               control={control}
               defaultValue="LIMIT"
               rules={{ required: true }}
@@ -189,16 +245,15 @@ export const EventDetail = () => {
                       ),
                     }}
                     size="small"
-                    disabled={eventDetail?.terminate_yn}
                   />
                 )}
-                name={"event_start_dt"}
+                name={"start_dt"}
                 control={control}
                 defaultValue={null}
                 rules={{ required: true }}
               />
 
-              {watch("event_type", "") === "TERM" && (
+              {watch("event_gubun", "") === "TERM" && (
                 <>
                   <Box mx={2} display="inline">
                     <Typography display="inline">~</Typography>
@@ -220,10 +275,9 @@ export const EventDetail = () => {
                           ),
                         }}
                         size="small"
-                        disabled={eventDetail?.terminate_yn}
                       />
                     )}
-                    name={"event_end_dt"}
+                    name={"end_dt"}
                     control={control}
                     defaultValue={null}
                     rules={{ required: true }}
@@ -237,35 +291,44 @@ export const EventDetail = () => {
           <TableCell>이벤트 상품 선택</TableCell>
           <TableCell>
             <Box>
-              {smaple_item_list.map((item, index) => (
-                <Box className={classes.item_wrapper} key={index}>
-                  <Avatar variant="square" src="/image/item_sample.png" />
-                  <Box ml={2}>
-                    <Typography fontWeight="500">{item.name}</Typography>
-                    <Typography fontWeight="500">{price(item.price)}원</Typography>
-                  </Box>
-                  {watch("event_type", "LIMIT") === "LIMIT" && (
+              {fields.map((item, index) => (
+                <Box className={classes.item_wrapper} key={item.id}>
+                  <Controller
+                    render={({ value }) => (
+                      <>
+                        <Avatar variant="square" src={getFullImgURL(value.thumb_img)} />
+                        <Box>
+                          <Typography fontWeight="500">{value.product_name}</Typography>
+                          <Typography fontWeight="500">{price(value.event_each_price)}원</Typography>
+                        </Box>
+                      </>
+                    )}
+                    control={control}
+                    name={`event_product.[${index}]`}
+                    defaultValue={item}
+                  />
+                  <IconButton onClick={() => remove(index)}>
+                    <HighlightOff />
+                  </IconButton>
+
+                  {/* {watch("event_gubun", "LIMIT") === "LIMIT" && (
                     <TextField
-                      inputRef={register({ required: true })}
-                      name={`item_amount[${index}]`}
+                      value={value.amount}
+                      onChange={(e) =>
+                        onChange({
+                          ...value,
+                          amount: e.target.value,
+                        })
+                      }
                       placeholder="수량 입력"
                       variant="outlined"
                       size="small"
                       type="number"
-                      disabled={eventDetail?.terminate_yn}
                     />
-                  )}
-                  <IconButton onClick={() => console.log("delete click")} disabled={eventDetail?.terminate_yn}>
-                    <HighlightOff />
-                  </IconButton>
+                  )} */}
                 </Box>
               ))}
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={() => setIsModalOpen(true)}
-                disabled={eventDetail?.terminate_yn}
-              >
+              <Button variant="contained" color="secondary" onClick={() => setIsModalOpen(true)}>
                 상품 검색
               </Button>
             </Box>
@@ -273,12 +336,7 @@ export const EventDetail = () => {
         </TableRow>
       </RowTable>
 
-      <ProductModal
-        open={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onAdd={append}
-        onRemove={handleRemoveItem}
-      />
+      <ProductModal open={isModalOpen} onClose={() => setIsModalOpen(false)} onSelect={handleAppendProduct} />
 
       <Box mt={4} textAlign="center">
         <Button mr={2} variant="contained" onClick={() => history.push("/event")}>
@@ -286,22 +344,22 @@ export const EventDetail = () => {
         </Button>
 
         {event_pk === "add" ? (
-          <Button variant="contained" color="primary" onClick={handleSubmit(handleAddNotice)}>
+          <Button variant="contained" color="primary" onClick={handleSubmit(registEvent)}>
             등록
           </Button>
         ) : (
           <>
-            <Button mr={2} variant="contained" color="primary" onClick={handleRemoveNotice}>
-              삭제
-            </Button>
-            <Button variant="contained" color="primary" onClick={handleSubmit(handleUpdateNotice)}>
+            <Button variant="contained" color="primary" onClick={handleSubmit(modifyEvent)}>
               수정
             </Button>
-            {!eventDetail?.terminate_yn && (
+            <Button ml={2} variant="contained" color="primary" onClick={removeEvent}>
+              삭제
+            </Button>
+            {/* {!eventDetail?.terminate_yn && (
               <Button ml={2} variant="contained" color="secondary" onClick={() => console.log("termination")}>
                 마감
               </Button>
-            )}
+            )} */}
           </>
         )}
       </Box>
@@ -309,61 +367,166 @@ export const EventDetail = () => {
   );
 };
 
-const ProductModal = ({ open, onClose }) => {
+const ProductModal = ({ open, onClose, onSelect }) => {
   const classes = useStyles();
+  const { control, register, watch } = useForm();
 
-  const [searchText, setSearchText] = useState("");
-  const [categoryTab, setCategoryTab] = useState(0);
-  const [itemList, setItemList] = useState([
+  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [categoryList, setCategoryList] = useState([]);
+  const [productList, setProductList] = useState();
+  const [listContext, setListContext] = useState({
+    page: 1,
+    search_word: "",
+  });
+
+  const product_columns = [
     {
-      item_no: 1,
-      name: "철 수세미",
-      price: 111111,
+      title: "상품 이미지",
+      render: ({ thumb_img }) => (
+        <Avatar variant="square" src={getFullImgURL(thumb_img)} className={classes.logo_box} />
+      ),
+      width: 180,
     },
+    { title: "상품명", field: "product_name", cellStyle: { textAlign: "left" } },
     {
-      item_no: 2,
-      name: "돌 수세미",
-      price: 222222,
+      title: "가격",
+      render: ({ each_price, box_price, carton_price }) => (
+        <>
+          {each_price !== 0 && <p>{`낱개(${price(each_price)})`}</p>}
+          {box_price !== 0 && <p>{`박스(${price(box_price)})`}</p>}
+          {carton_price !== 0 && <p>{`카톤(${price(carton_price)})`}</p>}
+        </>
+      ),
+      width: 200,
     },
-    {
-      item_no: 3,
-      name: "모래 수세미",
-      price: 3333333,
-    },
-  ]);
+  ];
+
+  async function getProductList() {
+    let data = await apiObject.getItemList({
+      ...listContext,
+    });
+    setProductList(data);
+  }
+  async function getCategoryList() {
+    let data = await apiObject.getCategoryList({});
+    setCategoryList(data);
+  }
+
+  function handleOnSelect() {
+    onSelect(selectedProducts);
+    onClose();
+  }
+
+  function handleContextChange(name, value) {
+    // let next_context = {
+    //   ...listContext,
+    //   [name]: value,
+    // };
+
+    // if (name !== "page") {
+    //   next_context.page = 1;
+    // }
+
+    // console.log(next_context);
+    // setListContext(next_context);
+    setListContext({
+      ...listContext,
+      [name]: value,
+    });
+  }
+
+  function handleEnter() {
+    getCategoryList();
+    setListContext({
+      page: 1,
+      search_word: "",
+    });
+  }
+
+  useEffect(() => {
+    handleContextChange("category_pk", "");
+  }, [watch("category_type")]);
+  useEffect(() => {
+    getProductList();
+  }, [listContext.page, listContext.category_pk]);
 
   return (
-    <Dialog maxWidth="md" open={open} onClose={onClose} onBackdropClick={onClose}>
-      <Box p={2} px={4} width="800px" height="600px" bgcolor="#fff">
+    <Dialog maxWidth="md" fullWidth open={open} onClose={onClose} onBackdropClick={onClose} onEnter={handleEnter}>
+      <Box p={3} height="800px" bgcolor="#fff">
         <Typography variant="h6" fontWeight="700">
           이벤트 적용 상품
         </Typography>
-        <Box mt={2} mb={1}>
+
+        <Box className={classes.product_list_header}>
+          <Box>
+            <Controller
+              as={
+                <Select displayEmpty margin="dense" variant="outlined">
+                  <MenuItem value="">카테고리 구분</MenuItem>
+                  <MenuItem value="B">브랜드</MenuItem>
+                  <MenuItem value="N">제품군</MenuItem>
+                </Select>
+              }
+              control={control}
+              name="category_type"
+              defaultValue=""
+            />
+
+            {watch("category_type", "") === "B" && (
+              <Select
+                displayEmpty
+                margin="dense"
+                variant="outlined"
+                value={listContext?.category_pk}
+                onChange={(e) => handleContextChange("category_pk", e.target.value)}
+              >
+                <MenuItem value="">카테고리 분류</MenuItem>
+                {categoryList.categoryBrandList.map((item, index) => (
+                  <MenuItem value={item.category_pk} key={index}>
+                    {item.category_name}
+                  </MenuItem>
+                ))}
+              </Select>
+            )}
+            {watch("category_type", "") === "N" && (
+              <Select
+                displayEmpty
+                margin="dense"
+                variant="outlined"
+                value={listContext?.category_pk}
+                onChange={(e) => handleContextChange("category_pk", e.target.value)}
+              >
+                <MenuItem value="">카테고리 분류</MenuItem>
+                {categoryList.categoryNormalList.map((item, index) => (
+                  <MenuItem value={item.category_pk} key={index}>
+                    {`${item.depth1name}  >  ${item.depth2name}  >  ${item.depth3name}`}
+                  </MenuItem>
+                ))}
+              </Select>
+            )}
+          </Box>
+
           <TextField
             size="small"
             variant="outlined"
             placeholder="상품검색"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
+            value={listContext.search_word}
+            onChange={(e) => handleContextChange("search_word", e.target.value)}
+            onKeyPress={(e) => e.key === "Enter" && getProductList()}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <Search />
+                  <IconButton onClick={getProductList}>
+                    <Search />
+                  </IconButton>
                 </InputAdornment>
               ),
             }}
           />
         </Box>
-        <Tabs value={categoryTab} indicatorColor="primary" onChange={(e, v) => setCategoryTab(v)}>
-          <Tab label="전체" value={0} />
-          <Tab label="아릭스" value={1} />
-          <Tab label="드라이팍" value={2} />
-          <Tab label="라코로나" value={3} />
-          <Tab label="클린로직" value={4} />
-        </Tabs>
 
-        <Box px={2}>
-          {itemList.map((item, index) => {
+        {/* <Box px={2}>
+          {productList.map((item, index) => {
             return (
               <FormControlLabel
                 className={classes.item_wrapper}
@@ -381,6 +544,19 @@ const ProductModal = ({ open, onClose }) => {
               />
             );
           })}
+        </Box> */}
+
+        <ColumnTable columns={product_columns} data={productList} selection onSelectionChange={setSelectedProducts} />
+
+        <Box py={4} position="relative" display="flex" alignItems="center" justifyContent="flex-end">
+          <Pagination
+            page={listContext.page}
+            setPage={handleContextChange}
+            count={Math.ceil(productList?.[0]?.total / 10)}
+          />
+          <Button variant="contained" color="primary" onClick={handleOnSelect}>
+            선택
+          </Button>
         </Box>
       </Box>
     </Dialog>

@@ -48,35 +48,24 @@ const header_button_list = [
 ];
 const event_list_columns = [
   { title: "번호", field: "event_pk", width: 80 },
-  { title: "종류", field: "event_type", width: 100 },
+  { title: "종류", field: "event_gubun_text", width: 160 },
   { title: "제목", field: "title", cellStyle: { textAlign: "left" } },
   {
     title: "등록일",
-    render: ({ event_regist_dt }) => dayjs.unix(event_regist_dt).format("YYYY-MM-DD"),
+    render: ({ reg_dt }) => dayjs.unix(reg_dt).format("YYYY-MM-DD"),
     width: 120,
   },
   {
     title: "시작일",
-    render: ({ event_start_dt }) => dayjs.unix(event_start_dt).format("YYYY-MM-DD"),
+    render: ({ start_dt }) => dayjs.unix(start_dt).format("YYYY-MM-DD"),
     width: 120,
   },
-  {
-    title: "종료일",
-    render: ({ event_end_dt }) => dayjs.unix(event_end_dt).format("YYYY-MM-DD"),
-    width: 120,
-  },
+  // {
+  //   title: "종료일",
+  //   render: ({ event_end_dt }) => dayjs.unix(event_end_dt).format("YYYY-MM-DD"),
+  //   width: 120,
+  // },
   { title: "종료여부", render: ({ termination_yn }) => (termination_yn ? "Y" : "N"), width: 100 },
-];
-const event_list_rows = [
-  {
-    event_pk: 1,
-    event_type: "TERM",
-    title: "특별감사세일",
-    event_regist_dt: 1099287399,
-    event_start_dt: 1499287399,
-    event_end_dt: 1698287399,
-    termination_yn: false,
-  },
 ];
 
 export const EventList = ({ location }) => {
@@ -88,8 +77,10 @@ export const EventList = ({ location }) => {
   const [searchWord, setSearchWord] = useState("");
 
   async function getEventList() {
-    console.log("get list called");
-    setEventList(event_list_rows);
+    let data = await apiObject.getEventList({ ...query });
+
+    console.log(data);
+    setEventList(data);
   }
 
   function handleQueryChange(q, v) {
@@ -138,8 +129,8 @@ export const EventList = ({ location }) => {
         <Pagination
           page={query.page || 1}
           setPage={handleQueryChange}
-          count={10}
-          // count={Math.ceil(+userList?.[0]?.total / 10)}
+          // count={10}
+          count={Math.ceil(+eventList?.[0]?.total / 10)}
         />
 
         <TextField

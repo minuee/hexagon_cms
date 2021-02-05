@@ -298,7 +298,6 @@ export const apiObject = {
       return [];
     }
   },
-
   registCategory: async ({ category_name, category_logo, category_seq = 1, category_type, normalcategory_pk }) => {
     try {
       let response = await axios.post("/cms/category/regist", {
@@ -399,6 +398,86 @@ export const apiObject = {
       let response = await axios.put(`/cms/product/modify/${product_pk}`, {
         ...form,
       });
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+
+  // Event
+  getEventList: async ({ page, paginate = 10, search_word }) => {
+    try {
+      let data = await axios.get("/cms/event/list", {
+        params: { page, paginate, search_word },
+      });
+
+      let ret = data.data.data.eventList;
+      ret.forEach((item) => {
+        switch (item.event_gubun) {
+          case "LIMIT":
+            item.event_gubun_text = "한정특가";
+            break;
+          case "TERM":
+            item.event_gubun_text = "기간할인이벤트";
+            break;
+          case "SALE":
+            item.event_gubun_text = "할인이벤트";
+            break;
+          default:
+            item.event_gubun_text = "이벤트 타입 오류";
+        }
+      });
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return [];
+    }
+  },
+  getEventDetail: async ({ event_pk }) => {
+    try {
+      let data = await axios.get(`/cms/event/view/${event_pk}`, {});
+      let ret = data.data.data.eventDetail;
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return {};
+    }
+  },
+  registEvent: async ({ event_gubun, start_dt, end_dt, title, product }) => {
+    try {
+      let response = await axios.post(`/cms/event/regist`, {
+        event_gubun,
+        start_dt,
+        end_dt,
+        title,
+        product,
+      });
+
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+  modifyEvent: async ({ event_pk, event_gubun, start_dt, end_dt, title, product }) => {
+    try {
+      let response = await axios.put(`/cms/event/modify/${event_pk}`, {
+        event_gubun,
+        start_dt,
+        end_dt,
+        title,
+        product,
+      });
+
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+  removeEvent: async ({ event_pk }) => {
+    try {
+      let response = await axios.delete(`/cms/event/remove/${event_pk}`);
       return response;
     } catch (e) {
       console.log({ e });
