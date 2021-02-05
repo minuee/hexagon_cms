@@ -157,7 +157,6 @@ export const SalesmanDetail = () => {
           <TableCell>
             <TextField
               size="small"
-              variant="outlined"
               fullWidth
               name="name"
               placeholder="이름을 입력해주세요"
@@ -182,7 +181,6 @@ export const SalesmanDetail = () => {
           <TableCell>
             <TextField
               size="small"
-              variant="outlined"
               type="password"
               fullWidth
               name="password"
@@ -196,7 +194,6 @@ export const SalesmanDetail = () => {
           <TableCell>
             <TextField
               size="small"
-              variant="outlined"
               fullWidth
               name="phone"
               placeholder="휴대폰 번호를 입력해주세요"
@@ -209,7 +206,6 @@ export const SalesmanDetail = () => {
           <TableCell>
             <TextField
               size="small"
-              variant="outlined"
               fullWidth
               name="email"
               placeholder="이메일을 입력해주세요"
@@ -222,7 +218,7 @@ export const SalesmanDetail = () => {
           <TableCell>
             <Controller
               as={
-                <TextField select size="small" variant="outlined">
+                <TextField select size="small">
                   <MenuItem value={"0"}>이용중</MenuItem>
                   <MenuItem value={"1"}>일시정지</MenuItem>
                   <MenuItem value={"2"}>퇴사</MenuItem>
@@ -251,7 +247,7 @@ export const SalesmanDetail = () => {
         display="flex"
         // justifyContent="center"
       >
-        <Button variant="contained" color="primary" onClick={handleSubmit(handleUpdateSalesman)}>
+        <Button color="primary" onClick={handleSubmit(handleUpdateSalesman)}>
           수정
         </Button>
       </Box>

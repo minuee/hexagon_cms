@@ -87,7 +87,7 @@ export const CouponDetail = () => {
           <TableCell>
             <Controller
               as={
-                <Select variant="outlined" displayEmpty error={!!errors?.coupon_type}>
+                <Select displayEmpty error={!!errors?.coupon_type}>
                   <MenuItem value="">쿠폰 종류 선택</MenuItem>
                   <MenuItem value={5000}>5000원권</MenuItem>
                   <MenuItem value={10000}>10000원권</MenuItem>
@@ -120,7 +120,7 @@ export const CouponDetail = () => {
               </Box>
               <Controller
                 render={({ ref, ...props }) => (
-                  <DatePicker {...props} inputRef={ref} format="YYYY.MM.DD" inputVariant="outlined" size="small" />
+                  <DatePicker {...props} inputRef={ref} format="YYYY.MM.DD" size="small" />
                 )}
                 control={control}
                 name="end_dt"
@@ -135,7 +135,6 @@ export const CouponDetail = () => {
           <TableCell>
             <TextField
               size="small"
-              variant="outlined"
               name="update_reason"
               placeholder="수정사유 입력"
               inputRef={register({ required: true })}
@@ -146,10 +145,10 @@ export const CouponDetail = () => {
       </RowTable>
 
       <Box mt={4} textAlign="center">
-        <Button variant="contained" color="primary" onClick={handleSubmit(updateCoupon)}>
+        <Button color="primary" onClick={handleSubmit(updateCoupon)}>
           수정
         </Button>
-        <Button ml={2} variant="contained" color="secondary" onClick={removeCoupon}>
+        <Button ml={2} color="secondary" onClick={removeCoupon}>
           삭제
         </Button>
       </Box>

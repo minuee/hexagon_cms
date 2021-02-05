@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import { Grid, Box, makeStyles, TextField, InputAdornment } from "@material-ui/core";
 import { DescriptionOutlined, Search } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination } from "components";
+import { ColumnTable, Pagination, SearchBox } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header_buttons: {
@@ -118,10 +118,10 @@ export const SalesmanList = () => {
         </Typography>
 
         <Box className={classes.header_buttons}>
-          <Button>이름순</Button>
-          <Button>구매대행액순</Button>
-          <Button>인센티브액순</Button>
-          <Button ml={2} variant="contained" onClick={() => history.push("/salesman/add")}>
+          <Button variant="text">이름순</Button>
+          <Button variant="text">구매대행액순</Button>
+          <Button variant="text">인센티브액순</Button>
+          <Button color="primary" ml={2} onClick={() => history.push("/salesman/add")}>
             영업사원등록
           </Button>
         </Box>
@@ -136,26 +136,14 @@ export const SalesmanList = () => {
       </Box>
 
       <Grid container className={classes.table_footer}>
-        <Button variant="contained" p={1}>
+        <Button p={1}>
           <DescriptionOutlined />
           엑셀저장
         </Button>
 
         <Pagination page={listContext.page} setPage={handleContextChange} />
 
-        <TextField
-          name="search_text"
-          variant="outlined"
-          value={listContext.search_text}
-          onChange={(e) => handleContextChange("search_text", e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search />
-              </InputAdornment>
-            ),
-          }}
-        />
+        {/* <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} /> */}
       </Grid>
     </Box>
   );

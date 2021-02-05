@@ -8,7 +8,7 @@ import qs from "query-string";
 import { Grid, Box, makeStyles, TextField, InputAdornment, IconButton } from "@material-ui/core";
 import { DescriptionOutlined, Search } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination } from "components";
+import { ColumnTable, SearchBox } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header_buttons: {
@@ -88,7 +88,7 @@ export const BannerList = ({ location }) => {
           배너 목록
         </Typography>
 
-        <Button variant="contained" onClick={handleAddBanner}>
+        <Button color="primary" onClick={handleAddBanner}>
           등록
         </Button>
       </Grid>
@@ -102,29 +102,14 @@ export const BannerList = ({ location }) => {
       </Box>
 
       <Grid container className={classes.table_footer}>
-        {/* <Button variant="contained" p={1}>
+        {/* <Button p={1}>
           <DescriptionOutlined />
           엑셀저장
         </Button> */}
 
         {/* <Pagination page={query.page || 1} setPage={handleQueryChange} /> */}
 
-        <TextField
-          name="search_text"
-          variant="outlined"
-          value={searchWord}
-          onChange={(e) => setSearchWord(e.target.value)}
-          onKeyPress={(e) => e.key === "Enter" && handleQueryChange("search_word", searchWord)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <IconButton onClick={() => handleQueryChange("search_word", searchWord)}>
-                  <Search />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
+        <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} />
       </Grid>
     </Box>
   );

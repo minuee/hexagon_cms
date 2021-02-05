@@ -32,7 +32,6 @@ export const SalesmanRegister = () => {
           <TableCell>
             <TextField
               size="small"
-              variant="outlined"
               fullWidth
               name="name"
               placeholder="이름을 입력해주세요"
@@ -45,7 +44,6 @@ export const SalesmanRegister = () => {
           <TableCell>
             <TextField
               size="small"
-              variant="outlined"
               fullWidth
               name="id"
               placeholder="아이디를 입력해주세요"
@@ -58,7 +56,6 @@ export const SalesmanRegister = () => {
           <TableCell>
             <TextField
               size="small"
-              variant="outlined"
               fullWidth
               type="password"
               name="password"
@@ -72,7 +69,6 @@ export const SalesmanRegister = () => {
           <TableCell>
             <TextField
               size="small"
-              variant="outlined"
               fullWidth
               name="email"
               placeholder="이메일을 입력해주세요"
@@ -85,7 +81,6 @@ export const SalesmanRegister = () => {
           <TableCell>
             <TextField
               size="small"
-              variant="outlined"
               fullWidth
               type="number"
               name="phone_no"
@@ -101,10 +96,10 @@ export const SalesmanRegister = () => {
       </RowTable>
 
       <Box mt={3}>
-        <Button variant="contained" mr={2} onClick={() => history.push("/salesman")}>
+        <Button mr={2} onClick={() => history.push("/salesman")}>
           목록
         </Button>
-        <Button variant="contained" color="primary" onClick={handleSubmit(handleRegister)}>
+        <Button color="primary" onClick={handleSubmit(handleRegister)}>
           등록
         </Button>
       </Box>

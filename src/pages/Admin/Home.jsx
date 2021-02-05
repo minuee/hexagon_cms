@@ -155,7 +155,7 @@ export const AdminHome = () => {
             />
           </Box>
 
-          <Button onClick={() => history.push("/user")}>
+          <Button variant="text" onClick={() => history.push("/user")}>
             <Typography>더보기</Typography>
             <KeyboardArrowRight />
           </Button>

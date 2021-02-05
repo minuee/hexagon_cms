@@ -17,9 +17,9 @@ import {
   MenuItem,
   IconButton,
 } from "@material-ui/core";
-import { DescriptionOutlined, Search, EventNote } from "@material-ui/icons";
+import { DescriptionOutlined, Search } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination } from "components";
+import { ColumnTable, Pagination, SearchBox } from "components";
 import { apiObject } from "api";
 
 const useStyles = makeStyles((theme) => ({
@@ -144,7 +144,7 @@ export const ItemList = ({ location }) => {
           상품 목록
         </Typography>
 
-        <Button ml={2} variant="contained" color="primary" onClick={() => history.push("/product/category")}>
+        <Button ml={2} color="primary" onClick={() => history.push("/product/category")}>
           상품 카테고리 관리
         </Button>
       </Box>
@@ -153,7 +153,7 @@ export const ItemList = ({ location }) => {
         <Box>
           <Controller
             as={
-              <Select displayEmpty margin="dense" variant="outlined">
+              <Select displayEmpty margin="dense">
                 <MenuItem value="">카테고리 구분</MenuItem>
                 <MenuItem value="B">브랜드</MenuItem>
                 <MenuItem value="N">제품군</MenuItem>
@@ -168,7 +168,6 @@ export const ItemList = ({ location }) => {
             <Select
               displayEmpty
               margin="dense"
-              variant="outlined"
               value={query.category_pk}
               onChange={(e) => handleQueryChange("category_pk", e.target.value)}
             >
@@ -184,7 +183,6 @@ export const ItemList = ({ location }) => {
             <Select
               displayEmpty
               margin="dense"
-              variant="outlined"
               value={query.category_pk}
               onChange={(e) => handleQueryChange("category_pk", e.target.value)}
             >
@@ -204,10 +202,10 @@ export const ItemList = ({ location }) => {
         </Box>
 
         <Box>
-          <Button variant="contained" onClick={() => history.push("/product/item/add")}>
-            추가
+          <Button color="primary" onClick={() => history.push("/product/item/add")}>
+            등록
           </Button>
-          <Button ml={2} variant="contained" onClick={removeItems}>
+          <Button color="secondary" ml={2} onClick={removeItems}>
             삭제
           </Button>
         </Box>
@@ -224,16 +222,16 @@ export const ItemList = ({ location }) => {
       </Box>
 
       <Grid container className={classes.table_footer}>
-        <Button variant="contained" p={1}>
+        <Button p={1}>
           <DescriptionOutlined />
           엑셀저장
         </Button>
 
         <Pagination page={query.page || 1} setPage={handleQueryChange} count={Math.ceil(itemList?.[0]?.total / 10)} />
 
-        <TextField
+        <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} />
+        {/* <TextField
           name="search_word"
-          variant="outlined"
           value={searchWord}
           onChange={(e) => setSearchWord(e.target.value)}
           onKeyPress={(e) => e.key === "Enter" && handleQueryChange("search_word", searchWord)}
@@ -246,7 +244,7 @@ export const ItemList = ({ location }) => {
               </InputAdornment>
             ),
           }}
-        />
+        /> */}
       </Grid>
     </Box>
   );

@@ -10,7 +10,7 @@ import { DescriptionOutlined, Search, EventNote } from "@material-ui/icons";
 import { DatePicker } from "@material-ui/pickers";
 
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination } from "components";
+import { ColumnTable, Pagination, SearchBox } from "components";
 
 const useStyles = makeStyles((theme) => ({
   datepicker: {
@@ -101,7 +101,7 @@ export const PurchaseList = () => {
             value={listContext?.search_start_dt}
             onChange={(date) => handleContextChange("search_start_dt", date)}
             format="YYYY-MM-DD"
-            inputVariant="outlined"
+            size="small"
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -117,7 +117,7 @@ export const PurchaseList = () => {
             value={listContext?.search_end_dt}
             onChange={(date) => handleContextChange("search_end_dt", date)}
             format="YYYY-MM-DD"
-            inputVariant="outlined"
+            size="small"
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -126,9 +126,7 @@ export const PurchaseList = () => {
               ),
             }}
           />
-          <Button variant="contained" ml={1}>
-            검색
-          </Button>
+          <Button ml={1}>검색</Button>
         </Box>
       </Grid>
 
@@ -141,25 +139,14 @@ export const PurchaseList = () => {
       </Box>
 
       <Grid container className={classes.table_footer}>
-        <Button variant="contained" p={1}>
+        <Button p={1}>
           <DescriptionOutlined />
           엑셀저장
         </Button>
 
         <Pagination page={listContext.page} setPage={handleContextChange} />
 
-        <TextField
-          variant="outlined"
-          value={listContext.search_text}
-          onChange={(e) => handleContextChange("search_text", e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search />
-              </InputAdornment>
-            ),
-          }}
-        />
+        {/* <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} /> */}
       </Grid>
     </Box>
   );

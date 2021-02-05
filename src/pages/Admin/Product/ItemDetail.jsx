@@ -158,7 +158,7 @@ export const ItemDetail = () => {
             <Box className={classes.category_wrapper}>
               <Controller
                 as={
-                  <Select margin="dense" variant="outlined" displayEmpty>
+                  <Select margin="dense" displayEmpty>
                     <MenuItem value="">카테고리선택</MenuItem>
                     <MenuItem value="B">브랜드</MenuItem>
                     <MenuItem value="N">제품군</MenuItem>
@@ -172,7 +172,7 @@ export const ItemDetail = () => {
               {watch("category_type", "") === "B" && (
                 <Controller
                   as={
-                    <Select margin="dense" variant="outlined" displayEmpty>
+                    <Select margin="dense" displayEmpty>
                       <MenuItem value="">브랜드 선택</MenuItem>
                       {categoryList?.categoryBrandList.map((item, index) => (
                         <MenuItem value={item.category_pk} key={index}>
@@ -189,7 +189,7 @@ export const ItemDetail = () => {
               {watch("category_type", "") === "N" && (
                 <Controller
                   as={
-                    <Select margin="dense" variant="outlined" displayEmpty>
+                    <Select margin="dense" displayEmpty>
                       <MenuItem value="">제품군 선택</MenuItem>
                       {categoryList?.categoryNormalList.map((item, index) => (
                         <MenuItem value={item.category_pk} key={index}>
@@ -205,7 +205,7 @@ export const ItemDetail = () => {
               )}
               {/* <Controller
                 as={
-                  <Select margin="dense" variant="outlined" displayEmpty>
+                  <Select margin="dense"  displayEmpty>
                     <MenuItem value="">카테고리 선택</MenuItem>
                     {watch("category_type", "B") === "B" &&
                       categoryList?.categoryBrandList.map((item, index) => (
@@ -232,7 +232,7 @@ export const ItemDetail = () => {
           <TableCell>상품명</TableCell>
           <TableCell>
             <Controller
-              as={<TextField size="small" variant="outlined" />}
+              as={<TextField size="small" />}
               placeholder="상품명"
               name="product_name"
               control={control}
@@ -249,7 +249,7 @@ export const ItemDetail = () => {
               <Typography>개당</Typography>
               <Box>
                 <Controller
-                  as={<TextField variant="outlined" type="number" size="small" />}
+                  as={<TextField type="number" size="small" />}
                   InputProps={{
                     endAdornment: <InputAdornment position="end">원</InputAdornment>,
                   }}
@@ -268,7 +268,7 @@ export const ItemDetail = () => {
               <Typography>박스당</Typography>
               <Box>
                 <Controller
-                  as={<TextField variant="outlined" type="number" size="small" />}
+                  as={<TextField type="number" size="small" />}
                   InputProps={{
                     endAdornment: <InputAdornment position="end">원</InputAdornment>,
                   }}
@@ -278,7 +278,7 @@ export const ItemDetail = () => {
                   defaultValue=""
                 />
                 <Controller
-                  as={<TextField variant="outlined" type="number" size="small" />}
+                  as={<TextField type="number" size="small" />}
                   InputProps={{
                     endAdornment: <InputAdornment position="end">개입</InputAdornment>,
                   }}
@@ -297,7 +297,7 @@ export const ItemDetail = () => {
               <Typography>카톤당</Typography>
               <Box>
                 <Controller
-                  as={<TextField variant="outlined" type="number" size="small" />}
+                  as={<TextField type="number" size="small" />}
                   InputProps={{
                     endAdornment: <InputAdornment position="end">원</InputAdornment>,
                   }}
@@ -307,7 +307,7 @@ export const ItemDetail = () => {
                   defaultValue=""
                 />
                 <Controller
-                  as={<TextField variant="outlined" type="number" size="small" />}
+                  as={<TextField type="number" size="small" />}
                   InputProps={{
                     endAdornment: <InputAdornment position="end">개입</InputAdornment>,
                   }}
@@ -328,7 +328,7 @@ export const ItemDetail = () => {
               <Typography>개당</Typography>
               <Box>
                 <Controller
-                  as={<TextField variant="outlined" type="number" size="small" />}
+                  as={<TextField type="number" size="small" />}
                   InputProps={{
                     endAdornment: <InputAdornment position="end">원</InputAdornment>,
                   }}
@@ -347,7 +347,7 @@ export const ItemDetail = () => {
               <Typography>박스당</Typography>
               <Box>
                 <Controller
-                  as={<TextField variant="outlined" type="number" size="small" />}
+                  as={<TextField type="number" size="small" />}
                   InputProps={{
                     endAdornment: <InputAdornment position="end">원</InputAdornment>,
                   }}
@@ -357,7 +357,7 @@ export const ItemDetail = () => {
                   defaultValue=""
                 />
                 <Controller
-                  as={<TextField variant="outlined" type="number" size="small" />}
+                  as={<TextField type="number" size="small" />}
                   InputProps={{
                     endAdornment: <InputAdornment position="end">개입</InputAdornment>,
                   }}
@@ -376,7 +376,7 @@ export const ItemDetail = () => {
               <Typography>카톤당</Typography>
               <Box>
                 <Controller
-                  as={<TextField variant="outlined" type="number" size="small" />}
+                  as={<TextField type="number" size="small" />}
                   InputProps={{
                     endAdornment: <InputAdornment position="end">원</InputAdornment>,
                   }}
@@ -386,7 +386,7 @@ export const ItemDetail = () => {
                   defaultValue=""
                 />
                 <Controller
-                  as={<TextField variant="outlined" type="number" size="small" />}
+                  as={<TextField type="number" size="small" />}
                   InputProps={{
                     endAdornment: <InputAdornment position="end">개입</InputAdornment>,
                   }}
@@ -405,7 +405,7 @@ export const ItemDetail = () => {
           <TableCell>
             <Controller
               as={
-                <TextField select variant="outlined">
+                <TextField select >
                   <MenuItem value={1}>일반</MenuItem>
                   <MenuItem value={2}>브랜드</MenuItem>
                 </TextField>
@@ -417,7 +417,7 @@ export const ItemDetail = () => {
             <Box display="inline-block" ml={2}>
               <Controller
                 as={
-                  <TextField select variant="outlined">
+                  <TextField select >
                     <MenuItem value={1}>아릭스</MenuItem>
                     <MenuItem value={2}>드라이팍</MenuItem>
                     <MenuItem value={3}>라코로나</MenuItem>
@@ -436,7 +436,7 @@ export const ItemDetail = () => {
           <TableCell>재질</TableCell>
           <TableCell>
             <Controller
-              as={<TextField size="small" variant="outlined" />}
+              as={<TextField size="small" />}
               placeholder="재질명"
               name="material"
               control={control}
@@ -464,7 +464,7 @@ export const ItemDetail = () => {
           <TableCell>영업사원 인센티브</TableCell>
           <TableCell>
             <Controller
-              as={<TextField size="small" variant="outlined" type="number" />}
+              as={<TextField size="small"  type="number" />}
               InputProps={{
                 endAdornment: "%",
               }}
@@ -514,11 +514,11 @@ export const ItemDetail = () => {
 
       <Box mt={4} textAlign="center">
         {product_pk === "add" ? (
-          <Button variant="contained" color="primary" onClick={handleSubmit(registItem)}>
-            게시
+          <Button color="primary" onClick={handleSubmit(registItem)}>
+            등록
           </Button>
         ) : (
-          <Button variant="contained" color="primary" onClick={handleSubmit(updateItem)}>
+          <Button color="primary" onClick={handleSubmit(updateItem)}>
             수정
           </Button>
         )}

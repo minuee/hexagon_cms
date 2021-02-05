@@ -94,14 +94,14 @@ export const CouponList = ({ location }) => {
           {header_button_list.map((item, index) => {
             let is_cur_filter = item.value === (query.filter_item || "ing");
             return (
-              <Button onClick={() => handleQueryChange("filter_item", item.value)} key={index}>
+              <Button variant="text" onClick={() => handleQueryChange("filter_item", item.value)} key={index}>
                 <Typography fontWeight={is_cur_filter ? "700" : undefined}>{item.label}</Typography>
               </Button>
             );
           })}
 
-          <Button variant="contained" ml={3} onClick={() => history.push(`/coupon/add`)}>
-            쿠폰 등록
+          <Button color="primary" ml={3} onClick={() => history.push(`/coupon/add`)}>
+            등록
           </Button>
         </Box>
       </Grid>
@@ -115,7 +115,7 @@ export const CouponList = ({ location }) => {
       </Box>
 
       <Grid container className={classes.table_footer}>
-        {/* <Button variant="contained" p={1}>
+        {/* <Button  p={1}>
           <DescriptionOutlined />
           엑셀저장
         </Button> */}
@@ -126,6 +126,8 @@ export const CouponList = ({ location }) => {
           // count={10}
           count={Math.ceil(+couponList?.[0]?.total / 10)}
         />
+
+        {/* <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} /> */}
 
         {/* <TextField
           name="search_word"

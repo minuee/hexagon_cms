@@ -195,12 +195,7 @@ export const BannerDetail = () => {
                     label={
                       <Controller
                         as={
-                          <Select
-                            margin="dense"
-                            variant="outlined"
-                            displayEmpty
-                            disabled={watch("link_type", "IN") === "OUT"}
-                          >
+                          <Select margin="dense" displayEmpty disabled={watch("link_type", "IN") === "OUT"}>
                             <MenuItem value="">링크 대상을 선택해주세요</MenuItem>
                             {innerLinkList.map((item, index) => (
                               <MenuItem value={item.special_code} key={index}>
@@ -222,7 +217,6 @@ export const BannerDetail = () => {
                     label={
                       <TextField
                         size="small"
-                        variant="outlined"
                         name="outer_link"
                         placeholder="외부링크"
                         inputRef={register({ required: watch("link_type", "IN") === "OUT" })}
@@ -244,7 +238,6 @@ export const BannerDetail = () => {
           <TableCell>
             <TextField
               size="small"
-              variant="outlined"
               fullWidth
               name="title"
               placeholder="제목을 입력해주세요"
@@ -258,7 +251,6 @@ export const BannerDetail = () => {
           <TableCell>
             <TextField
               size="small"
-              variant="outlined"
               fullWidth
               multiline
               rows={10}
@@ -293,15 +285,15 @@ export const BannerDetail = () => {
 
       <Box mt={4} display="flex" justifyContent="center" alignItems="flex-start">
         {banner_pk === "add" ? (
-          <Button variant="contained" color="primary" onClick={handleSubmit(registBanner)}>
+          <Button color="primary" onClick={handleSubmit(registBanner)}>
             등록
           </Button>
         ) : (
           <>
-            <Button mx={2} variant="contained" color="primary" onClick={handleSubmit(updateBanner)}>
+            <Button color="primary" onClick={handleSubmit(updateBanner)}>
               수정
             </Button>
-            <Button mx={2} variant="contained" color="secondary" onClick={handleSubmit(removeBanner)}>
+            <Button mx={2} color="secondary" onClick={handleSubmit(removeBanner)}>
               삭제
             </Button>
           </>

@@ -104,7 +104,7 @@ export const CouponRegister = () => {
           <TableCell>
             <Controller
               as={
-                <Select variant="outlined" displayEmpty error={!!errors?.coupon_type}>
+                <Select displayEmpty error={!!errors?.coupon_type}>
                   <MenuItem value="">쿠폰 종류 선택</MenuItem>
                   <MenuItem value={5000}>5000원권</MenuItem>
                   <MenuItem value={10000}>10000원권</MenuItem>
@@ -127,7 +127,6 @@ export const CouponRegister = () => {
               <TextField
                 name="search_word"
                 placeholder="대상자 검색"
-                variant="outlined"
                 value={userFilter}
                 onChange={(e) => setUserFilter(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && getUserList()}
@@ -142,7 +141,7 @@ export const CouponRegister = () => {
                 }}
               />
               <Box mx={1} display="inline-block" />
-              <Select value="" variant="outlined" displayEmpty>
+              <Select value="" displayEmpty>
                 <MenuItem value="">쿠폰대상 선택</MenuItem>
                 {filteredList.map((item, index) => (
                   <MenuItem value={item.member_pk} key={index} onClick={() => handleAppendTarget(item)}>
@@ -184,7 +183,7 @@ export const CouponRegister = () => {
               </Box>
               <Controller
                 render={({ ref, ...props }) => (
-                  <DatePicker {...props} inputRef={ref} format="YYYY.MM.DD" inputVariant="outlined" size="small" />
+                  <DatePicker {...props} inputRef={ref} format="YYYY.MM.DD" size="small" />
                 )}
                 control={control}
                 name="end_dt"
@@ -199,7 +198,6 @@ export const CouponRegister = () => {
           <TableCell>
             <TextField
               size="small"
-              variant="outlined"
               name="issue_reason"
               placeholder="등록사유 입력"
               defaultValue="관리자에 의한 발급"
@@ -211,7 +209,7 @@ export const CouponRegister = () => {
       </RowTable>
 
       <Box mt={4} textAlign="center">
-        <Button variant="contained" color="primary" onClick={handleSubmit(registCoupon)}>
+        <Button color="primary" onClick={handleSubmit(registCoupon)}>
           등록
         </Button>
       </Box>

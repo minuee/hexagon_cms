@@ -214,25 +214,13 @@ export const UserDetail = () => {
         <TableRow>
           <TableCell>휴대폰번호</TableCell>
           <TableCell>
-            <TextField
-              size="small"
-              variant="outlined"
-              name="phone"
-              placeholder="휴대폰번호"
-              inputRef={register({ required: true })}
-            />
+            <TextField size="small" name="phone" placeholder="휴대폰번호" inputRef={register({ required: true })} />
           </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>이메일</TableCell>
           <TableCell>
-            <TextField
-              size="small"
-              variant="outlined"
-              name="email"
-              placeholder="이메일"
-              inputRef={register({ required: true })}
-            />
+            <TextField size="small" name="email" placeholder="이메일" inputRef={register({ required: true })} />
           </TableCell>
         </TableRow>
         {/* <TableRow>
@@ -306,11 +294,11 @@ export const UserDetail = () => {
         // justifyContent="center"
       >
         {userInfo?.approval_dt ? (
-          <Button variant="contained" color="primary" onClick={handleSubmit(updateUser)}>
+          <Button color="primary" onClick={handleSubmit(updateUser)}>
             정보 수정
           </Button>
         ) : (
-          <Button variant="contained" color="primary" onClick={approveUser}>
+          <Button color="primary" onClick={approveUser}>
             회원가입 승인
           </Button>
         )}

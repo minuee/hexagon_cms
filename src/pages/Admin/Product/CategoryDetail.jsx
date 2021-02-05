@@ -141,7 +141,6 @@ export const CategoryDetail = ({ location }) => {
               as={
                 <Select
                   className={classes.category_input}
-                  variant="outlined"
                   margin="dense"
                   displayEmpty
                   disabled={category_pk !== "add"}
@@ -173,7 +172,6 @@ export const CategoryDetail = ({ location }) => {
                       onChange(e);
                     }}
                     displayEmpty
-                    variant="outlined"
                     error={!!errors?.d1}
                   >
                     <MenuItem value="">-</MenuItem>
@@ -198,7 +196,6 @@ export const CategoryDetail = ({ location }) => {
                       onCategoryChange("d2");
                       onChange(e);
                     }}
-                    variant="outlined"
                     displayEmpty
                     error={!!errors?.d2}
                   >
@@ -217,7 +214,7 @@ export const CategoryDetail = ({ location }) => {
               />
               <Controller
                 as={
-                  <Select className={classes.category_input} variant="outlined" displayEmpty error={!!errors?.d3}>
+                  <Select className={classes.category_input} displayEmpty error={!!errors?.d3}>
                     <MenuItem value="">-</MenuItem>
                     {normalCategoryList?.d3[watch("d2")]?.map((item, index) => (
                       <MenuItem key={index} value={item.code}>
@@ -235,7 +232,7 @@ export const CategoryDetail = ({ location }) => {
           ) : (
             <TableCell>
               <Controller
-                as={<TextField variant="outlined" error={!!errors?.category_name} />}
+                as={<TextField error={!!errors?.category_name} />}
                 placeholder="카테고리명"
                 name="category_name"
                 control={control}
@@ -262,11 +259,11 @@ export const CategoryDetail = ({ location }) => {
 
       <Box mt={4} textAlign="center">
         {category_pk === "add" ? (
-          <Button variant="contained" color="primary" onClick={handleSubmit(registCategory)}>
-            추가
+          <Button color="primary" onClick={handleSubmit(registCategory)}>
+            등록
           </Button>
         ) : (
-          <Button variant="contained" color="primary" onClick={handleSubmit(updateCategory)}>
+          <Button color="primary" onClick={handleSubmit(updateCategory)}>
             수정
           </Button>
         )}

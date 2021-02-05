@@ -20,7 +20,7 @@ import { DescriptionOutlined, Search, EventNote } from "@material-ui/icons";
 import { DatePicker } from "@material-ui/pickers";
 
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination } from "components";
+import { ColumnTable, SearchBox } from "components";
 import { apiObject } from "api";
 
 const useStyles = makeStyles((theme) => ({
@@ -132,7 +132,7 @@ export const CategoryList = ({ location }) => {
           상품 카테고리
         </Typography>
 
-        <Button ml={2} variant="contained" color="primary" onClick={() => history.push("/product/item")}>
+        <Button ml={2} color="primary" onClick={() => history.push("/product/item")}>
           상품 목록 관리
         </Button>
       </Box>
@@ -142,7 +142,6 @@ export const CategoryList = ({ location }) => {
           <Select
             displayEmpty
             name="category_type"
-            variant="outlined"
             margin="dense"
             value={query.category_type || "B"}
             onChange={(e) => handleQueryChange("category_type", e.target.value)}
@@ -158,10 +157,10 @@ export const CategoryList = ({ location }) => {
         </Box>
 
         <Box>
-          <Button variant="contained" onClick={() => history.push("/product/category/add")}>
-            추가
+          <Button color="primary" onClick={() => history.push("/product/category/add")}>
+            등록
           </Button>
-          <Button ml={2} variant="contained" onClick={removeCategories}>
+          <Button color="secondary" ml={2} onClick={removeCategories}>
             삭제
           </Button>
         </Box>
@@ -187,7 +186,7 @@ export const CategoryList = ({ location }) => {
       </Box>
 
       <Grid container className={classes.table_footer}>
-        <Button variant="contained" p={1}>
+        <Button p={1}>
           <DescriptionOutlined />
           엑셀저장
         </Button>
@@ -197,22 +196,7 @@ export const CategoryList = ({ location }) => {
         <Box className={classes.search_section}>
           <Box display="inline-block" mx={1} />
 
-          <TextField
-            name="search_word"
-            variant="outlined"
-            value={searchWord}
-            onChange={(e) => setSearchWord(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleQueryChange("search_word", searchWord)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <IconButton onClick={() => handleQueryChange("search_word", searchWord)}>
-                    <Search />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
+          <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} />
         </Box>
       </Grid>
     </Box>

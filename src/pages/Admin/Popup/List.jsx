@@ -145,19 +145,10 @@ export const PopupList = () => {
         팝업관리
       </Typography>
       <Box display="flex" mt={2}>
-        <Button
-          variant="contained"
-          color={popupType === "notice" ? "primary" : undefined}
-          onClick={() => setPopupType("notice")}
-        >
+        <Button color={popupType === "notice" ? "primary" : undefined} onClick={() => setPopupType("notice")}>
           공지
         </Button>
-        <Button
-          ml={2}
-          variant="contained"
-          color={popupType === "event" ? "primary" : undefined}
-          onClick={() => setPopupType("event")}
-        >
+        <Button ml={2} color={popupType === "event" ? "primary" : undefined} onClick={() => setPopupType("event")}>
           상품 이벤트
         </Button>
       </Box>
@@ -168,10 +159,10 @@ export const PopupList = () => {
             현재
           </Typography>
           <Box>
-            <Button variant="contained" mr={2} onClick={() => history.push(`/popup/${popupType}/cur/add`)}>
+            <Button color="primary" mr={2} onClick={() => history.push(`/popup/${popupType}/cur/add`)}>
               등록
             </Button>
-            <Button variant="contained" onClick={() => handleRemovePopup("cur")}>
+            <Button color="secondary" onClick={() => handleRemovePopup("cur")}>
               삭제
             </Button>
           </Box>
@@ -196,10 +187,10 @@ export const PopupList = () => {
             지난
           </Typography>
           <Box>
-            <Button variant="contained" mr={2} onClick={() => history.push(`/popup/${popupType}/prev/add`)}>
+            <Button color="primary" mr={2} onClick={() => history.push(`/popup/${popupType}/prev/add`)}>
               등록
             </Button>
-            <Button variant="contained" onClick={() => handleRemovePopup("prev")}>
+            <Button color="secondary" onClick={() => handleRemovePopup("prev")}>
               삭제
             </Button>
           </Box>
@@ -219,7 +210,7 @@ export const PopupList = () => {
       </Box>
 
       {/* <Grid container className={classes.table_footer}>
-        <Button variant="contained" p={1}>
+        <Button  p={1}>
           <DescriptionOutlined />
           엑셀저장
         </Button>

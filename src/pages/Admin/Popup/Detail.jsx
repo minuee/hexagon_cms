@@ -156,7 +156,6 @@ export const PopupDetail = () => {
                   className={classes.datetimepicker}
                   format={`YYYY.MM.DD  HH:mm`}
                   minutesStep={10}
-                  inputVariant="outlined"
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
@@ -185,7 +184,6 @@ export const PopupDetail = () => {
                       className={classes.datetimepicker}
                       format={`YYYY.MM.DD  HH:mm`}
                       minutesStep={10}
-                      inputVariant="outlined"
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
@@ -221,7 +219,7 @@ export const PopupDetail = () => {
               <TableCell>
                 <Controller
                   as={
-                    <Select variant="outlined" displayEmpty fullWidth>
+                    <Select displayEmpty fullWidth>
                       <MenuItem value="">이벤트를 선택해주세요</MenuItem>
                       <MenuItem value="1">친구초대이벤트</MenuItem>
                       <MenuItem value="2">겨울맞이세일</MenuItem>
@@ -246,7 +244,7 @@ export const PopupDetail = () => {
                 </Box>
                 <Controller
                   as={
-                    <Select variant="outlined" size="small" displayEmpty disabled={!watch("banner_yn", false)}>
+                    <Select  size="small" displayEmpty disabled={!watch("banner_yn", false)}>
                       <MenuItem value="">순서 선택</MenuItem>
                       <MenuItem value="1">1</MenuItem>
                       <MenuItem value="2">2</MenuItem>
@@ -265,7 +263,7 @@ export const PopupDetail = () => {
                 <Box mt={1}>
                   <TextField
                     disabled={!watch("banner_yn", false)}
-                    variant="outlined"
+                    
                     size="small"
                     name="banner_text"
                     placeholder="배너 설명 문구 작성"
@@ -286,21 +284,21 @@ export const PopupDetail = () => {
       />
 
       <Box mt={4} textAlign="center">
-        <Button mr={2} variant="contained" onClick={() => history.push("/notice")}>
+        <Button mr={2} onClick={() => history.push("/notice")}>
           목록
         </Button>
 
         {popup_no === "add" ? (
-          <Button variant="contained" color="primary" onClick={handleSubmit(handleAddNotice)}>
+          <Button color="primary" onClick={handleSubmit(handleAddNotice)}>
             등록
           </Button>
         ) : (
           <>
-            <Button mr={2} variant="contained" color="primary" onClick={handleRemoveNotice}>
-              삭제
-            </Button>
-            <Button variant="contained" color="primary" onClick={handleSubmit(handleUpdateNotice)}>
+            <Button color="primary" onClick={handleSubmit(handleUpdateNotice)}>
               수정
+            </Button>
+            <Button ml={2} color="secondary" onClick={handleRemoveNotice}>
+              삭제
             </Button>
           </>
         )}
@@ -341,7 +339,6 @@ const EventItemModal = ({ open, onClose }) => {
         <Box mt={2} mb={1}>
           <TextField
             size="small"
-            variant="outlined"
             placeholder="상품검색"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}

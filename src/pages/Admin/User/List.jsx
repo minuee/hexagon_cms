@@ -5,10 +5,10 @@ import { price } from "common";
 import { apiObject } from "api";
 import qs from "query-string";
 
-import { Grid, Box, makeStyles, TextField, InputAdornment, IconButton } from "@material-ui/core";
-import { DescriptionOutlined, Search, ArrowDropDown, ArrowDropUp } from "@material-ui/icons";
+import { Grid, Box, makeStyles } from "@material-ui/core";
+import { DescriptionOutlined, ArrowDropDown, ArrowDropUp } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination } from "components";
+import { ColumnTable, Pagination, SearchBox } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header_buttons: {
@@ -133,7 +133,7 @@ export const UserList = ({ location }) => {
 
         <Box className={classes.header_buttons}>
           {header_button_list.map((item, index) => (
-            <Button onClick={() => handleQueryChange("sort_item", item.value)} key={index}>
+            <Button variant="text" onClick={() => handleQueryChange("sort_item", item.value)} key={index}>
               <Typography fontWeight={query.sort_item === item.value ? "700" : undefined}>{item.label}</Typography>
               {query.sort_item === item.value && (
                 <>{query.sort_type === "DESC" ? <ArrowDropDown /> : <ArrowDropUp />}</>
@@ -141,7 +141,7 @@ export const UserList = ({ location }) => {
             </Button>
           ))}
 
-          <Button variant="contained" color="primary" ml={3} onClick={approveSignIn}>
+          <Button color="primary" ml={3} onClick={approveSignIn}>
             회원가입 승인
           </Button>
         </Box>
@@ -158,29 +158,14 @@ export const UserList = ({ location }) => {
       </Box>
 
       <Grid container className={classes.table_footer}>
-        <Button variant="contained" p={1}>
+        <Button p={1}>
           <DescriptionOutlined />
           엑셀저장
         </Button>
 
         <Pagination page={query.page || 1} setPage={handleQueryChange} count={Math.ceil(+userList?.[0]?.total / 10)} />
 
-        <TextField
-          name="search_word"
-          variant="outlined"
-          value={searchWord}
-          onChange={(e) => setSearchWord(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleQueryChange("search_word", searchWord)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <IconButton onClick={() => handleQueryChange("search_word", searchWord)}>
-                  <Search />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
+        <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} />
       </Grid>
     </Box>
   );

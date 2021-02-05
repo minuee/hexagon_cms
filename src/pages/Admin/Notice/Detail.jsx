@@ -100,7 +100,6 @@ export const NoticeDetail = () => {
                   inputRef={ref}
                   format={`YYYY.MM.DD  HH:mm`}
                   minutesStep={10}
-                  inputVariant="outlined"
                   size="small"
                   InputProps={{
                     endAdornment: (
@@ -124,7 +123,6 @@ export const NoticeDetail = () => {
           <TableCell>
             <TextField
               size="small"
-              variant="outlined"
               fullWidth
               name="title"
               placeholder="공지 제목을 입력해주세요"
@@ -138,7 +136,6 @@ export const NoticeDetail = () => {
           <TableCell>
             <TextField
               size="small"
-              variant="outlined"
               fullWidth
               multiline
               rows={10}
@@ -176,24 +173,24 @@ export const NoticeDetail = () => {
       </RowTable>
 
       <Box mt={4} display="flex" justifyContent="center" alignItems="flex-start">
-        <Button mr={2} variant="contained" onClick={() => history.push("/notice")}>
+        <Button mr={2} onClick={() => history.push("/notice")}>
           목록
         </Button>
 
         {notice_pk === "add" ? (
-          <Button variant="contained" color="primary" onClick={handleSubmit(registerNotice)}>
+          <Button color="primary" onClick={handleSubmit(registerNotice)}>
             등록
           </Button>
         ) : (
           <>
-            <Button variant="contained" color="primary" onClick={removeNotice}>
-              삭제
-            </Button>
-            <Button mx={2} variant="contained" color="primary" onClick={handleSubmit(updateNotice)}>
+            <Button color="primary" onClick={handleSubmit(updateNotice)}>
               수정
             </Button>
+            <Button mx={2} color="secondary" onClick={removeNotice}>
+              삭제
+            </Button>
             {/* <Box display="inline-block">
-              <Button variant="contained" color="secondary" onClick={handleSendNotice}>
+              <Button  color="secondary" onClick={handleSendNotice}>
                 Push 발송
               </Button>
               <p style={{ fontFamily: "Montserrat", fontWeight: "ital,wght@1,300" }}>

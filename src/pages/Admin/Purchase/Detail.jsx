@@ -386,7 +386,7 @@ export const PurchaseDetail = () => {
           <TableCell>
             <Controller
               as={
-                <Select margin="dense" variant="outlined" displayEmpty>
+                <Select margin="dense" displayEmpty>
                   <MenuItem value="">주문상태를 선택해주세요</MenuItem>
                   {shipping_state_list.map((item, index) => {
                     return (
@@ -407,7 +407,7 @@ export const PurchaseDetail = () => {
       </RowTable>
 
       <Box py={2} display="flex" justifyContent="center">
-        <Button px={3} variant="contained" color="primary" onClick={handleSubmit(updatePurchaseDetail)}>
+        <Button px={3} color="primary" onClick={handleSubmit(updatePurchaseDetail)}>
           수정
         </Button>
       </Box>

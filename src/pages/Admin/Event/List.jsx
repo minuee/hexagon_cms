@@ -9,7 +9,7 @@ import qs from "query-string";
 import { Grid, Box, makeStyles, TextField, InputAdornment, IconButton } from "@material-ui/core";
 import { DescriptionOutlined, Search, ArrowDropDown, ArrowDropUp } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination } from "components";
+import { ColumnTable, Pagination, SearchBox } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header_buttons: {
@@ -101,12 +101,12 @@ export const EventList = ({ location }) => {
 
         <Box className={classes.header_buttons}>
           {header_button_list.map((item, index) => (
-            <Button onClick={() => handleQueryChange("filter_item", item.value)} key={index}>
+            <Button variant="text" onClick={() => handleQueryChange("filter_item", item.value)} key={index}>
               <Typography fontWeight={query.filter_item === item.value ? "700" : undefined}>{item.label}</Typography>
             </Button>
           ))}
 
-          <Button variant="contained" ml={3} onClick={() => history.push(`/event/add`)}>
+          <Button color="primary" ml={3} onClick={() => history.push(`/event/add`)}>
             이벤트 등록
           </Button>
         </Box>
@@ -126,29 +126,9 @@ export const EventList = ({ location }) => {
           엑셀저장
         </Button> */}
 
-        <Pagination
-          page={query.page || 1}
-          setPage={handleQueryChange}
-          // count={10}
-          count={Math.ceil(+eventList?.[0]?.total / 10)}
-        />
+        <Pagination page={query.page || 1} setPage={handleQueryChange} count={Math.ceil(+eventList?.[0]?.total / 10)} />
 
-        <TextField
-          name="search_word"
-          variant="outlined"
-          value={searchWord}
-          onChange={(e) => setSearchWord(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleQueryChange("search_word", searchWord)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <IconButton onClick={() => handleQueryChange("search_word", searchWord)}>
-                  <Search />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
+        <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} />
       </Grid>
     </Box>
   );

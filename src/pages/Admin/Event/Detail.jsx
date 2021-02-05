@@ -196,13 +196,7 @@ export const EventDetail = () => {
         <TableRow>
           <TableCell>이벤트 제목</TableCell>
           <TableCell>
-            <TextField
-              inputRef={register({ required: true })}
-              variant="outlined"
-              size="small"
-              name="title"
-              placeholder="제목 입력"
-            />
+            <TextField inputRef={register({ required: true })} size="small" name="title" placeholder="제목 입력" />
           </TableCell>
         </TableRow>
         <TableRow>
@@ -266,7 +260,6 @@ export const EventDetail = () => {
                         inputRef={ref}
                         format={`YYYY.MM.DD   HH:mm`}
                         minutesStep={10}
-                        inputVariant="outlined"
                         InputProps={{
                           endAdornment: (
                             <InputAdornment position="end">
@@ -321,14 +314,13 @@ export const EventDetail = () => {
                         })
                       }
                       placeholder="수량 입력"
-                      variant="outlined"
                       size="small"
                       type="number"
                     />
                   )} */}
                 </Box>
               ))}
-              <Button variant="contained" color="secondary" onClick={() => setIsModalOpen(true)}>
+              <Button size="large" onClick={() => setIsModalOpen(true)}>
                 상품 검색
               </Button>
             </Box>
@@ -339,24 +331,24 @@ export const EventDetail = () => {
       <ProductModal open={isModalOpen} onClose={() => setIsModalOpen(false)} onSelect={handleAppendProduct} />
 
       <Box mt={4} textAlign="center">
-        <Button mr={2} variant="contained" onClick={() => history.push("/event")}>
+        <Button mr={2} onClick={() => history.push("/event")}>
           목록
         </Button>
 
         {event_pk === "add" ? (
-          <Button variant="contained" color="primary" onClick={handleSubmit(registEvent)}>
+          <Button color="primary" onClick={handleSubmit(registEvent)}>
             등록
           </Button>
         ) : (
           <>
-            <Button variant="contained" color="primary" onClick={handleSubmit(modifyEvent)}>
+            <Button color="primary" onClick={handleSubmit(modifyEvent)}>
               수정
             </Button>
-            <Button ml={2} variant="contained" color="primary" onClick={removeEvent}>
+            <Button ml={2} color="primary" onClick={removeEvent}>
               삭제
             </Button>
             {/* {!eventDetail?.terminate_yn && (
-              <Button ml={2} variant="contained" color="secondary" onClick={() => console.log("termination")}>
+              <Button ml={2} color="secondary" onClick={() => console.log("termination")}>
                 마감
               </Button>
             )} */}
@@ -461,7 +453,7 @@ const ProductModal = ({ open, onClose, onSelect }) => {
           <Box>
             <Controller
               as={
-                <Select displayEmpty margin="dense" variant="outlined">
+                <Select displayEmpty margin="dense">
                   <MenuItem value="">카테고리 구분</MenuItem>
                   <MenuItem value="B">브랜드</MenuItem>
                   <MenuItem value="N">제품군</MenuItem>
@@ -476,7 +468,6 @@ const ProductModal = ({ open, onClose, onSelect }) => {
               <Select
                 displayEmpty
                 margin="dense"
-                variant="outlined"
                 value={listContext?.category_pk}
                 onChange={(e) => handleContextChange("category_pk", e.target.value)}
               >
@@ -492,7 +483,6 @@ const ProductModal = ({ open, onClose, onSelect }) => {
               <Select
                 displayEmpty
                 margin="dense"
-                variant="outlined"
                 value={listContext?.category_pk}
                 onChange={(e) => handleContextChange("category_pk", e.target.value)}
               >
@@ -508,7 +498,6 @@ const ProductModal = ({ open, onClose, onSelect }) => {
 
           <TextField
             size="small"
-            variant="outlined"
             placeholder="상품검색"
             value={listContext.search_word}
             onChange={(e) => handleContextChange("search_word", e.target.value)}
@@ -554,7 +543,7 @@ const ProductModal = ({ open, onClose, onSelect }) => {
             setPage={handleContextChange}
             count={Math.ceil(productList?.[0]?.total / 10)}
           />
-          <Button variant="contained" color="primary" onClick={handleOnSelect}>
+          <Button color="primary" onClick={handleOnSelect}>
             선택
           </Button>
         </Box>

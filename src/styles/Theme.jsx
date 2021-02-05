@@ -19,11 +19,32 @@ export const theme = createMuiTheme({
     divider: "#707070",
   },
 
+  props: {
+    MuiButton: {
+      variant: "contained",
+    },
+    MuiTextField: {
+      variant: "outlined",
+    },
+    MuiSelect: {
+      variant: "outlined",
+    },
+  },
+
   overrides: {
     MuiButton: {
       contained: {
         color: "#000",
         backgroundColor: "#fff",
+      },
+      containedSecondary: {
+        borderWidth: 0,
+        color: "#fff",
+        backgroundColor: "#ff5252",
+      },
+      containedSizeLarge: {
+        color: "#fff",
+        backgroundColor: "#333",
       },
     },
   },
