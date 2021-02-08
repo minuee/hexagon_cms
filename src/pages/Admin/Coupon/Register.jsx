@@ -21,39 +21,23 @@ import {
   TableCell,
   Checkbox,
   FormControlLabel,
+  Dialog,
 } from "@material-ui/core";
 import { EventNote, Search, HighlightOff } from "@material-ui/icons";
 import { DatePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
-import { RowTable, ColumnTable, Pagination, Dropzone } from "components";
-
-const useStyles = makeStyles((theme) => ({
-  category_input: {
-    width: theme.spacing(20),
-    marginRight: theme.spacing(2),
-  },
-}));
+import { RowTable, ColumnTable, Pagination, Dropzone, SearchBox } from "components";
 
 export const CouponRegister = () => {
-  const classes = useStyles();
   const history = useHistory();
-  const { coupon_pk } = useParams();
   const { control, register, watch, setValue, reset, handleSubmit, errors } = useForm();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "selected_user",
   });
 
-  const [userFilter, setUserFilter] = useState("");
-  const [userList, setUserList] = useState([]);
-  const [filteredList, setFilteredList] = useState([]);
+  const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
 
-  async function getUserList() {
-    let data = await apiObject.getMemberList({ page: 1, paginate: 1000, search_word: userFilter });
-
-    setUserList(data);
-    setFilteredList(_.differenceBy(data, fields, "member_pk"));
-  }
   async function registCoupon(form) {
     if (!form.selected_user) {
       alert("발행 대상 회원을 선택해주세요");
@@ -67,7 +51,7 @@ export const CouponRegister = () => {
       target_array.push(item.member_pk);
     });
 
-    let resp = await apiObject.registerCoupon({
+    await apiObject.registCoupon({
       ...form,
       price: form.coupon_type,
       end_dt: form.end_dt.unix(),
@@ -77,18 +61,10 @@ export const CouponRegister = () => {
     history.push("/coupon");
   }
 
-  function handleAppendTarget(user) {
-    setFilteredList(_.differenceBy(filteredList, [user], "member_pk"));
-    append(user);
+  function handleAppendTarget(user_array) {
+    let tmp = _.differenceBy(user_array, fields, "member_pk");
+    append(tmp);
   }
-  function handleRemoveTarget(index) {
-    setFilteredList(_.differenceBy(userList, fields.slice(0, index), fields.slice(index + 1), "member_pk"));
-    remove(index);
-  }
-
-  useEffect(() => {
-    getUserList();
-  }, [coupon_pk]);
 
   return (
     <Box>
@@ -124,33 +100,9 @@ export const CouponRegister = () => {
           <TableCell>대상자</TableCell>
           <TableCell>
             <Box display="flex" alignItems="center">
-              <TextField
-                name="search_word"
-                placeholder="대상자 검색"
-                value={userFilter}
-                onChange={(e) => setUserFilter(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && getUserList()}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton onClick={() => getUserList()}>
-                        <Search />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <Box mx={1} display="inline-block" />
-              <Select value="" displayEmpty>
-                <MenuItem value="">쿠폰대상 선택</MenuItem>
-                {filteredList.map((item, index) => (
-                  <MenuItem value={item.member_pk} key={index} onClick={() => handleAppendTarget(item)}>
-                    {item.name}
-                  </MenuItem>
-                ))}
-              </Select>
-              <Box mx={1} display="inline-block" />
-              <Typography display="inline">검색된 대상: {filteredList.length}</Typography>
+              <Button size="large" onClick={() => setIsMemberModalOpen(true)}>
+                대상자 검색
+              </Button>
             </Box>
             <Box mt={2}>
               {fields.map((item, index) => (
@@ -159,7 +111,7 @@ export const CouponRegister = () => {
                   render={({ value }) => (
                     <Box px={2} display="flex" alignItems="center">
                       <Typography display="inline">{value.name}</Typography>
-                      <IconButton onClick={() => handleRemoveTarget(index)}>
+                      <IconButton onClick={() => remove(index)}>
                         <HighlightOff />
                       </IconButton>
                     </Box>
@@ -213,6 +165,94 @@ export const CouponRegister = () => {
           등록
         </Button>
       </Box>
+
+      <MemberModal open={isMemberModalOpen} onClose={() => setIsMemberModalOpen(false)} onSelect={handleAppendTarget} />
     </Box>
+  );
+};
+
+const MemberModal = ({ open, onClose, onSelect }) => {
+  const [selectedMembers, setSelectedMembers] = useState([]);
+  const [memberList, setMemberList] = useState();
+  const [listContext, setListContext] = useState({
+    page: 1,
+    search_word: "",
+  });
+
+  const member_columns = [
+    { title: "이름", field: "name" },
+    { title: "코드값", field: "special_code", width: 100 },
+    { title: "휴대폰번호", field: "phone", width: 160 },
+    {
+      title: "구매액",
+      render: ({ total_amount }) => `${price(total_amount) || 0}원`,
+      cellStyle: { textAlign: "right" },
+    },
+    {
+      title: "리워드액",
+      render: ({ reward_point }) => `${price(reward_point) || 0}원`,
+      cellStyle: { textAlign: "right" },
+    },
+    { title: "등급", field: "grade_name", width: 100 },
+    {
+      title: "비고",
+      render: ({ approval, agent_code }) => (approval ? `영업사원코드:  ${agent_code}` : "회원가입 미승인"),
+    },
+  ];
+
+  async function getMemberList() {
+    let data = await apiObject.getMemberList({
+      ...listContext,
+    });
+    setMemberList(data);
+  }
+
+  function handleOnSelect() {
+    onSelect(selectedMembers);
+    onClose();
+  }
+  function handleOnEnter() {
+    getMemberList();
+    setListContext({
+      page: 1,
+      search_word: "",
+    });
+  }
+  function handleContextChange(name, value) {
+    setListContext({
+      ...listContext,
+      [name]: value,
+    });
+  }
+
+  useEffect(() => {
+    getMemberList();
+  }, [listContext.page, listContext.search_word]);
+
+  return (
+    <Dialog maxWidth="md" fullWidth open={open} onClose={onClose} onBackdropClick={onClose} onEnter={handleOnEnter}>
+      <Box p={3} height="800px" bgcolor="#fff">
+        <Typography variant="h6" fontWeight="700">
+          쿠폰 대상자 검색
+        </Typography>
+
+        <Box my={2}>
+          <SearchBox defaultValue="" placeholder="회원검색" onSearch={handleContextChange} />
+        </Box>
+
+        <ColumnTable columns={member_columns} data={memberList} selection onSelectionChange={setSelectedMembers} />
+
+        <Box py={4} position="relative" display="flex" alignItems="center" justifyContent="flex-end">
+          <Pagination
+            page={listContext.page}
+            setPage={handleContextChange}
+            count={Math.ceil(memberList?.[0]?.total / 10)}
+          />
+          <Button color="primary" onClick={handleOnSelect}>
+            선택
+          </Button>
+        </Box>
+      </Box>
+    </Dialog>
   );
 };

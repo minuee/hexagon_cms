@@ -683,7 +683,7 @@ export const apiObject = {
       console.log({ e });
     }
   },
-  updateCoupon: async ({ coupon_pk, coupon_type, price, end_dt, member_pk, update_reason, is_first }) => {
+  modifyCoupon: async ({ coupon_pk, coupon_type, price, end_dt, member_pk, update_reason, is_first }) => {
     try {
       let response = await axios.put(`/cms/coupon/modify/${coupon_pk}`, {
         coupon_type,

@@ -49,10 +49,13 @@ export const CouponDetail = () => {
     reset({
       ...data,
       end_dt: dayjs.unix(data.end_dt),
+      update_reason: "",
     });
   }
-  async function updateCoupon(form) {
-    let resp = await apiObject.updateCoupon({
+  async function modifyCoupon(form) {
+    if (!window.confirm("입력한 정보로 쿠폰을 수정하시겠습니까?")) return;
+
+    await apiObject.modifyCoupon({
       coupon_pk,
       ...form,
       price: form.coupon_type,
@@ -60,7 +63,7 @@ export const CouponDetail = () => {
       member_pk: couponDetail?.member_pk,
     });
 
-    reset({ update_reason: "" });
+    getCouponDetail();
   }
   async function removeCoupon() {
     if (!window.confirm("해당 쿠폰을 삭제하시겠습니까?")) return;
@@ -145,7 +148,7 @@ export const CouponDetail = () => {
       </RowTable>
 
       <Box mt={4} textAlign="center">
-        <Button color="primary" onClick={handleSubmit(updateCoupon)}>
+        <Button color="primary" onClick={handleSubmit(modifyCoupon)}>
           수정
         </Button>
         <Button ml={2} color="secondary" onClick={removeCoupon}>
