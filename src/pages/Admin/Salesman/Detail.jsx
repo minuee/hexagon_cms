@@ -3,6 +3,7 @@ import { useHistory, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useForm, Controller } from "react-hook-form";
 import { price } from "common";
+import { apiObject } from "api";
 import dayjs from "dayjs";
 
 import {
@@ -16,6 +17,8 @@ import {
   TableRow,
   TableCell,
   Checkbox,
+  RadioGroup,
+  Radio,
   FormControlLabel,
   Tabs,
   Tab,
@@ -53,90 +56,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const salesman_member_columns = [
-  { field: "user_name", title: "유저명" },
-  { field: "user_rank", title: "등급" },
-];
-const monthly_incentive_columns = [
-  { field: "incentive_dt", title: "날짜", render: ({ incentive_dt }) => dayjs.unix(incentive_dt).format("YYYY-MM") },
-  {
-    field: "total_amount",
-    title: "총구매대행액",
-    render: ({ total_amount }) => `${price(total_amount)}원`,
-    cellStyle: { textAlign: "right" },
-  },
-  {
-    field: "incentive_amount",
-    title: "인센티브액",
-    render: ({ incentive_amount }) => `${price(incentive_amount)}원`,
-    cellStyle: { textAlign: "right" },
-  },
-];
-
-const salesman_member_rows = [
-  {
-    user_no: 3,
-    user_name: "김태호",
-    user_rank: "골드",
-  },
-  {
-    user_no: 7,
-    user_name: "박태호",
-    user_rank: "실버",
-  },
-  {
-    user_no: 8,
-    user_name: "이태호",
-    user_rank: "코끼리",
-  },
-];
-const monthly_incentive_rows = [
-  {
-    month_no: 1,
-    incentive_dt: 1882783984,
-    total_amount: 123456000,
-    incentive_amount: 126000,
-  },
-  {
-    month_no: 3,
-    incentive_dt: 1120973984,
-    total_amount: 323456000,
-    incentive_amount: 526000,
-  },
-  {
-    month_no: 6,
-    incentive_dt: 2092883984,
-    total_amount: 223456000,
-    incentive_amount: 426000,
-  },
-];
-
 export const SalesmanDetail = () => {
   const classes = useStyles();
   const { member_pk } = useParams();
-  const history = useHistory();
   const { control, register, reset, handleSubmit } = useForm();
 
-  const [tabStatus, setTabStatus] = useState("member");
   const [salesmanInfo, setUserInfo] = useState();
 
   async function getSalesmanDetail() {
-    reset({
-      name: "전지현",
-      phone: "01055663322",
-      email: "admin@gmail.com",
-      status: "2",
-    });
-    setUserInfo({
-      code_no: "81JK3D",
-      id: "jhlove1030",
-      register_dt: 3333333333,
-    });
-  }
-  async function handleUpdateSalesman(data) {
-    console.log("data", data);
+    let data = await apiObject.getSalesmanDetail({ member_pk });
 
-    getSalesmanDetail();
+    reset({
+      ...data,
+    });
+    setUserInfo(data);
+  }
+  async function modifySalesman(form) {
+    if (!window.confirm("입력한 정보로 영업사원을 수정하시겠습니까?")) return;
+
+    console.log("form", form);
+
+    await apiObject.modifySalesman({ member_pk, ...form });
+
+    // getSalesmanDetail();
   }
 
   useEffect(() => {
@@ -161,20 +103,21 @@ export const SalesmanDetail = () => {
               name="name"
               placeholder="이름을 입력해주세요"
               inputRef={register({ required: true })}
+              disabled={salesmanInfo?.is_retired}
             />
           </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>아이디</TableCell>
-          <TableCell>{salesmanInfo?.id}</TableCell>
+          <TableCell>{salesmanInfo?.user_id}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>코드번호</TableCell>
-          <TableCell>{salesmanInfo?.code_no}</TableCell>
+          <TableCell>{salesmanInfo?.special_code}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>등록일자</TableCell>
-          <TableCell>{dayjs.unix(salesmanInfo?.register_dt).format("YYYY-MM-DD")}</TableCell>
+          <TableCell>{dayjs.unix(salesmanInfo?.reg_dt).format("YYYY-MM-DD")}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>비밀번호</TableCell>
@@ -185,7 +128,8 @@ export const SalesmanDetail = () => {
               fullWidth
               name="password"
               placeholder="변경 시에만 입력해주세요"
-              inputRef={register({ required: true })}
+              inputRef={register}
+              disabled={salesmanInfo?.is_retired}
             />
           </TableCell>
         </TableRow>
@@ -198,6 +142,7 @@ export const SalesmanDetail = () => {
               name="phone"
               placeholder="휴대폰 번호를 입력해주세요"
               inputRef={register({ required: true })}
+              disabled={salesmanInfo?.is_retired}
             />
           </TableCell>
         </TableRow>
@@ -210,71 +155,141 @@ export const SalesmanDetail = () => {
               name="email"
               placeholder="이메일을 입력해주세요"
               inputRef={register({ required: true })}
+              disabled={salesmanInfo?.is_retired}
             />
           </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>상태</TableCell>
           <TableCell>
-            <Controller
-              as={
-                <TextField select size="small">
-                  <MenuItem value={"0"}>이용중</MenuItem>
-                  <MenuItem value={"1"}>일시정지</MenuItem>
-                  <MenuItem value={"2"}>퇴사</MenuItem>
-                </TextField>
-              }
-              control={control}
-              name="status"
-              defaultValue="0"
-            />
+            {salesmanInfo?.is_retired ? (
+              <Typography>퇴사</Typography>
+            ) : (
+              <Controller
+                render={({ onChange, ...props }) => (
+                  <RadioGroup {...props} onChange={(e) => onChange(JSON.parse(e.target.value))} row>
+                    <FormControlLabel value={false} control={<Radio color="primary" />} label="이용중" />
+                    <FormControlLabel value={true} control={<Radio color="primary" />} label="퇴사" />
+                  </RadioGroup>
+                )}
+                name="is_retired"
+                control={control}
+                defaultValue={false}
+                disabled={salesmanInfo?.is_retired}
+              />
+            )}
           </TableCell>
         </TableRow>
-        {/* <TableRow>
-          <TableCell>인센티브율</TableCell>
-          <TableCell>{salesmanInfo?.accumulate_rate} %</TableCell>
-        </TableRow> */}
-        {/* <TableRow>
-          <TableCell>사업자등록증 첨부</TableCell>
-          <TableCell>
-            <Dropzone control={control} name="lisence_img" width="90px" ratio={1} />
-          </TableCell>
-        </TableRow> */}
       </RowTable>
 
-      <Box
-        py={2}
-        display="flex"
-        // justifyContent="center"
-      >
-        <Button color="primary" onClick={handleSubmit(handleUpdateSalesman)}>
-          수정
-        </Button>
+      <Box py={2} display="flex">
+        {!salesmanInfo?.is_retired && (
+          <Button color="primary" onClick={handleSubmit(modifySalesman)}>
+            수정
+          </Button>
+        )}
       </Box>
 
-      <Tabs value={tabStatus} onChange={(e, v) => setTabStatus(v)}>
+      <SalesmanSubTable member_pk={member_pk} special_code={salesmanInfo?.special_code} />
+    </Box>
+  );
+};
+
+const SalesmanSubTable = ({ member_pk, special_code }) => {
+  const history = useHistory();
+
+  const [subTableData, setSubTableData] = useState();
+  const [tableContext, setTableContext] = useState({
+    tab: "member",
+    page: 1,
+  });
+
+  const member_columns = [
+    { field: "user_name", title: "유저명" },
+    { field: "user_rank", title: "등급", width: 240 },
+  ];
+  const incentive_columns = [
+    {
+      field: "incentive_dt",
+      title: "날짜",
+      render: ({ incentive_dt }) => dayjs.unix(incentive_dt).format("YYYY-MM"),
+      width: 160,
+    },
+    {
+      field: "total_amount",
+      title: "총구매대행액",
+      render: ({ total_amount }) => `${price(total_amount)}원`,
+      cellStyle: { textAlign: "right" },
+    },
+    {
+      field: "incentive_amount",
+      title: "인센티브액",
+      render: ({ incentive_amount }) => `${price(incentive_amount)}원`,
+      cellStyle: { textAlign: "right" },
+    },
+  ];
+
+  async function getSubTableData() {
+    let data = [];
+
+    switch (tableContext?.tab) {
+      case "member":
+        if (special_code) {
+          data = await apiObject.getSalsemanClientList({ special_code });
+        }
+        break;
+      case "incentive":
+        if (member_pk) {
+          // data = await getSalesmanIncentiveList({member_pk})
+        }
+        break;
+    }
+
+    setSubTableData(data);
+  }
+
+  function handleTableContextChange(name, value) {
+    let tmp = {
+      ...tableContext,
+      [name]: value,
+    };
+
+    if (name !== "page") {
+      tmp.page = 1;
+    }
+
+    setTableContext(tmp);
+  }
+
+  useEffect(() => {
+    getSubTableData();
+  }, [tableContext, member_pk, special_code]);
+
+  return (
+    <Box>
+      <Tabs value={tableContext.tab} onChange={(e, v) => handleTableContextChange("tab", v)}>
         <Tab value="member" label="회원관리" />
         <Tab value="incentive" label="인센티브월별현황" />
       </Tabs>
 
       <Box my={2}>
-        {tabStatus === "member" ? (
-          <ColumnTable
-            columns={salesman_member_columns}
-            data={salesman_member_rows}
-            onRowClick={(row) => history.push(`/user/${row.user_no}`)}
-          />
-        ) : (
-          <ColumnTable
-            columns={monthly_incentive_columns}
-            data={monthly_incentive_rows}
-            onRowClick={(row) => history.push(`/salesman/incentive/${row.month_no}`)}
-          />
-        )}
+        <ColumnTable
+          columns={tableContext.tab === "member" ? member_columns : incentive_columns}
+          data={subTableData}
+          onRowClick={(row) =>
+            history.push(
+              tableContext.tab === "member" ? `/user/${row.member_pk}` : `/salesman/incentive/${row.month_no}`,
+            )
+          }
+        />
       </Box>
 
       <Box position="relative" py={6}>
-        <Pagination />
+        <Pagination
+          page={tableContext.page}
+          setPage={handleTableContextChange}
+          count={Math.ceil(+subTableData?.[0]?.total / 10)}
+        />
       </Box>
     </Box>
   );

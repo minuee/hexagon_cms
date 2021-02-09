@@ -3,6 +3,7 @@ import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useForm, Controller } from "react-hook-form";
 import { price } from "common";
+import { apiObject } from "api";
 import dayjs from "dayjs";
 
 import { Box, makeStyles, TextField, TableRow, TableCell } from "@material-ui/core";
@@ -12,10 +13,13 @@ import { RowTable } from "components";
 
 export const SalesmanRegister = () => {
   const history = useHistory();
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, errors } = useForm();
 
-  function handleRegister(data) {
-    console.log("register", data);
+  async function registSalesman(form) {
+    if (!window.confirm("입력한 정보로 영업사원을 등록하시겠습니까?")) return;
+
+    await apiObject.registSalesman({ ...form });
+    history.push("/salesman");
   }
 
   return (
@@ -36,6 +40,7 @@ export const SalesmanRegister = () => {
               name="name"
               placeholder="이름을 입력해주세요"
               inputRef={register({ required: true })}
+              error={!!errors?.name}
             />
           </TableCell>
         </TableRow>
@@ -45,9 +50,10 @@ export const SalesmanRegister = () => {
             <TextField
               size="small"
               fullWidth
-              name="id"
+              name="user_id"
               placeholder="아이디를 입력해주세요"
               inputRef={register({ required: true })}
+              error={!!errors?.user_id}
             />
           </TableCell>
         </TableRow>
@@ -61,6 +67,7 @@ export const SalesmanRegister = () => {
               name="password"
               placeholder="비밀번호를 입력해주세요"
               inputRef={register({ required: true })}
+              error={!!errors?.password}
             />
           </TableCell>
         </TableRow>
@@ -73,6 +80,7 @@ export const SalesmanRegister = () => {
               name="email"
               placeholder="이메일을 입력해주세요"
               inputRef={register({ required: true })}
+              error={!!errors?.email}
             />
           </TableCell>
         </TableRow>
@@ -83,9 +91,10 @@ export const SalesmanRegister = () => {
               size="small"
               fullWidth
               type="number"
-              name="phone_no"
+              name="phone"
               placeholder="전화번호를 입력해주세요"
               inputRef={register({ required: true })}
+              error={!!errors?.phone}
             />
           </TableCell>
         </TableRow>
@@ -99,7 +108,7 @@ export const SalesmanRegister = () => {
         <Button mr={2} onClick={() => history.push("/salesman")}>
           목록
         </Button>
-        <Button color="primary" onClick={handleSubmit(handleRegister)}>
+        <Button color="primary" onClick={handleSubmit(registSalesman)}>
           등록
         </Button>
       </Box>

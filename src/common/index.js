@@ -27,7 +27,7 @@ export function decrypt(str) {
 }
 
 export function price(num) {
-  if (!Number.isInteger(num)) {
+  if (!Number.isInteger(+num)) {
     return null;
   }
 

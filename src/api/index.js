@@ -762,4 +762,94 @@ export const apiObject = {
       console.log({ e });
     }
   },
+
+  // Salesman
+  getSalesmanList: async ({ page = 1, paginate = 10, search_word, term_start, term_end, sort_item, sort_type }) => {
+    try {
+      let data = await axios.get("/cms/salesman/list", {
+        params: {
+          page,
+          paginate,
+          search_word,
+          term_start,
+          term_end,
+          sort_item,
+          sort_type,
+        },
+      });
+      let ret = data.data.data.salesmanList;
+
+      ret.forEach((item) => {
+        item.email = decrypt(item.email);
+        item.phone = decrypt(item.phone);
+      });
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return [];
+    }
+  },
+  getSalesmanDetail: async ({ member_pk }) => {
+    try {
+      let data = await axios.get(`/cms/salesman/view/${member_pk}`);
+      let ret = data.data.data.userDetail;
+
+      ret.email = decrypt(ret.email);
+      ret.phone = decrypt(ret.phone);
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return {};
+    }
+  },
+  getSalsemanClientList: async ({ special_code }) => {
+    try {
+      let data = await axios.get(`/cms/salesman/charge/list/${special_code}`);
+      let ret = data.data.data.salesmanList;
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return [];
+    }
+  },
+  getSalesmanIncentiveList: async ({ member_pk }) => {
+    try {
+      let data = await axios.get(`/cms/salesman/incentive/list/${member_pk}`);
+      console.log(data);
+    } catch (e) {
+      console.log({ e });
+      return [];
+    }
+  },
+  modifySalesman: async ({ member_pk, name, email, password, phone, is_retired }) => {
+    try {
+      let response = await axios.put(`/cms/salesman/modify/${member_pk}`, {
+        name,
+        email: encrypt(email),
+        phone: encrypt(phone),
+        is_retired,
+        password: !!password ? password : undefined,
+      });
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+  registSalesman: async ({ name, user_id, password, email, phone }) => {
+    try {
+      let response = await axios.post("/cms/salesman/regist", {
+        name,
+        user_id,
+        password,
+        email: encrypt(email),
+        phone: encrypt(phone),
+      });
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
 };
