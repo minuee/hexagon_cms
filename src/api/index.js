@@ -561,16 +561,65 @@ export const apiObject = {
       });
       let ret = data.data.data.bannerList;
 
+      ret.forEach((item) => {
+        if (item.link_type === "INLINK") {
+          switch (item.inlink_type) {
+            case "PRODUCT":
+              item.link_type_text = "상품";
+              break;
+            case "CATEGORY":
+              item.link_type_text = "카테고리";
+              break;
+            case "EVENT":
+              item.link_type_text = "이벤트";
+              break;
+          }
+        } else {
+          item.link_type_text = "외부링크";
+        }
+      });
+
       return ret;
     } catch (e) {
       console.log({ e });
       return [];
     }
   },
-  getBannerDetail: async ({ banner_pk }) => {
+  getBannerDetail: async ({ banner_pk, link_type, inlink_type }) => {
     try {
-      let data = await axios.get(`/cms/banner/view/${banner_pk}`);
+      let data = await axios.get(`/cms/banner/view/${banner_pk}`, {
+        params: {
+          link_type,
+          inlink_type,
+        },
+      });
       let ret = data.data.data.bannerDetail;
+
+      if (ret.link_type === "INLINK") {
+        switch (ret.inlink_type) {
+          case "PRODUCT":
+            ret.target = {
+              target_pk: ret.target_pk,
+              name: ret.productdetail.PRODUCT_NAME,
+            };
+            break;
+          case "CATEGORY":
+            ret.target = {
+              target_pk: ret.target_pk,
+              name: ret.categorydetail.CATEGORY_NAME,
+            };
+            break;
+          case "EVENT":
+            ret.target = {
+              target_pk: ret.target_pk,
+              name: ret.title,
+            };
+            break;
+
+          default:
+            break;
+        }
+      }
 
       return ret;
     } catch (e) {
@@ -578,10 +627,13 @@ export const apiObject = {
       return {};
     }
   },
-  registBanner: async ({ banner_type, img_url, title, content }) => {
+  registBanner: async ({ link_type, inlink_type, target_pk, target_url, img_url, title, content }) => {
     try {
       let response = await axios.post("/cms/banner/regist", {
-        banner_type,
+        link_type,
+        inlink_type,
+        target_pk,
+        target_url,
         img_url,
         title,
         content,
@@ -591,10 +643,13 @@ export const apiObject = {
       console.log({ e });
     }
   },
-  updateBanner: async ({ banner_pk, banner_type, img_url, title, content }) => {
+  modifyBanner: async ({ banner_pk, link_type, inlink_type, target_pk, target_url, img_url, title, content }) => {
     try {
       let response = await axios.put(`/cms/banner/modify/${banner_pk}`, {
-        banner_type,
+        link_type,
+        inlink_type,
+        target_pk,
+        target_url,
         img_url,
         title,
         content,

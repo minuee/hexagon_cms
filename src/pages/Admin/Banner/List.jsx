@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 
 const banner_list_columns = [
   { title: "번호", field: "banner_pk", width: 80 },
-  { title: "타입", field: "banner_type", width: 120 },
+  { title: "타입", field: "link_type_text", width: 120 },
   {
     title: "제목",
     render: ({ title }) => (title?.length > 20 ? title?.substring(0, 20) : title),
@@ -73,6 +73,10 @@ export const BannerList = ({ location }) => {
     }
   }
   function handleQueryChange(q, v) {
+    if (q != "page") {
+      query.page = 1;
+    }
+
     query[q] = v;
     history.push("/banner?" + qs.stringify(query));
   }
@@ -97,7 +101,15 @@ export const BannerList = ({ location }) => {
         <ColumnTable
           columns={banner_list_columns}
           data={bannerList}
-          onRowClick={(row) => history.push(`/banner/${row.banner_pk}`)}
+          onRowClick={(row) =>
+            history.push({
+              pathname: `/banner/${row.banner_pk}`,
+              state: {
+                link_type: row.link_type,
+                inlink_type: row.inlink_type,
+              },
+            })
+          }
         />
       </Box>
 

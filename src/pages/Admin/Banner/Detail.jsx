@@ -3,7 +3,7 @@ import { useHistory, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
 import { apiObject } from "api";
-import { price } from "common";
+import { price, getFullImgURL } from "common";
 import dayjs from "dayjs";
 
 import {
@@ -21,77 +21,38 @@ import {
   FormControlLabel,
   RadioGroup,
   Radio,
+  Dialog,
 } from "@material-ui/core";
 import { EventNote } from "@material-ui/icons";
 import { DateTimePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
-import { RowTable, Dropzone } from "components";
+import { ColumnTable, RowTable, Pagination, SearchBox, Dropzone } from "components";
 
-const inner_link_sample = {
-  NOTICE: [
-    {
-      no: 1,
-      special_code: 1,
-      label: "설 연휴 미끄러짐 주의 공지",
-    },
-    {
-      no: 2,
-      special_code: 2,
-      label: "2021 코로나 한파 주의보",
-    },
-  ],
-  PRODUCT: [
-    {
-      no: 1,
-      special_code: 3,
-      label: "겨울맞이 신상품 출시!",
-    },
-    {
-      no: 2,
-      special_code: 4,
-      label: "올 해에는 집안에서 따뜻한 설을 즐겨보세요",
-    },
-    {
-      no: 3,
-      special_code: 5,
-      label: "이탈리아 코로나 특별 상품관",
-    },
-  ],
-  CATEGORY: [
-    {
-      no: 1,
-      special_code: 6,
-      label: "이탈리아 코로나 특별 상품관",
-    },
-  ],
-  EVENT: [
-    {
-      no: 1,
-      special_code: 7,
-      label: "겨울맞이 신상품 출시!",
-    },
-    {
-      no: 2,
-      special_code: 8,
-      label: "2021년에도 친구들 많이 데려오소",
-    },
-    {
-      no: 3,
-      special_code: 9,
-      label: "이탈리아 코로나 특별 상품관",
-    },
-  ],
-};
+const useStyles = makeStyles((theme) => ({
+  logo_box: {
+    display: "inline-block",
+    width: "60px",
+    height: "60px",
 
-export const BannerDetail = () => {
+    "& img": {
+      objectFit: "contain",
+    },
+  },
+}));
+
+export const BannerDetail = ({ location }) => {
   const { banner_pk } = useParams();
   const history = useHistory();
   const { control, register, reset, setValue, watch, handleSubmit, errors } = useForm();
 
-  const [innerLinkList, setInnerLinkList] = useState([]);
+  const [isInlinkModalOpen, setIsInlinkModalOpen] = useState(false);
 
   async function getBannerDetail() {
-    let data = await apiObject.getBannerDetail({ banner_pk });
+    let data = await apiObject.getBannerDetail({
+      banner_pk,
+      link_type: location.state?.link_type,
+      inlink_type: location.state?.inlink_type,
+    });
 
     reset({
       ...data,
@@ -99,9 +60,10 @@ export const BannerDetail = () => {
     });
     setValue("banner_img", [{ file: null, path: data.img_url }]);
   }
+
   async function registBanner(form) {
     if (!form.banner_img) {
-      alert("배너이미지를 등록해주세요");
+      alert("배너이미지를 선택해주세요");
       return;
     }
     if (!window.confirm("입력한 내용으로 배너를 등록하시겠습니까?")) {
@@ -115,12 +77,15 @@ export const BannerDetail = () => {
 
     await apiObject.registBanner({
       ...form,
+      target_pk: form.target.target_pk,
       img_url: paths?.[0],
     });
+
+    history.push("/banner");
   }
-  async function updateBanner(form) {
+  async function modifyBanner(form) {
     if (!form.banner_img) {
-      alert("배너이미지를 등록해주세요");
+      alert("배너이미지를 선택해주세요");
       return;
     }
     if (!window.confirm("입력한 내용으로 배너를 수정하시겠습니까?")) {
@@ -132,14 +97,17 @@ export const BannerDetail = () => {
       page: "etc",
     });
 
-    await apiObject.updateBanner({
+    await apiObject.modifyBanner({
       banner_pk,
       ...form,
+      target_pk: form.target.target_pk,
       img_url: paths?.[0],
     });
+
+    getBannerDetail();
   }
   async function removeBanner() {
-    if (!window.confirm("배너를 삭제하시겠습니까?")) return;
+    if (!window.confirm("현재 배너를 삭제하시겠습니까?")) return;
 
     await apiObject.removeBanner({ banner_pk });
     history.push("/banner");
@@ -149,12 +117,7 @@ export const BannerDetail = () => {
     if (banner_pk !== "add") {
       getBannerDetail();
     }
-  }, [banner_pk]);
-
-  useEffect(() => {
-    setInnerLinkList(inner_link_sample[watch("banner_type", "NOTICE")]);
-    setValue("inner_link", "");
-  }, [watch("banner_type", "NOTICE")]);
+  }, [banner_pk, location.state?.link_type, location.state?.inlink_type]);
 
   return (
     <Box>
@@ -166,73 +129,81 @@ export const BannerDetail = () => {
 
       <RowTable>
         <TableRow>
-          <TableCell>배너타입</TableCell>
+          <TableCell>링크타입</TableCell>
           <TableCell>
             <Controller
               as={
                 <RadioGroup row>
-                  <FormControlLabel value="NOTICE" control={<Radio color="primary" />} label="공지사항" />
-                  <FormControlLabel value="PRODUCT" control={<Radio color="primary" />} label="상품" />
-                  <FormControlLabel value="CATEGORY" control={<Radio color="primary" />} label="카테고리" />
-                  <FormControlLabel value="EVENT" control={<Radio color="primary" />} label="이벤트" />
-                </RadioGroup>
-              }
-              name="banner_type"
-              control={control}
-              defaultValue="NOTICE"
-            />
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>링크대상선택</TableCell>
-          <TableCell>
-            <Controller
-              as={
-                <RadioGroup row>
-                  <FormControlLabel
-                    value="IN"
-                    control={<Radio color="primary" />}
-                    label={
-                      <Controller
-                        as={
-                          <Select margin="dense" displayEmpty disabled={watch("link_type", "IN") === "OUT"}>
-                            <MenuItem value="">링크 대상을 선택해주세요</MenuItem>
-                            {innerLinkList.map((item, index) => (
-                              <MenuItem value={item.special_code} key={index}>
-                                {item.label}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        }
-                        control={control}
-                        name="inner_link"
-                        defaultValue=""
-                        rules={{ required: watch("link_type", "IN") === "IN" }}
-                      />
-                    }
-                  />
-                  <FormControlLabel
-                    value="OUT"
-                    control={<Radio color="primary" />}
-                    label={
-                      <TextField
-                        size="small"
-                        name="outer_link"
-                        placeholder="외부링크"
-                        inputRef={register({ required: watch("link_type", "IN") === "OUT" })}
-                        error={!!errors?.outer_link}
-                        disabled={watch("link_type", "IN") === "IN"}
-                      />
-                    }
-                  />
+                  <FormControlLabel value="INLINK" control={<Radio color="primary" />} label="앱내이동" />
+                  <FormControlLabel value="OUTLINK" control={<Radio color="primary" />} label="브라우저호출" />
                 </RadioGroup>
               }
               name="link_type"
               control={control}
-              defaultValue="IN"
+              defaultValue="INLINK"
             />
           </TableCell>
         </TableRow>
+        {watch("link_type") === "INLINK" && (
+          <>
+            <TableRow>
+              <TableCell>배너타입</TableCell>
+              <TableCell>
+                <Controller
+                  render={({ onChange, ...props }) => (
+                    <RadioGroup
+                      {...props}
+                      onChange={(e) => {
+                        onChange(e);
+                        setValue("target", null);
+                      }}
+                      row
+                    >
+                      <FormControlLabel value="PRODUCT" control={<Radio color="primary" />} label="상품" />
+                      <FormControlLabel value="CATEGORY" control={<Radio color="primary" />} label="카테고리" />
+                      <FormControlLabel value="EVENT" control={<Radio color="primary" />} label="이벤트" />
+                    </RadioGroup>
+                  )}
+                  name="inlink_type"
+                  control={control}
+                  defaultValue="PRODUCT"
+                />
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>링크대상선택</TableCell>
+              <TableCell>
+                <Controller
+                  render={({ value }) => <Typography>{value ? value.name : "링크 대상을 선택해주세요"}</Typography>}
+                  control={control}
+                  name="target"
+                  defaultValue={null}
+                  rules={{ required: watch("link_type") === "INLINK" }}
+                  error={!!errors?.target}
+                />
+                <Button mt={2} size="large" onClick={() => setIsInlinkModalOpen(true)}>
+                  링크대상선택
+                </Button>
+              </TableCell>
+            </TableRow>
+          </>
+        )}
+        {watch("link_type") === "OUTLINK" && (
+          <TableRow>
+            <TableCell>외부브라우저 링크</TableCell>
+            <TableCell>
+              <TextField
+                size="small"
+                fullWidth
+                name="target_url"
+                placeholder="링크의 전체 URL을 입력해주세요"
+                inputRef={register({ required: watch("link_type") === "OUTLINK" })}
+                error={!!errors?.target_url}
+              />
+            </TableCell>
+          </TableRow>
+        )}
+
         <TableRow>
           <TableCell>제목</TableCell>
           <TableCell>
@@ -273,7 +244,7 @@ export const BannerDetail = () => {
           <TableCell>
             <Controller
               render={({ value }) => (
-                <Typography>{value || "자동으로 최상단에 들어갑니다 앱에서 수정부탁드립니다."}</Typography>
+                <Typography>{value || "자동으로 가장 낮은 순위가 배정됩니다. 앱에서 수정부탁드립니다."}</Typography>
               )}
               control={control}
               name="display_seq"
@@ -290,7 +261,7 @@ export const BannerDetail = () => {
           </Button>
         ) : (
           <>
-            <Button color="primary" onClick={handleSubmit(updateBanner)}>
+            <Button color="primary" onClick={handleSubmit(modifyBanner)}>
               수정
             </Button>
             <Button mx={2} color="secondary" onClick={handleSubmit(removeBanner)}>
@@ -299,6 +270,282 @@ export const BannerDetail = () => {
           </>
         )}
       </Box>
+
+      <InlinkModal
+        open={isInlinkModalOpen}
+        onClose={() => setIsInlinkModalOpen(false)}
+        onSelect={(target) => setValue("target", target)}
+        inlinkType={watch("inlink_type", "PRODUCT")}
+      />
     </Box>
+  );
+};
+
+const InlinkModal = ({ open, onClose, onSelect, inlinkType }) => {
+  const classes = useStyles();
+  const { control, watch, setValue } = useForm();
+
+  const [categoryList, setCategoryList] = useState();
+  const [inlinkColumn, setInlinkColumn] = useState([]);
+  const [inlinkList, setInlinkList] = useState();
+  const [listContext, setListContext] = useState({
+    page: 1,
+    search_word: "",
+    category_type: "B",
+    category_pk: "",
+    filter_item: "",
+  });
+
+  const product_columns = [
+    {
+      title: "상품 이미지",
+      render: ({ thumb_img }) => (
+        <Avatar variant="square" src={getFullImgURL(thumb_img)} className={classes.logo_box} />
+      ),
+      width: 180,
+    },
+    { title: "카테고리구분", render: ({ category_yn }) => (category_yn ? "브랜드" : "제품군"), width: 120 },
+    { title: "카테고리명", field: "category_name" },
+    { title: "상품명", field: "product_name", cellStyle: { textAlign: "left" } },
+    {
+      title: "가격",
+      render: ({ each_price, box_price, carton_price }) => (
+        <>
+          {each_price !== 0 && <p>{`낱개(${price(each_price)})`}</p>}
+          {box_price !== 0 && <p>{`박스(${price(box_price)})`}</p>}
+          {carton_price !== 0 && <p>{`카톤(${price(carton_price)})`}</p>}
+        </>
+      ),
+    },
+  ];
+  const category_columns = [
+    {
+      title: "로고",
+      render: ({ category_logo }) => (
+        <Avatar variant="square" src={getFullImgURL(category_logo)} className={classes.logo_box} />
+      ),
+      width: 180,
+    },
+    { title: "카테고리구분", render: ({ category_type }) => (category_type === "B" ? "브랜드" : "제품군"), width: 120 },
+    {
+      title: "카테고리명",
+      render: (props) =>
+        props.category_type === "N"
+          ? `${props.depth1name} > ${props.depth2name} > ${props.depth3name}`
+          : props.category_name,
+    },
+  ];
+  const event_columns = [
+    { title: "번호", field: "event_pk", width: 80 },
+    { title: "종류", field: "event_gubun_text", width: 160 },
+    { title: "제목", field: "title", cellStyle: { textAlign: "left" } },
+    {
+      title: "등록일",
+      render: ({ reg_dt }) => dayjs.unix(reg_dt).format("YYYY-MM-DD"),
+      width: 120,
+    },
+    {
+      title: "시작일",
+      render: ({ start_dt }) => dayjs.unix(start_dt).format("YYYY-MM-DD"),
+      width: 120,
+    },
+    { title: "종료여부", render: ({ termination_yn }) => (termination_yn ? "Y" : "N"), width: 100 },
+  ];
+
+  async function getInlinkList() {
+    let data;
+
+    switch (inlinkType) {
+      case "PRODUCT":
+        setInlinkColumn(product_columns);
+        data = await apiObject.getItemList({ ...listContext });
+        break;
+      case "CATEGORY":
+        setInlinkColumn(category_columns);
+        let tmp = await apiObject.getCategoryList({ ...listContext });
+
+        if (listContext.category_type === "B") {
+          data = tmp.categoryBrandList;
+        } else {
+          data = tmp.categoryNormalList;
+        }
+        break;
+      case "EVENT":
+        setInlinkColumn(event_columns);
+        data = await apiObject.getEventList({ ...listContext });
+        break;
+
+      default:
+        setInlinkColumn([]);
+        break;
+    }
+
+    setInlinkList(data);
+  }
+
+  async function handleOnEnter() {
+    if (inlinkType === "PRODUCT") {
+      let data = await apiObject.getCategoryList({});
+      setCategoryList(data);
+    }
+  }
+  function handleOnSelect(target) {
+    switch (inlinkType) {
+      case "PRODUCT":
+        target.name = target.product_name;
+        target.target_pk = target.product_pk;
+        break;
+      case "CATEGORY":
+        if (listContext.category_type === "B") {
+          target.name = target.category_name;
+        } else {
+          target.name = `${target.depth1name} > ${target.depth2name} > ${target.depth3name}`;
+        }
+        target.target_pk = target.category_pk;
+        break;
+      case "EVENT":
+        target.name = target.title;
+        target.target_pk = target.event_pk;
+        break;
+    }
+
+    onSelect(target);
+    onClose();
+    setListContext({
+      page: 1,
+      search_word: "",
+      category_type: "B",
+      category_pk: "",
+      filter_item: "",
+    });
+  }
+  function handleContextChange(name, value) {
+    let tmp = {
+      ...listContext,
+      [name]: value,
+    };
+
+    if (name != "page") {
+      tmp.page = 1;
+    }
+
+    setListContext(tmp);
+  }
+
+  useEffect(() => {
+    if (open) {
+      getInlinkList();
+    }
+  }, [inlinkType, listContext, open]);
+  useEffect(() => {
+    setValue("category_pk", "");
+    handleContextChange("category_pk", "");
+  }, [watch("category_type", "")]);
+
+  return (
+    <Dialog maxWidth="md" fullWidth open={open} onClose={onClose} onBackdropClick={onClose} onEnter={handleOnEnter}>
+      <Box p={3} height="800px" bgcolor="#fff">
+        <Typography variant="h6" fontWeight="700">
+          링크 {inlinkType === "PRODUCT" ? "상품" : inlinkType === "CATEGORY" ? "카테고리" : "이벤트"} 선택
+        </Typography>
+
+        <Box my={2} display="flex" justifyContent="space-between" alignItems="center">
+          {inlinkType === "PRODUCT" && (
+            <Box>
+              <Box mr={1} display="inline-block">
+                <Controller
+                  as={
+                    <Select displayEmpty margin="dense">
+                      <MenuItem value="">카테고리 구분</MenuItem>
+                      <MenuItem value="B">브랜드</MenuItem>
+                      <MenuItem value="N">제품군</MenuItem>
+                    </Select>
+                  }
+                  control={control}
+                  name="category_type"
+                  defaultValue=""
+                />
+              </Box>
+
+              {watch("category_type", "") === "B" && (
+                <Select
+                  displayEmpty
+                  margin="dense"
+                  value={listContext.category_pk}
+                  onChange={(e) => handleContextChange("category_pk", e.target.value)}
+                >
+                  <MenuItem value="">카테고리 분류</MenuItem>
+                  {categoryList?.categoryBrandList.map((item, index) => (
+                    <MenuItem value={item.category_pk} key={index}>
+                      {item.category_name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
+              {watch("category_type", "") === "N" && (
+                <Select
+                  displayEmpty
+                  margin="dense"
+                  value={listContext.category_pk}
+                  onChange={(e) => handleContextChange("category_pk", e.target.value)}
+                >
+                  <MenuItem value="">카테고리 분류</MenuItem>
+                  {categoryList?.categoryNormalList.map((item, index) => (
+                    <MenuItem value={item.category_pk} key={index}>
+                      {`${item.depth1name}  >  ${item.depth2name}  >  ${item.depth3name}`}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
+
+              <Box ml={1} display="inline-block">
+                <Typography>등록 상품 수: {inlinkList?.[0]?.total}</Typography>
+              </Box>
+            </Box>
+          )}
+          {inlinkType === "CATEGORY" && (
+            <Select
+              name="category_type"
+              margin="dense"
+              value={listContext.category_type}
+              onChange={(e) => handleContextChange("category_type", e.target.value)}
+            >
+              <MenuItem value={"B"}>브랜드</MenuItem>
+              <MenuItem value={"N"}>제품군</MenuItem>
+            </Select>
+          )}
+          {inlinkType === "EVENT" && (
+            <Select
+              margin="dense"
+              displayEmpty
+              value={listContext.filter_item}
+              onChange={(e) => handleContextChange("filter_item", e.target.value)}
+            >
+              <MenuItem value="">전체</MenuItem>
+              <MenuItem value="N">진행중</MenuItem>
+              <MenuItem value="Y">마감</MenuItem>
+            </Select>
+          )}
+
+          <SearchBox
+            defaultValue=""
+            placeholder={`${
+              inlinkType === "PRODUCT" ? "상품" : inlinkType === "CATEGORY" ? "카테고리" : "이벤트"
+            } 검색`}
+            onSearch={handleContextChange}
+          />
+        </Box>
+
+        <ColumnTable columns={inlinkColumn} data={inlinkList} onRowClick={(row) => handleOnSelect(row)} />
+
+        <Box py={4} position="relative" display="flex" alignItems="center" justifyContent="flex-end">
+          <Pagination
+            page={listContext.page}
+            setPage={handleContextChange}
+            count={Math.ceil(inlinkList?.[0]?.total / 10) || 1}
+          />
+        </Box>
+      </Box>
+    </Dialog>
   );
 };
