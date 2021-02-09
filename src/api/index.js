@@ -393,7 +393,7 @@ export const apiObject = {
       console.log({ e });
     }
   },
-  updateItem: async ({ form, product_pk }) => {
+  modifyItem: async ({ form, product_pk }) => {
     try {
       let response = await axios.put(`/cms/product/modify/${product_pk}`, {
         ...form,

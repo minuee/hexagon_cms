@@ -40,14 +40,14 @@ const useStyles = makeStyles((theme) => ({
 
     "& > :first-child": {
       display: "inline-block",
-      width: theme.spacing(10),
+      marginRight: theme.spacing(2),
     },
     "& > :nth-child(2)": {
       display: "inline-flex",
       flexDirection: "column",
 
       "& > *": {
-        width: theme.spacing(30),
+        width: theme.spacing(20),
       },
       "& > :nth-child(2)": {
         marginTop: theme.spacing(1),
@@ -104,10 +104,10 @@ export const ItemDetail = () => {
       form[`detail_img${i + 1}`] = paths[i];
     }
 
-    console.log(form);
-    //  await apiObject.registItem(form);
+    // console.log(form);
+    await apiObject.registItem(form);
   }
-  async function updateItem(form) {
+  async function modifyItem(form) {
     if (!form.thumb_img) {
       alert("대표이미지를 추가해주세요");
       return;
@@ -128,8 +128,8 @@ export const ItemDetail = () => {
       form[`detail_img${i + 1}`] = paths[i];
     }
 
-    console.log(form);
-    // await apiObject.updateItem({ form, product_pk });
+    // console.log(form);
+    await apiObject.modifyItem({ form, product_pk });
   }
 
   useEffect(() => {
@@ -232,7 +232,7 @@ export const ItemDetail = () => {
           <TableCell>상품명</TableCell>
           <TableCell>
             <Controller
-              as={<TextField size="small" />}
+              as={<TextField size="small" fullWidth />}
               placeholder="상품명"
               name="product_name"
               control={control}
@@ -246,14 +246,14 @@ export const ItemDetail = () => {
           <TableCell rowSpan={3}>가격</TableCell>
           <TableCell>
             <Box className={classes.price_cell}>
-              <Typography>개당</Typography>
+              <Typography>낱개당</Typography>
               <Box>
                 <Controller
                   as={<TextField type="number" size="small" />}
                   InputProps={{
                     endAdornment: <InputAdornment position="end">원</InputAdornment>,
                   }}
-                  placeholder="숫자만 입력"
+                  placeholder="가격 입력"
                   name="each_price"
                   control={control}
                   defaultValue=""
@@ -272,7 +272,7 @@ export const ItemDetail = () => {
                   InputProps={{
                     endAdornment: <InputAdornment position="end">원</InputAdornment>,
                   }}
-                  placeholder="숫자만 입력"
+                  placeholder="가격 입력"
                   name="box_price"
                   control={control}
                   defaultValue=""
@@ -282,7 +282,7 @@ export const ItemDetail = () => {
                   InputProps={{
                     endAdornment: <InputAdornment position="end">개입</InputAdornment>,
                   }}
-                  placeholder="숫자만 입력"
+                  placeholder="수량 입력"
                   name="box_unit"
                   control={control}
                   defaultValue=""
@@ -301,7 +301,7 @@ export const ItemDetail = () => {
                   InputProps={{
                     endAdornment: <InputAdornment position="end">원</InputAdornment>,
                   }}
-                  placeholder="숫자만 입력"
+                  placeholder="가격 입력"
                   name="carton_price"
                   control={control}
                   defaultValue=""
@@ -311,7 +311,7 @@ export const ItemDetail = () => {
                   InputProps={{
                     endAdornment: <InputAdornment position="end">개입</InputAdornment>,
                   }}
-                  placeholder="숫자만 입력"
+                  placeholder="수량 입력"
                   name="carton_unit"
                   control={control}
                   defaultValue=""
@@ -322,79 +322,130 @@ export const ItemDetail = () => {
         </TableRow>
 
         <TableRow>
-          <TableCell rowSpan={3}>이벤트가</TableCell>
+          <TableCell rowSpan={3}>이벤트가격</TableCell>
           <TableCell>
-            <Box className={classes.price_cell}>
-              <Typography>개당</Typography>
-              <Box>
-                <Controller
-                  as={<TextField type="number" size="small" />}
-                  InputProps={{
-                    endAdornment: <InputAdornment position="end">원</InputAdornment>,
-                  }}
-                  placeholder="숫자만 입력"
-                  name="event_each_price"
-                  control={control}
-                  defaultValue=""
-                />
+            <Box display="flex">
+              <Box className={classes.price_cell}>
+                <Typography>낱개당</Typography>
+                <Box>
+                  <Controller
+                    as={<TextField type="number" size="small" />}
+                    InputProps={{
+                      endAdornment: <InputAdornment position="end">원</InputAdornment>,
+                    }}
+                    placeholder="가격 입력"
+                    name="event_each_price"
+                    control={control}
+                    defaultValue=""
+                  />
+                </Box>
+              </Box>
+              <Box ml={4} className={classes.price_cell}>
+                <Typography>이벤트 수량</Typography>
+                <Box>
+                  <Controller
+                    as={<TextField type="number" size="small" />}
+                    InputProps={{
+                      endAdornment: <InputAdornment position="end">개</InputAdornment>,
+                    }}
+                    placeholder="수량 입력"
+                    name="event_each_stock"
+                    control={control}
+                    defaultValue=""
+                  />
+                </Box>
               </Box>
             </Box>
           </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>
-            <Box className={classes.price_cell}>
-              <Typography>박스당</Typography>
-              <Box>
-                <Controller
-                  as={<TextField type="number" size="small" />}
-                  InputProps={{
-                    endAdornment: <InputAdornment position="end">원</InputAdornment>,
-                  }}
-                  placeholder="숫자만 입력"
-                  name="event_box_price"
-                  control={control}
-                  defaultValue=""
-                />
-                <Controller
-                  as={<TextField type="number" size="small" />}
-                  InputProps={{
-                    endAdornment: <InputAdornment position="end">개입</InputAdornment>,
-                  }}
-                  placeholder="숫자만 입력"
-                  name="event_box_unit"
-                  control={control}
-                  defaultValue=""
-                />
+            <Box display="flex">
+              <Box className={classes.price_cell}>
+                <Typography>박스당</Typography>
+                <Box>
+                  <Controller
+                    as={<TextField type="number" size="small" />}
+                    InputProps={{
+                      endAdornment: <InputAdornment position="end">원</InputAdornment>,
+                    }}
+                    placeholder="가격 입력"
+                    name="event_box_price"
+                    control={control}
+                    defaultValue=""
+                  />
+                  <Controller
+                    as={<TextField type="number" size="small" />}
+                    InputProps={{
+                      endAdornment: <InputAdornment position="end">개입</InputAdornment>,
+                    }}
+                    placeholder="수량 입력"
+                    name="event_box_unit"
+                    control={control}
+                    defaultValue=""
+                  />
+                </Box>
+              </Box>
+              <Box ml={4} className={classes.price_cell}>
+                <Typography>이벤트 수량</Typography>
+                <Box>
+                  <Controller
+                    as={<TextField type="number" size="small" />}
+                    InputProps={{
+                      endAdornment: <InputAdornment position="end">박스</InputAdornment>,
+                    }}
+                    placeholder="수량 입력"
+                    name="event_box_stock"
+                    control={control}
+                    defaultValue=""
+                  />
+                </Box>
               </Box>
             </Box>
           </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>
-            <Box className={classes.price_cell}>
-              <Typography>카톤당</Typography>
-              <Box>
-                <Controller
-                  as={<TextField type="number" size="small" />}
-                  InputProps={{
-                    endAdornment: <InputAdornment position="end">원</InputAdornment>,
-                  }}
-                  placeholder="숫자만 입력"
-                  name="event_carton_price"
-                  control={control}
-                  defaultValue=""
-                />
-                <Controller
-                  as={<TextField type="number" size="small" />}
-                  InputProps={{
-                    endAdornment: <InputAdornment position="end">개입</InputAdornment>,
-                  }}
-                  placeholder="숫자만 입력"
-                  name="event_carton_unit"
-                  control={control}
-                  defaultValue=""
-                />
+            <Box display="flex">
+              <Box className={classes.price_cell}>
+                <Typography>카톤당</Typography>
+                <Box>
+                  <Controller
+                    as={<TextField type="number" size="small" />}
+                    InputProps={{
+                      endAdornment: <InputAdornment position="end">원</InputAdornment>,
+                    }}
+                    placeholder="가격 입력"
+                    name="event_carton_price"
+                    control={control}
+                    defaultValue=""
+                  />
+                  <Controller
+                    as={<TextField type="number" size="small" />}
+                    InputProps={{
+                      endAdornment: <InputAdornment position="end">개입</InputAdornment>,
+                    }}
+                    placeholder="수량 입력"
+                    name="event_carton_unit"
+                    control={control}
+                    defaultValue=""
+                  />
+                </Box>
+              </Box>
+              <Box ml={4} className={classes.price_cell}>
+                <Typography>이벤트 수량</Typography>
+                <Box>
+                  <Controller
+                    as={<TextField type="number" size="small" />}
+                    InputProps={{
+                      endAdornment: <InputAdornment position="end">카톤</InputAdornment>,
+                    }}
+                    placeholder="수량 입력"
+                    name="event_carton_stock"
+                    control={control}
+                    defaultValue=""
+                  />
+                </Box>
               </Box>
             </Box>
           </TableCell>
@@ -468,7 +519,7 @@ export const ItemDetail = () => {
               InputProps={{
                 endAdornment: "%",
               }}
-              placeholder="숫자만 입력"
+              placeholder="가격 입력"
               name="salesman_incentive"
               control={control}
               rules={{ required: true }}
@@ -518,7 +569,7 @@ export const ItemDetail = () => {
             등록
           </Button>
         ) : (
-          <Button color="primary" onClick={handleSubmit(updateItem)}>
+          <Button color="primary" onClick={handleSubmit(modifyItem)}>
             수정
           </Button>
         )}
