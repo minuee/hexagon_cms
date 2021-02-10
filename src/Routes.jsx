@@ -12,7 +12,7 @@ import { SalesmanList, SalesmanDetail, SalesmanRegister, SalesmanIncentive } fro
 import { PurchaseList, PurchaseDetail } from "./pages/Admin/Purchase";
 import { CategoryList, CategoryDetail, ItemList, ItemDetail } from "./pages/Admin/Product";
 import { EventList, EventDetail } from "./pages/Admin/Event";
-import { PopupList, PopupDetail } from "./pages/Admin/Popup";
+import { PopupList, PopupRegister, PopupDetail } from "./pages/Admin/Popup";
 import { NoticeList, NoticeDetail } from "./pages/Admin/Notice";
 import { CouponList, CouponRegister, CouponDetail } from "./pages/Admin/Coupon";
 import { BannerList, BannerDetail } from "./pages/Admin/Banner";
@@ -81,7 +81,8 @@ const AdminRoutes = () => {
         <Route path="/event/:event_pk" component={EventDetail} />
         <Route path="/event" component={EventList} />
 
-        <Route exact path="/popup/:popup_type_1/:popup_type_2/:popup_no" component={PopupDetail} />
+        <Route exact path="/popup/add" component={PopupRegister} />
+        <Route exact path="/popup/:popup_gubun/:popup_pk" component={PopupDetail} />
         <Route path="/popup" component={PopupList} />
 
         <Route exact path="/notice/:notice_pk" component={NoticeDetail} />

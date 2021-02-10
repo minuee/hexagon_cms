@@ -57,40 +57,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const PopupDetail = () => {
+export const PopupRegister = () => {
   const history = useHistory();
   const classes = useStyles();
-  const { popup_gubun, popup_pk } = useParams();
   const { control, register, reset, watch, setValue, handleSubmit, errors } = useForm();
 
-  const [isUsePopup, setIsUsePopup] = useState(true);
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
 
-  async function getPopupDetail() {
-    let data;
-    switch (popup_gubun) {
-      case "Notice":
-        data = await apiObject.getNoticePopupDetail({ popup_pk });
-        break;
-      case "Event":
-        data = await apiObject.getEventPopupDetail({ popup_pk });
-        break;
-    }
-
-    reset({
-      ...data,
-      start_dt: dayjs.unix(data?.start_dt),
-      end_dt: dayjs.unix(data?.end_dt),
-      popup_img: [],
-    });
-    setValue("popup_img", [{ file: null, path: data?.img_url }]);
-    setValue("selected_event", {
-      title: data.event_title,
-      event_pk: data.event_pk,
-    });
-    setIsUsePopup(data.use_yn);
-  }
-  async function modifyPopup(form) {
+  async function registPopup(form) {
     if (!form.popup_img) {
       alert("팝업 이미지를 선택해주세요");
       return;
@@ -99,7 +73,7 @@ export const PopupDetail = () => {
       alert("적용 이벤트를 선택해주세요");
       return;
     }
-    if (!window.confirm("입력한 정보로 팝업을 수정하시겠습니까?")) {
+    if (!window.confirm("입력한 정보로 팝업을 등록하시겠습니까?")) {
       return;
     }
 
@@ -111,54 +85,20 @@ export const PopupDetail = () => {
 
     switch (form.popup_gubun) {
       case "Notice":
-        await apiObject.modifyNoticePopup({ popup_pk, ...form });
+        await apiObject.registNoticePopup({ ...form });
         break;
       case "Event":
-        await apiObject.modifyEventPopup({ popup_pk, ...form });
-        break;
-    }
-
-    getPopupDetail();
-  }
-  async function haltPopup() {
-    if (!window.confirm("해당 팝업을 게시 중지시키시겠습니까?")) return;
-
-    let restart_dt = dayjs().unix();
-    switch (popup_gubun) {
-      case "Notice":
-        await apiObject.haltNoticePopup({ popup_pk, restart_dt });
-        break;
-      case "Event":
-        await apiObject.haltEventPopup({ popup_pk, restart_dt });
-        break;
-    }
-
-    getPopupDetail();
-  }
-  async function removePopup() {
-    if (!window.confirm("해당 팝업을 삭제하시겠습니까?")) return;
-
-    switch (popup_gubun) {
-      case "Notice":
-        await apiObject.removeNoticePopup({ popup_pk });
-        break;
-      case "Event":
-        await apiObject.removeEventPopup({ popup_pk });
+        await apiObject.registEventPopup({ ...form });
         break;
     }
     history.push("/popup");
   }
 
-  useEffect(() => {
-    getPopupDetail();
-  }, [popup_gubun, popup_pk]);
-
   return (
     <Box>
       <Box mb={1}>
         <Typography variant="h5" fontWeight="500">
-          {`${popup_gubun === "Notice" ? "공지" : "이벤트"} `}
-          팝업 관리
+          팝업 등록
         </Typography>
       </Box>
 
@@ -167,12 +107,6 @@ export const PopupDetail = () => {
           <TableCell>팝업 구분</TableCell>
           <TableCell>
             <Controller
-              render={({ value }) => <Typography>{value === "Notice" ? "공지팝업" : "이벤트팝업"}</Typography>}
-              name="popup_gubun"
-              control={control}
-              defaultValue="Notice"
-            />
-            {/* <Controller
               as={
                 <RadioGroup row>
                   <FormControlLabel value="Notice" control={<Radio color="primary" />} label="공지팝업" />
@@ -182,22 +116,18 @@ export const PopupDetail = () => {
               name="popup_gubun"
               control={control}
               defaultValue="Notice"
-            /> */}
+            />
           </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>팝업 종류</TableCell>
           <TableCell>
             <Controller
-              render={(props) =>
-                isUsePopup ? (
-                  <RadioGroup row {...props}>
-                    <FormControlLabel value="Layer" control={<Radio color="primary" />} label="레이어 팝업창" />
-                    <FormControlLabel value="FullScreen" control={<Radio color="primary" />} label="전면 팝업창" />
-                  </RadioGroup>
-                ) : (
-                  <Typography>{props.value === "Layer" ? "레이어 팝업창" : "전면 팝업창"}</Typography>
-                )
+              as={
+                <RadioGroup row>
+                  <FormControlLabel value="Layer" control={<Radio color="primary" />} label="레이어 팝업창" />
+                  <FormControlLabel value="FullScreen" control={<Radio color="primary" />} label="전면 팝업창" />
+                </RadioGroup>
               }
               name="popup_type"
               control={control}
@@ -216,12 +146,11 @@ export const PopupDetail = () => {
               placeholder="제목 입력"
               inputRef={register({ required: true })}
               error={!!errors.title}
-              disabled={!isUsePopup}
             />
           </TableCell>
         </TableRow>
         <TableRow>
-          <TableCell>{isUsePopup ? "오픈시간설정" : "게시기간"}</TableCell>
+          <TableCell>오픈시간설정</TableCell>
           <TableCell>
             <Controller
               render={({ ref, ...props }) => (
@@ -240,7 +169,6 @@ export const PopupDetail = () => {
                   }}
                   size="small"
                   error={!!errors.start_dt}
-                  disabled={!isUsePopup}
                 />
               )}
               control={control}
@@ -248,64 +176,31 @@ export const PopupDetail = () => {
               defaultValue={null}
               rules={{ required: true }}
             />
-
-            {!isUsePopup && (
-              <>
-                <Box mx={3} display="inline-flex" alignItems="center" height="40px">
-                  ~
-                </Box>
-                <Controller
-                  render={({ ref, ...props }) => (
-                    <DateTimePicker
-                      {...props}
-                      inputRef={ref}
-                      className={classes.datetimepicker}
-                      format={`YYYY.MM.DD  HH:mm`}
-                      minutesStep={10}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <EventNote />
-                          </InputAdornment>
-                        ),
-                      }}
-                      size="small"
-                      error={!!errors.end_dt}
-                      disabled={!isUsePopup}
-                    />
-                  )}
-                  control={control}
-                  name={"end_dt"}
-                  defaultValue={null}
-                />
-              </>
-            )}
           </TableCell>
         </TableRow>
 
         <TableRow>
           <TableCell>이미지</TableCell>
           <TableCell>
-            <Dropzone control={control} name="popup_img" width="250px" ratio={1.8} readOnly={!isUsePopup} />
+            <Dropzone control={control} name="popup_img" width="250px" ratio={1.8} />
           </TableCell>
         </TableRow>
+
         {watch("popup_gubun", "Event") === "Event" && (
           <TableRow>
             <TableCell>적용 이벤트 선택</TableCell>
             <TableCell>
               <Controller
-                render={({ value }) => <Typography>{value?.title || "이벤트를 선택해주세요"}</Typography>}
+                as={({ value }) => <Typography>{value?.title || "이벤트를 선택해주세요"}</Typography>}
                 name="selected_event"
                 control={control}
                 defaultValue={null}
                 rules={{ required: watch("popup_gubun", "Event") === "Event" }}
               />
 
-              {isUsePopup && (
-                <Button mt={2} size="large" onClick={() => setIsEventModalOpen(true)}>
-                  이벤트 선택
-                </Button>
-              )}
+              <Button mt={2} size="large" onClick={() => setIsEventModalOpen(true)}>
+                이벤트 선택
+              </Button>
             </TableCell>
           </TableRow>
         )}
@@ -318,21 +213,12 @@ export const PopupDetail = () => {
       />
 
       <Box mt={4} textAlign="center">
-        <Button mr={2} onClick={() => history.push("/popup")}>
+        <Button mr={2} onClick={() => history.push("/notice")}>
           목록
         </Button>
-        {isUsePopup && (
-          <>
-            <Button mr={2} color="primary" onClick={handleSubmit(modifyPopup)}>
-              수정
-            </Button>
-            <Button mr={2} style={{ background: "#333", color: "#fff" }} onClick={handleSubmit(haltPopup)}>
-              중지
-            </Button>
-          </>
-        )}
-        <Button color="secondary" onClick={removePopup}>
-          삭제
+
+        <Button color="primary" onClick={handleSubmit(registPopup)}>
+          등록
         </Button>
       </Box>
     </Box>

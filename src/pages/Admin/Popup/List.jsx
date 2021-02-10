@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { apiObject } from "api";
+import { price, getFullImgURL } from "common";
 import dayjs from "dayjs";
+import qs from "query-string";
 
 import { Grid, Box, makeStyles, TextField, InputAdornment, Avatar } from "@material-ui/core";
 import { DescriptionOutlined, Search } from "@material-ui/icons";
@@ -14,7 +17,26 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     alignItems: "center",
 
-    marginBottom: theme.spacing(1),
+    "& > *": {
+      display: "inline-flex",
+      alignItems: "center",
+    },
+
+    "& > :first-child > *": {
+      marginRight: theme.spacing(2),
+    },
+    "& > :last-child > *": {
+      marginLeft: theme.spacing(2),
+    },
+  },
+
+  header_buttons: {
+    display: "inline-flex",
+    alignItems: "center",
+
+    "& > *": {
+      marginleft: theme.spacing(1),
+    },
   },
 
   table_image: {
@@ -28,207 +50,191 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const popup_list_rows_1 = [
+const type_buttons = [
   {
-    cur_popup_no: 1,
-    cur_popup_img: "/image/popup_sample_1.png",
-    popup_type_text: "전면 팝업창",
-    popup_start_dt: 1622001453,
+    label: "공지",
+    value: "notice",
   },
   {
-    cur_popup_no: 2,
-    cur_popup_img: "/image/popup_sample_2.png",
-    popup_type_text: "전면 팝업창",
-    popup_start_dt: 1622001453,
-  },
-  {
-    cur_popup_no: 3,
-    cur_popup_img: "/image/popup_sample_3.png",
-    popup_type_text: "전면 팝업창",
-    popup_start_dt: 1622001453,
+    label: "이벤트",
+    value: "event",
   },
 ];
-const popup_list_rows_2 = [
+const filter_buttons = [
   {
-    prev_popup_no: 1,
-    prev_popup_img: "/image/popup_sample_1.png",
-    popup_type_text: "전면 팝업창",
-    popup_start_dt: 1622001453,
-    popup_end_dt: 1622001453,
+    label: "진행중",
+    value: "now",
   },
   {
-    prev_popup_no: 2,
-    prev_popup_img: "/image/popup_sample_2.png",
-    popup_type_text: "후면 팝업창",
-    popup_start_dt: 1622001453,
-    popup_end_dt: 1622001453,
-  },
-  {
-    prev_popup_no: 3,
-    prev_popup_img: "/image/popup_sample_3.png",
-    popup_type_text: "레이어 팝업창",
-    popup_start_dt: 1622001453,
-    popup_end_dt: 1622001453,
+    label: "마감",
+    value: "stop",
   },
 ];
 
-export const PopupList = () => {
+export const PopupList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
+  const query = qs.parse(location.search);
 
-  const [curPopupList, setCurPopupList] = useState();
-  const [selectedCurPopup, setSelectedCurPopup] = useState([]);
-  const [prevPopupList, setPrevPopupList] = useState();
-  const [selectedPrevPopup, setSelectedPrevPopup] = useState([]);
+  const [popupList, setPopupList] = useState();
+  const [selectedPopup, setSelectedPopup] = useState([]);
 
-  const [popupType, setPopupType] = useState("notice");
-
-  const [listContext, setListContext] = useState({
-    cur_popup_page: 1,
-    prev_popup_page: 1,
-  });
-
-  const popup_list_columns_1 = [
+  const cur_popup_columns = [
     {
       title: "이미지",
-      render: ({ cur_popup_img }) => <Avatar variant="square" src={cur_popup_img} className={classes.table_image} />,
+      render: ({ img_url }) => <Avatar variant="square" src={getFullImgURL(img_url)} className={classes.table_image} />,
       width: 180,
     },
-    { title: "팝업 종류", field: "popup_type_text" },
+    {
+      title: "종류",
+      render: ({ popup_type }) => (popup_type === "Layer" ? "레이어" : "전체화면"),
+      width: 120,
+    },
+    { title: "제목", field: "title", cellStyle: { textAlign: "left" } },
     {
       title: "시작 시간",
-      render: ({ popup_start_dt }) => `${dayjs.unix(popup_start_dt).format("YYYY-MM-DD hh:mm")}부터 적용`,
+      render: ({ start_dt }) => `${dayjs.unix(start_dt).format("YYYY-MM-DD hh:mm")}부터 적용`,
+      width: 240,
     },
   ];
-  const popup_list_columns_2 = [
+  const prev_popup_columns = [
     {
       title: "이미지",
-      render: ({ prev_popup_img }) => <Avatar variant="square" src={prev_popup_img} className={classes.table_image} />,
+      render: ({ img_url }) => <Avatar variant="square" src={getFullImgURL(img_url)} className={classes.table_image} />,
       width: 180,
     },
-    { title: "팝업 종류", field: "popup_type_text" },
+    {
+      title: "종류",
+      render: ({ popup_type }) => (popup_type === "Layer" ? "레이어" : "전체화면"),
+      width: 120,
+    },
+    { title: "제목", field: "title", cellStyle: { textAlign: "left" } },
     {
       title: "게시 시간",
-      render: ({ popup_start_dt, popup_end_dt }) =>
-        `${dayjs.unix(popup_start_dt).format("YYYY-MM-DD hh:mm")}부터 
-      ${dayjs.unix(popup_end_dt).format("YYYY-MM-DD hh:mm")}까지 적용
-      `,
+      render: ({ start_dt, end_dt }) =>
+        `${dayjs.unix(start_dt).format("YYYY-MM-DD hh:mm")} ~
+      ${dayjs.unix(end_dt).format("YYYY-MM-DD hh:mm")}`,
+      width: 400,
     },
   ];
 
-  function handleRemovePopup(type) {
-    if (type === "cur") {
-      console.log("cur", selectedCurPopup);
-    } else if (type === "prev") {
-      console.log("prev", selectedPrevPopup);
+  async function getPopupList() {
+    let data;
+
+    if (query.type === "event") {
+      if (query.filter === "stop") {
+        data = await apiObject.getPrevEventPopupList({ ...query });
+      } else {
+        data = await apiObject.getCurEventPopupList({ ...query });
+      }
+    } else {
+      if (query.filter === "stop") {
+        data = await apiObject.getPrevNoticePopupList({ ...query });
+      } else {
+        data = await apiObject.getCurNoticePopupList({ ...query });
+      }
     }
+
+    setPopupList(data);
   }
-  function handleContextChange(name, value) {
-    setListContext({
-      ...listContext,
-      [name]: value,
+  async function removePopups() {
+    if (!window.confirm("선택한 팝업들을 삭제하시겠습니까?")) return;
+
+    let popup_array = [];
+    selectedPopup.forEach((item) => {
+      popup_array.push({ popup_pk: item.popup_pk });
     });
+
+    switch (query.type || "notice") {
+      case "notice":
+        await apiObject.removeNoticePopupMultiple({ popup_array });
+        break;
+      case "event":
+        await apiObject.removeEventPopupMultiple({ popup_array });
+        break;
+    }
+
+    handleQueryChange("page", 1);
+    getPopupList();
+  }
+
+  function handleQueryChange(q, v) {
+    query[q] = v;
+    if (q !== "page") {
+      query.page = 1;
+    }
+    if (q === "type") {
+      query.filter = "now";
+    }
+
+    history.push("/popup?" + qs.stringify(query));
   }
 
   useEffect(() => {
-    console.log("listContext", listContext);
-  }, [listContext]);
-
-  useEffect(() => {
-    setCurPopupList(popup_list_rows_1);
-    setPrevPopupList(popup_list_rows_2);
-  }, []);
+    getPopupList();
+  }, [query.type, query.filter, query.page]);
 
   return (
     <Box>
-      <Typography variant="h5" fontWeight="500">
-        팝업관리
-      </Typography>
-      <Box display="flex" mt={2}>
-        <Button color={popupType === "notice" ? "primary" : undefined} onClick={() => setPopupType("notice")}>
-          공지
-        </Button>
-        <Button ml={2} color={popupType === "event" ? "primary" : undefined} onClick={() => setPopupType("event")}>
-          상품 이벤트
-        </Button>
-      </Box>
-
-      <Box mt={4}>
-        <Box className={classes.table_header}>
-          <Typography variant="h6" fontWeight="500">
-            현재
+      <Box className={classes.table_header}>
+        <Box>
+          <Typography variant="h5" fontWeight="500" display="inline">
+            팝업 목록
           </Typography>
+
+          <Box display="inline-flex">
+            {type_buttons.map((item, index) => {
+              let is_cur_type = item.value === (query.type || "notice");
+              return (
+                <Button
+                  key={index}
+                  mr={1}
+                  color={is_cur_type ? "primary" : undefined}
+                  onClick={() => handleQueryChange("type", item.value)}
+                >
+                  {item.label}
+                </Button>
+              );
+            })}
+          </Box>
+        </Box>
+
+        <Box>
+          <Box display="inline-flex">
+            {filter_buttons.map((item, index) => {
+              let is_cur_filter = item.value === (query.filter || "now");
+              return (
+                <Button variant="text" onClick={() => handleQueryChange("filter", item.value)} key={index}>
+                  <Typography fontWeight={is_cur_filter ? "700" : undefined}>{item.label}</Typography>
+                </Button>
+              );
+            })}
+          </Box>
+
           <Box>
-            <Button color="primary" mr={2} onClick={() => history.push(`/popup/${popupType}/cur/add`)}>
+            <Button color="primary" onClick={() => history.push(`/popup/add`)}>
               등록
             </Button>
-            <Button color="secondary" onClick={() => handleRemovePopup("cur")}>
+            <Button ml={1} color="secondary" onClick={removePopups}>
               삭제
             </Button>
           </Box>
         </Box>
-
-        <ColumnTable
-          columns={popup_list_columns_1}
-          data={curPopupList}
-          onRowClick={(row) => history.push(`/popup/${popupType}/cur/${row.cur_popup_no}`)}
-          selection
-          onSelectionChange={setSelectedCurPopup}
-        />
-
-        <Box position="relative" mt={6}>
-          <Pagination page={listContext.page} setPage={handleContextChange} name="cur_popup_page" />
-        </Box>
       </Box>
 
-      <Box mt={16} mb={12}>
-        <Box className={classes.table_header}>
-          <Typography variant="h6" fontWeight="500">
-            지난
-          </Typography>
-          <Box>
-            <Button color="primary" mr={2} onClick={() => history.push(`/popup/${popupType}/prev/add`)}>
-              등록
-            </Button>
-            <Button color="secondary" onClick={() => handleRemovePopup("prev")}>
-              삭제
-            </Button>
-          </Box>
-        </Box>
-
+      <Box my={2}>
         <ColumnTable
-          columns={popup_list_columns_2}
-          data={prevPopupList}
-          onRowClick={(row) => history.push(`/popup/${popupType}/prev/${row.prev_popup_no}`)}
+          columns={query.filter === "stop" ? prev_popup_columns : cur_popup_columns}
+          data={popupList}
+          onRowClick={(row) => history.push(`/popup/${row.popup_gubun}/${row.popup_pk}`)}
           selection
-          onSelectionChange={setSelectedPrevPopup}
+          onSelectionChange={setSelectedPopup}
         />
-
-        <Box position="relative" mt={6}>
-          <Pagination page={listContext.page} setPage={handleContextChange} name="prev_popup_page" />
-        </Box>
       </Box>
 
-      {/* <Grid container className={classes.table_footer}>
-        <Button  p={1}>
-          <DescriptionOutlined />
-          엑셀저장
-        </Button>
-
-        <TextField
-          name="search_text"
-          variant="outlined"
-          value={listContext.search_text}
-          onChange={(e) => handleContextChange("search_text", e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search />
-              </InputAdornment>
-            ),
-          }}
-        />
-      </Grid> */}
+      <Box position="relative" mt={6}>
+        <Pagination page={query.page} setPage={handleQueryChange} />
+      </Box>
     </Box>
   );
 };

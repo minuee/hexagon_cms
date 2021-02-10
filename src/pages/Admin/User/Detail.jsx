@@ -137,7 +137,7 @@ export const UserDetail = () => {
 
     getUserDetail();
   }
-  async function updateUser(data) {
+  async function modifyUser(data) {
     await apiObject.updateMemberDetail({
       ...data,
       member_pk,
@@ -294,7 +294,7 @@ export const UserDetail = () => {
         // justifyContent="center"
       >
         {userInfo?.approval_dt ? (
-          <Button color="primary" onClick={handleSubmit(updateUser)}>
+          <Button color="primary" onClick={handleSubmit(modifyUser)}>
             정보 수정
           </Button>
         ) : (

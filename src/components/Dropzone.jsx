@@ -93,9 +93,9 @@ export const Dropzone = ({ control, name, width, ratio = 1, maxFiles = 1, minFil
               width={width}
               ratio={ratio}
               border="solid 1px #dddddd"
-              // onClick={readOnly ? undefined : () => remove(index)}
+              onClick={readOnly ? undefined : () => remove(index)}
               // onClick={() => !readOnly && remove(index)}
-              onClick={() => remove(index)}
+              // onClick={() => remove(index)}
             >
               <Controller
                 as={

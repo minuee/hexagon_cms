@@ -211,6 +211,8 @@ export const apiObject = {
     }
   },
 
+  // Purchase
+
   // Category
   getCategoryList: async ({ search_word }) => {
     try {
@@ -338,7 +340,7 @@ export const apiObject = {
     }
   },
 
-  // Item
+  // Product
   getItemList: async ({ category_pk, page, paginate = 10, search_word }) => {
     try {
       let data = await axios.get("/cms/product/list", {
@@ -484,6 +486,218 @@ export const apiObject = {
     }
   },
 
+  // Popup
+  getCurNoticePopupList: async ({ page, paginate = 10 }) => {
+    try {
+      let data = await axios.get("/cms/popup/list/now", {
+        params: {
+          page,
+          paginate,
+        },
+      });
+      let ret = data.data.data.nowPopList;
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return [];
+    }
+  },
+  getPrevNoticePopupList: async ({ page, paginate = 10 }) => {
+    try {
+      let data = await axios.get("/cms/popup/list/stop", {
+        params: {
+          page,
+          paginate,
+        },
+      });
+      let ret = data.data.data.stopPopList;
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return [];
+    }
+  },
+  getCurEventPopupList: async ({ page, paginate = 10 }) => {
+    try {
+      let data = await axios.get("/cms/popevent/list/now", {
+        params: {
+          page,
+          paginate,
+        },
+      });
+      let ret = data.data.data.nowPopupEventList;
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return [];
+    }
+  },
+  getPrevEventPopupList: async ({ page, paginate = 10 }) => {
+    try {
+      let data = await axios.get("/cms/popevent/list/stop", {
+        params: {
+          page,
+          paginate,
+        },
+      });
+      let ret = data.data.data.stopPopupEventList;
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return [];
+    }
+  },
+  getNoticePopupDetail: async ({ popup_pk }) => {
+    try {
+      let data = await axios.get(`/cms/popup/view/${popup_pk}`);
+      let ret = data.data.data.popupDetail;
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return {};
+    }
+  },
+  getEventPopupDetail: async ({ popup_pk }) => {
+    try {
+      let data = await axios.get(`/cms/popevent/view/${popup_pk}`);
+      let ret = data.data.data.popEventDetail;
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return {};
+    }
+  },
+  registNoticePopup: async ({ popup_gubun, popup_type, title, start_dt, end_dt, img_url, send_push }) => {
+    try {
+      let response = await axios.post("/cms/popup/regist", {
+        popup_gubun,
+        popup_type,
+        title,
+        start_dt,
+        end_dt,
+        img_url,
+        send_push,
+      });
+
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+  registEventPopup: async ({ popup_gubun, popup_type, title, start_dt, end_dt, img_url, event_pk }) => {
+    try {
+      let response = await axios.post("/cms/popevent/regist", {
+        popup_gubun,
+        popup_type,
+        title,
+        start_dt,
+        end_dt,
+        img_url,
+        event_pk,
+      });
+
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+  modifyNoticePopup: async ({ popup_pk, popup_gubun, popup_type, title, start_dt, end_dt, img_url, send_push }) => {
+    try {
+      let response = await axios.put(`/cms/popup/modify/${popup_pk}`, {
+        popup_gubun,
+        popup_type,
+        title,
+        start_dt,
+        end_dt,
+        img_url,
+        send_push,
+      });
+
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+  modifyEventPopup: async ({ popup_pk, popup_gubun, popup_type, title, start_dt, end_dt, img_url, event_pk }) => {
+    try {
+      let response = await axios.put(`/cms/popevent/modify/${popup_pk}`, {
+        popup_gubun,
+        popup_type,
+        title,
+        start_dt,
+        end_dt,
+        img_url,
+        event_pk,
+      });
+
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+  haltNoticePopup: async ({ popup_pk, restart_dt }) => {
+    try {
+      let response = await axios.patch(`/cms/popup/stop/${popup_pk}`, {
+        restart_dt,
+      });
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+  haltEventPopup: async ({ popup_pk, restart_dt }) => {
+    try {
+      let response = await axios.patch(`/cms/popevent/stop/${popup_pk}`, {
+        restart_dt,
+      });
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+  removeNoticePopup: async ({ popup_pk }) => {
+    try {
+      let response = await axios.delete(`/cms/popup/remove/${popup_pk}`);
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+  removeEventPopup: async ({ popup_pk }) => {
+    try {
+      let response = await axios.delete(`/cms/popevent/remove/${popup_pk}`);
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+  removeNoticePopupMultiple: async ({ popup_array }) => {
+    try {
+      let response = await axios.put(`/cms/popup/removes`, {
+        popup_array,
+      });
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+  removeEventPopupMultiple: async ({ popup_array }) => {
+    try {
+      let response = await axios.put(`/cms/popevent/removes`, {
+        popup_array,
+      });
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+
   // Notice
   getNoticeList: async ({ page, search_word, paginate = 10 }) => {
     try {
@@ -543,6 +757,101 @@ export const apiObject = {
   removeNotice: async ({ notice_pk }) => {
     try {
       let response = await axios.delete(`/cms/notice/remove/${notice_pk}`);
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+
+  // Coupon
+  getValidCouponList: async ({ page, paginate = 10 }) => {
+    try {
+      let data = await axios.get(`/cms/coupon/list/ing`, {
+        params: {
+          page,
+          paginate,
+        },
+      });
+      let ret = data.data.data.validCouponList;
+
+      ret.forEach((item) => {
+        item.coupon_type = item.price;
+      });
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return [];
+    }
+  },
+  getPassCouponList: async ({ page, paginate = 10 }) => {
+    try {
+      let data = await axios.get(`/cms/coupon/list/old`, {
+        params: {
+          page,
+          paginate,
+        },
+      });
+      let ret = data.data.data.passCouponList;
+
+      ret.forEach((item) => {
+        item.coupon_type = item.price;
+      });
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return [];
+    }
+  },
+  getCouponDetail: async ({ coupon_pk }) => {
+    try {
+      let data = await axios.get(`/cms/coupon/view/${coupon_pk}`);
+      let ret = data.data.data.couponDetail;
+
+      ret.coupon_type = ret.price;
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return {};
+    }
+  },
+  registCoupon: async ({ coupon_type, price, end_dt, target_array, issue_reason, is_first }) => {
+    try {
+      let response = await axios.post("/cms/coupon/regist", {
+        coupon_type,
+        price,
+        end_dt,
+        target_array,
+        issue_reason,
+        is_first,
+      });
+
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+  modifyCoupon: async ({ coupon_pk, coupon_type, price, end_dt, member_pk, update_reason, is_first }) => {
+    try {
+      let response = await axios.put(`/cms/coupon/modify/${coupon_pk}`, {
+        coupon_type,
+        price,
+        end_dt,
+        member_pk,
+        update_reason,
+        is_first,
+      });
+
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+  removeCoupon: async ({ coupon_pk }) => {
+    try {
+      let response = await axios.delete(`/cms/coupon/remove/${coupon_pk}`);
       return response;
     } catch (e) {
       console.log({ e });
@@ -662,101 +971,6 @@ export const apiObject = {
   removeBanner: async ({ banner_pk }) => {
     try {
       let response = await axios.delete(`/cms/banner/remove/${banner_pk}`);
-      return response;
-    } catch (e) {
-      console.log({ e });
-    }
-  },
-
-  // Coupon
-  getValidCouponList: async ({ page, paginate = 10 }) => {
-    try {
-      let data = await axios.get(`/cms/coupon/list/ing`, {
-        params: {
-          page,
-          paginate,
-        },
-      });
-      let ret = data.data.data.validCouponList;
-
-      ret.forEach((item) => {
-        item.coupon_type = item.price;
-      });
-
-      return ret;
-    } catch (e) {
-      console.log({ e });
-      return [];
-    }
-  },
-  getPassCouponList: async ({ page, paginate = 10 }) => {
-    try {
-      let data = await axios.get(`/cms/coupon/list/old`, {
-        params: {
-          page,
-          paginate,
-        },
-      });
-      let ret = data.data.data.passCouponList;
-
-      ret.forEach((item) => {
-        item.coupon_type = item.price;
-      });
-
-      return ret;
-    } catch (e) {
-      console.log({ e });
-      return [];
-    }
-  },
-  getCouponDetail: async ({ coupon_pk }) => {
-    try {
-      let data = await axios.get(`/cms/coupon/view/${coupon_pk}`);
-      let ret = data.data.data.couponDetail;
-
-      ret.coupon_type = ret.price;
-
-      return ret;
-    } catch (e) {
-      console.log({ e });
-      return {};
-    }
-  },
-  registCoupon: async ({ coupon_type, price, end_dt, target_array, issue_reason, is_first }) => {
-    try {
-      let response = await axios.post("/cms/coupon/regist", {
-        coupon_type,
-        price,
-        end_dt,
-        target_array,
-        issue_reason,
-        is_first,
-      });
-
-      return response;
-    } catch (e) {
-      console.log({ e });
-    }
-  },
-  modifyCoupon: async ({ coupon_pk, coupon_type, price, end_dt, member_pk, update_reason, is_first }) => {
-    try {
-      let response = await axios.put(`/cms/coupon/modify/${coupon_pk}`, {
-        coupon_type,
-        price,
-        end_dt,
-        member_pk,
-        update_reason,
-        is_first,
-      });
-
-      return response;
-    } catch (e) {
-      console.log({ e });
-    }
-  },
-  removeCoupon: async ({ coupon_pk }) => {
-    try {
-      let response = await axios.delete(`/cms/coupon/remove/${coupon_pk}`);
       return response;
     } catch (e) {
       console.log({ e });
