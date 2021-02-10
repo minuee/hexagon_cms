@@ -96,11 +96,11 @@ export const CategoryList = ({ location }) => {
 
   async function getCategoryList() {
     let data = await apiObject.getCategoryList({ ...query });
-
     setCategoryList(data);
-    console.log(data);
   }
   async function removeCategories() {
+    if (!window.confirm("선택한 카테고리들을 삭제하시겠습니까?")) return;
+
     let category_array = [];
     selectedCategorys.forEach((item) => {
       category_array.push({
@@ -108,12 +108,8 @@ export const CategoryList = ({ location }) => {
       });
     });
 
-    if (window.confirm("선택한 카테고리들을 삭제하시겠습니까?")) {
-      let resp = await apiObject.removeCategories({ category_array });
-      console.log(resp);
-
-      getCategoryList();
-    }
+    await apiObject.removeCategories({ category_array });
+    getCategoryList();
   }
 
   function handleQueryChange(q, v) {

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { store } from "redux/index";
-import { encrypt, decrypt, getFullImgURL } from "common";
+import { encrypt, decrypt, getFullImgURL, getListIndex } from "common";
 import dayjs from "dayjs";
 import _ from "lodash";
 
@@ -249,7 +249,6 @@ export const apiObject = {
 
       let ret = data.data.data.categoryDetail;
 
-      console.log(ret);
       if (ret.category_type === "N") {
         for (let i = 1; i <= 3; i++) {
           ret[`d${i}`] = ret[`depth${i}code`];
@@ -293,7 +292,6 @@ export const apiObject = {
         }
       });
 
-      console.log(ret);
       return ret;
     } catch (e) {
       console.log({ e });
@@ -407,14 +405,15 @@ export const apiObject = {
   },
 
   // Event
-  getEventList: async ({ page, paginate = 10, search_word }) => {
+  getEventList: async ({ page = 1, paginate = 10, search_word }) => {
     try {
       let data = await axios.get("/cms/event/list", {
         params: { page, paginate, search_word },
       });
 
       let ret = data.data.data.eventList;
-      ret.forEach((item) => {
+      ret.forEach((item, index) => {
+        item.no = getListIndex(item.total, page, index);
         switch (item.event_gubun) {
           case "LIMIT":
             item.event_gubun_text = "한정특가";
@@ -699,7 +698,7 @@ export const apiObject = {
   },
 
   // Notice
-  getNoticeList: async ({ page, search_word, paginate = 10 }) => {
+  getNoticeList: async ({ page = 1, paginate = 10, search_word }) => {
     try {
       let data = await axios.get("/cms/notice/list", {
         params: {
@@ -709,6 +708,10 @@ export const apiObject = {
         },
       });
       let ret = data.data.data.noticeList;
+
+      ret.forEach((item, index) => {
+        item.no = getListIndex(item.total, page, index);
+      });
 
       return ret;
     } catch (e) {
@@ -764,7 +767,7 @@ export const apiObject = {
   },
 
   // Coupon
-  getValidCouponList: async ({ page, paginate = 10 }) => {
+  getValidCouponList: async ({ page = 1, paginate = 10 }) => {
     try {
       let data = await axios.get(`/cms/coupon/list/ing`, {
         params: {
@@ -774,7 +777,8 @@ export const apiObject = {
       });
       let ret = data.data.data.validCouponList;
 
-      ret.forEach((item) => {
+      ret.forEach((item, index) => {
+        item.no = getListIndex(item.total, page, index);
         item.coupon_type = item.price;
       });
 
@@ -784,7 +788,7 @@ export const apiObject = {
       return [];
     }
   },
-  getPassCouponList: async ({ page, paginate = 10 }) => {
+  getPassCouponList: async ({ page = 1, paginate = 10 }) => {
     try {
       let data = await axios.get(`/cms/coupon/list/old`, {
         params: {
@@ -794,7 +798,8 @@ export const apiObject = {
       });
       let ret = data.data.data.passCouponList;
 
-      ret.forEach((item) => {
+      ret.forEach((item, index) => {
+        item.no = getListIndex(item.total, page, index);
         item.coupon_type = item.price;
       });
 
@@ -870,7 +875,8 @@ export const apiObject = {
       });
       let ret = data.data.data.bannerList;
 
-      ret.forEach((item) => {
+      ret.forEach((item, index) => {
+        item.no = getListIndex(item.total, page, index);
         if (item.link_type === "INLINK") {
           switch (item.inlink_type) {
             case "PRODUCT":

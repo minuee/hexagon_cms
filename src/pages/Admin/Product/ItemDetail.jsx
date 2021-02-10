@@ -71,7 +71,6 @@ export const ItemDetail = () => {
   async function getItemDetail() {
     let data = await apiObject.getItemDetail({ product_pk });
 
-    console.log(data.category_pk);
     reset({
       ...data,
       material: data.material || "",

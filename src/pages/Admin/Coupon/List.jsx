@@ -43,7 +43,7 @@ const header_button_list = [
   },
 ];
 const coupon_list_columns = [
-  { title: "번호", field: "coupon_pk", width: 80 },
+  { title: "번호", field: "no", width: 80 },
   { title: "사용자", field: "member_name" },
   { title: "금액", render: ({ coupon_type }) => price(coupon_type), width: 160, cellStyle: { textAlign: "right" } },
   {

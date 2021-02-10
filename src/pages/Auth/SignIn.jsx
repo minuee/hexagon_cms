@@ -2,6 +2,7 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { apiObject } from "api";
+import { decrypt } from "common";
 
 import {
   makeStyles,
@@ -73,7 +74,6 @@ export const SignIn = ({}) => {
           className={classes.input}
           name="user_id"
           placeholder="ID"
-          variant="outlined"
           inputRef={register({ required: true })}
           InputProps={{
             startAdornment: (
@@ -90,7 +90,6 @@ export const SignIn = ({}) => {
           className={classes.input}
           name="password"
           placeholder="Password"
-          variant="outlined"
           type="password"
           inputRef={register({ required: true })}
           InputProps={{
@@ -106,9 +105,9 @@ export const SignIn = ({}) => {
 
         <Box display="flex" alignItems="center" mt={2}>
           {/* <Button onClick={() => history.push("/finduserinfo")}>아이디/패스워드 찾기</Button> */}
-          <Button>아이디/패스워드 찾기</Button>
+          <Button variant="text">아이디/패스워드 찾기</Button>
           &#x0007C;
-          <Button>회원가입</Button>
+          <Button variant="text">회원가입</Button>
           {/* <Button onClick={() => history.push("/signup")}>회원가입</Button> */}
         </Box>
 

@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const notice_list_columns = [
-  { title: "번호", field: "notice_pk", width: 80 },
+  { title: "번호", field: "no", width: 80 },
   {
     title: "제목",
     render: ({ title }) => (title?.length > 20 ? title?.substring(0, 20) : title),

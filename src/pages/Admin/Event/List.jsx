@@ -47,7 +47,7 @@ const header_button_list = [
   },
 ];
 const event_list_columns = [
-  { title: "번호", field: "event_pk", width: 80 },
+  { title: "번호", field: "no", width: 80 },
   { title: "종류", field: "event_gubun_text", width: 160 },
   { title: "제목", field: "title", cellStyle: { textAlign: "left" } },
   {
@@ -74,12 +74,9 @@ export const EventList = ({ location }) => {
   const query = qs.parse(location.search);
 
   const [eventList, setEventList] = useState();
-  const [searchWord, setSearchWord] = useState("");
 
   async function getEventList() {
     let data = await apiObject.getEventList({ ...query });
-
-    console.log(data);
     setEventList(data);
   }
 

@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const purchase_list_columns = [
-  { title: "번호", field: "purchase_no", width: 80 },
+  { title: "번호", field: "no", width: 80 },
   { title: "구매번호", field: "purchase_code", width: 160 },
   {
     title: "구매일자",

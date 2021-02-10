@@ -117,7 +117,6 @@ export const EventDetail = () => {
       tmp.push(item);
     });
     setValue("event_product", tmp);
-    console.log(data);
     // setEventDetail(data);
   }
   async function registEvent(form) {

@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const banner_list_columns = [
-  { title: "번호", field: "banner_pk", width: 80 },
+  { title: "번호", field: "no", width: 80 },
   { title: "타입", field: "link_type_text", width: 120 },
   {
     title: "제목",
