@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import dayjs from "dayjs";
 
 import { price } from "common";
@@ -113,6 +113,7 @@ const salesman_incentive_rows = [
 export const AdminHome = () => {
   const classes = useStyles();
   const history = useHistory();
+  const { member } = useSelector((state) => state.reducer);
 
   const [userRewardData, setUserRewardData] = useState();
 
@@ -123,10 +124,7 @@ export const AdminHome = () => {
   return (
     <Box>
       <Typography variant="h5" fontWeight={500}>
-        {"관리자"}님, 환영합니다
-      </Typography>
-      <Typography variant="h6" fontWeight={300} textAlign="right">
-        {`[${"수요일"}]`}
+        {member?.name}님, 환영합니다
       </Typography>
       <Typography variant="h6" fontWeight={300} textAlign="right">
         {dayjs().format("YYYY-MM-DD")}

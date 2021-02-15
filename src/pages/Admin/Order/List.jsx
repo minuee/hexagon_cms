@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
-
-import dayjs from "dayjs";
+import { apiObject } from "api";
 import { price } from "common";
+import dayjs from "dayjs";
+import qs from "query-string";
 
 import { Grid, Box, makeStyles, TextField, InputAdornment } from "@material-ui/core";
 import { DescriptionOutlined, Search, EventNote } from "@material-ui/icons";
@@ -35,71 +36,59 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const purchase_list_columns = [
+const order_list_columns = [
   { title: "번호", field: "no", width: 80 },
-  { title: "구매번호", field: "purchase_code", width: 160 },
+  { title: "구매번호", field: "order_code", width: 160 },
   {
     title: "구매일자",
-    render: ({ purchase_dt }) => dayjs.unix(purchase_dt).format("YYYY-MM-DD"),
+    render: ({ order_dt }) => dayjs.unix(order_dt).format("YYYY-MM-DD"),
     width: 160,
   },
   { title: "유저명", field: "user_name", width: 100 },
   {
     title: "구매액",
-    render: ({ purchase_price }) => `${price(purchase_price)}원`,
+    render: ({ order_price }) => `${price(order_price)}원`,
     cellStyle: { textAlign: "right" },
   },
   { title: "주문상태", field: "order_status", width: 100 },
 ];
-const purchase_list_rows = [
-  {
-    purchase_no: 1,
-    purchase_code: "20200506-D5446",
-    purchase_dt: 3333333333,
-    user_name: "전지현",
-    purchase_price: 1234567,
-    order_status: "배송중",
-  },
-];
 
-export const PurchaseList = () => {
+export const OrderList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
+  const query = qs.parse(location.search);
 
-  const [userList, setUserList] = useState();
-  const [listContext, setListContext] = useState({
-    page: 1,
-    search_text: "",
-    search_start_dt: null,
-    search_end_dt: null,
-  });
+  const [orderList, setOrderList] = useState();
 
-  function handleContextChange(name, value) {
-    setListContext({
-      ...listContext,
-      [name]: value,
-    });
+  async function getOrderList() {
+    let data = await apiObject.getOrderList({ ...query });
+    setOrderList(data);
+  }
+
+  function handleQueryChange(q, v) {
+    query[q] = v;
+    if (q !== "page") {
+      query.page = 1;
+    }
+
+    history.push("/order?" + qs.stringify(query));
   }
 
   useEffect(() => {
-    console.log("listContext", listContext);
-  }, [listContext]);
-
-  useEffect(() => {
-    setUserList(purchase_list_rows);
-  }, []);
+    getOrderList();
+  }, [query.page, query.search_word, query.start_dt, query.end_dt]);
 
   return (
     <Box>
       <Grid container justify="space-between" alignItems="center">
         <Typography display="inline" variant="h5" fontWeight="500">
-          구매내역
+          주문내역
         </Typography>
 
         <Box className={classes.datepicker}>
           <DatePicker
-            value={listContext?.search_start_dt}
-            onChange={(date) => handleContextChange("search_start_dt", date)}
+            value={query.start_dt ? dayjs.unix(query.start_dt) : null}
+            onChange={(d) => handleQueryChange("start_dt", d?.unix())}
             format="YYYY-MM-DD"
             size="small"
             InputProps={{
@@ -114,8 +103,8 @@ export const PurchaseList = () => {
             -
           </Box>
           <DatePicker
-            value={listContext?.search_end_dt}
-            onChange={(date) => handleContextChange("search_end_dt", date)}
+            value={query.end_dt ? dayjs.unix(query.end_dt) : null}
+            onChange={(d) => handleQueryChange("end_dt", d?.unix())}
             format="YYYY-MM-DD"
             size="small"
             InputProps={{
@@ -126,15 +115,17 @@ export const PurchaseList = () => {
               ),
             }}
           />
-          <Button ml={1}>검색</Button>
+          <Button ml={1} color="primary">
+            검색
+          </Button>
         </Box>
       </Grid>
 
       <Box mt={2} mb={3}>
         <ColumnTable
-          columns={purchase_list_columns}
-          data={userList}
-          onRowClick={(row) => history.push(`/purchase/${row.purchase_no}`)}
+          columns={order_list_columns}
+          data={orderList}
+          onRowClick={(row) => history.push(`/order/${row.order_no}`)}
         />
       </Box>
 
@@ -144,9 +135,9 @@ export const PurchaseList = () => {
           엑셀저장
         </Button>
 
-        <Pagination page={listContext.page} setPage={handleContextChange} />
+        <Pagination page={query.page} setPage={handleQueryChange} />
 
-        {/* <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} /> */}
+        <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} />
       </Grid>
     </Box>
   );

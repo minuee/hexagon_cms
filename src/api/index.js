@@ -224,7 +224,21 @@ export const apiObject = {
     }
   },
 
-  // Purchase
+  // Order
+  getOrderList: async ({ page = 1, paginate = 10, search_word, start_dt, end_dt }) => {
+    try {
+      let data = await axios.get("/cms/order/list", {
+        params: { page, paginate, search_word, start_dt, end_dt },
+      });
+      let ret = data.data.data;
+      console.log(ret);
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return [];
+    }
+  },
 
   // Category
   getCategoryList: async ({ search_word }) => {

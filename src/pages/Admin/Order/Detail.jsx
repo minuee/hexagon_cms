@@ -107,11 +107,11 @@ const shipping_state_list = [
   },
 ];
 
-export const PurchaseDetail = () => {
+export const OrderDetail = () => {
   const classes = useStyles();
   const { control, handleSubmit } = useForm();
 
-  const [purchaseInfo, setPurchaseInfo] = useState({
+  const [orderDetail, setOrderDetail] = useState({
     items: [
       {
         no: 1,
@@ -190,14 +190,14 @@ export const PurchaseDetail = () => {
     },
   });
 
-  async function updatePurchaseDetail(data) {
+  async function modifyOrderDetail(data) {
     console.log(data);
   }
 
   return (
     <Box>
       <Typography variant="h5" fontWeight="500">
-        구매내역 상세
+        주문내역 상세
       </Typography>
 
       <Box mt={4} mb={6}>
@@ -205,7 +205,7 @@ export const PurchaseDetail = () => {
         <Box px={6} position="relative">
           <Box className={classes.shipping_status}>
             {delivery_state.map((item) => {
-              let isPassed = item.no <= purchaseInfo?.shipping.status;
+              let isPassed = item.no <= orderDetail?.shipping.status;
               return (
                 <Box key={item.no}>
                   <Avatar variant="square" src={`/image/order_state_${item.no}.png`} />
@@ -244,10 +244,10 @@ export const PurchaseDetail = () => {
       <RowTable>
         <TableRow>
           <TableCell>주문번호</TableCell>
-          <TableCell colSpan={5}>{purchaseInfo?.order.order_no}</TableCell>
+          <TableCell colSpan={5}>{orderDetail?.order.order_no}</TableCell>
         </TableRow>
 
-        {purchaseInfo?.items.map((item) => (
+        {orderDetail?.items.map((item) => (
           <Fragment key={item.no}>
             <TableRow>
               <TableCell colSpan={6} className={classes.product_divider} />
@@ -282,24 +282,24 @@ export const PurchaseDetail = () => {
       <RowTable>
         <TableRow>
           <TableCell>구매일시</TableCell>
-          <TableCell>{dayjs.unix(purchaseInfo?.order.order_dt).format("YYYY.MM.DD hh:mm")}</TableCell>
+          <TableCell>{dayjs.unix(orderDetail?.order.order_dt).format("YYYY.MM.DD hh:mm")}</TableCell>
         </TableRow>
 
         <TableRow>
           <TableCell>상품가</TableCell>
-          <TableCell align="right">{price(purchaseInfo?.order.event_price)}원</TableCell>
+          <TableCell align="right">{price(orderDetail?.order.event_price)}원</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>할인금액</TableCell>
-          <TableCell align="right">{price(purchaseInfo?.order.discount_amount)}원</TableCell>
+          <TableCell align="right">{price(orderDetail?.order.discount_amount)}원</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>배송비</TableCell>
-          <TableCell align="right">{price(purchaseInfo?.order.shipping_fee)}원</TableCell>
+          <TableCell align="right">{price(orderDetail?.order.shipping_fee)}원</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>총 주문금액</TableCell>
-          <TableCell align="right"> {price(purchaseInfo?.order.total_price)}원</TableCell>
+          <TableCell align="right"> {price(orderDetail?.order.total_price)}원</TableCell>
         </TableRow>
       </RowTable>
 
@@ -309,15 +309,15 @@ export const PurchaseDetail = () => {
       <RowTable>
         <TableRow>
           <TableCell>주문자명</TableCell>
-          <TableCell>{purchaseInfo?.user.name}</TableCell>
+          <TableCell>{orderDetail?.user.name}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>휴대폰번호</TableCell>
-          <TableCell>{purchaseInfo?.user.phone_no}</TableCell>
+          <TableCell>{orderDetail?.user.phone_no}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>이메일 주소</TableCell>
-          <TableCell>{purchaseInfo?.user.email}</TableCell>
+          <TableCell>{orderDetail?.user.email}</TableCell>
         </TableRow>
       </RowTable>
 
@@ -327,11 +327,11 @@ export const PurchaseDetail = () => {
       <RowTable>
         <TableRow>
           <TableCell>결제수단</TableCell>
-          <TableCell>{purchaseInfo?.payment.type}</TableCell>
+          <TableCell>{orderDetail?.payment.type}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>입금자명</TableCell>
-          <TableCell>{purchaseInfo?.payment.deposit_name}</TableCell>
+          <TableCell>{orderDetail?.payment.deposit_name}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>미출고시 조치방법</TableCell>
@@ -349,12 +349,12 @@ export const PurchaseDetail = () => {
             />
             {/* <FormControlLabel
               control={<Checkbox name="rank_bronze" color="primary" />}
-              checked={purchaseInfo?.payment.not_shipped_type === 1}
+              checked={orderDetail?.payment.not_shipped_type === 1}
               label="결제수단으로 환불"
             />
             <FormControlLabel
               control={<Checkbox name="rank_bronze" color="primary" />}
-              checked={purchaseInfo?.payment.not_shipped_type === 2}
+              checked={orderDetail?.payment.not_shipped_type === 2}
               label="상품 입고시 배송"
             /> */}
           </TableCell>
@@ -367,19 +367,19 @@ export const PurchaseDetail = () => {
       <RowTable>
         <TableRow>
           <TableCell>받는 분</TableCell>
-          <TableCell>{purchaseInfo?.shipping.reciever_name}</TableCell>
+          <TableCell>{orderDetail?.shipping.reciever_name}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>휴대폰번호</TableCell>
-          <TableCell>{purchaseInfo?.shipping.reciever_phone}</TableCell>
+          <TableCell>{orderDetail?.shipping.reciever_phone}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>배송지주소</TableCell>
-          <TableCell>{`[${purchaseInfo?.shipping.reciever_addr_code}] ${purchaseInfo?.shipping.reciever_addr_name}`}</TableCell>
+          <TableCell>{`[${orderDetail?.shipping.reciever_addr_code}] ${orderDetail?.shipping.reciever_addr_name}`}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>배송시 요청사항</TableCell>
-          <TableCell>{purchaseInfo?.shipping.additional_info}</TableCell>
+          <TableCell>{orderDetail?.shipping.additional_info}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>배송상태</TableCell>
@@ -407,7 +407,7 @@ export const PurchaseDetail = () => {
       </RowTable>
 
       <Box py={2} display="flex" justifyContent="center">
-        <Button px={3} color="primary" onClick={handleSubmit(updatePurchaseDetail)}>
+        <Button px={3} color="primary" onClick={handleSubmit(modifyOrderDetail)}>
           수정
         </Button>
       </Box>

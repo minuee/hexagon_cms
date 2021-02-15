@@ -16,8 +16,8 @@ const admin_page = [
     path: `/member`,
   },
   {
-    label: `구매내역`,
-    path: `/purchase`,
+    label: `주문내역`,
+    path: `/order`,
   },
   {
     label: `상품관리`,

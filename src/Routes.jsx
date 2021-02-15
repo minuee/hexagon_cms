@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
+import jwt from "jsonwebtoken";
 
 import { Dashboard } from "./layouts";
 
@@ -9,7 +10,7 @@ import { SignIn, SignUp, FindUserInfo } from "./pages/Auth";
 import { AdminHome } from "./pages/Admin/Home";
 import { MemberList, MemberDetail } from "./pages/Admin/Member";
 import { SalesmanList, SalesmanDetail, SalesmanRegister, SalesmanIncentive } from "./pages/Admin/Salesman";
-import { PurchaseList, PurchaseDetail } from "./pages/Admin/Purchase";
+import { OrderList, OrderDetail } from "./pages/Admin/Order";
 import { CategoryList, CategoryDetail, ItemList, ItemDetail } from "./pages/Admin/Product";
 import { EventList, EventDetail } from "./pages/Admin/Event";
 import { PopupList, PopupRegister, PopupDetail } from "./pages/Admin/Popup";
@@ -32,6 +33,8 @@ const Routes = () => {
   useEffect(() => {
     if (!token) {
       dispatch({ type: "SIGN_OUT" });
+    } else {
+      dispatch({ type: "SET_MEMBER", payload: jwt.decode(token) });
     }
   }, [token]);
 
@@ -69,8 +72,8 @@ const AdminRoutes = () => {
         <Route exact path="/member/:member_pk" component={MemberDetail} />
         <Route path="/member" component={MemberList} />
 
-        <Route exact path="/purchase/:purchase_no" component={PurchaseDetail} />
-        <Route path="/purchase" component={PurchaseList} />
+        <Route exact path="/order/:order_pk" component={OrderDetail} />
+        <Route path="/order" component={OrderList} />
 
         <Route exact path="/product/category/:category_pk" component={CategoryDetail} />
         <Route path="/product/category" component={CategoryList} />

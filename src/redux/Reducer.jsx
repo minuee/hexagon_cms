@@ -5,6 +5,8 @@ const INITIAL_STATE = {
   // userState: UserState.NOT_SIGN,
   userState: UserState.SIGNED,
   isSalesman: false,
+
+  member: {},
 };
 
 export default (state = INITIAL_STATE, { type, payload }) => {
@@ -17,6 +19,8 @@ export default (state = INITIAL_STATE, { type, payload }) => {
       return { ...state, userState: UserState.NOT_SIGN };
     case "SET_IS_SALESMAN":
       return { ...state, isSalesman: payload };
+    case "SET_MEMBER":
+      return { ...state, member: payload };
 
     default:
       return state;

@@ -2,7 +2,6 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { apiObject } from "api";
-import { decrypt } from "common";
 
 import {
   makeStyles,
@@ -69,8 +68,8 @@ export const SignIn = ({}) => {
         <Avatar className={classes.logo} variant="square" src="/image/logo_color.png" />
 
         <TextField
-          // defaultValue="superbinder"
-          defaultValue="123456789"
+          defaultValue="superbinder"
+          // defaultValue="123456789"
           className={classes.input}
           name="user_id"
           placeholder="ID"
@@ -85,8 +84,8 @@ export const SignIn = ({}) => {
           error={!!errors?.user_id}
         />
         <TextField
-          // defaultValue="hexagon12!@"
-          defaultValue="lenapark47##"
+          defaultValue="hexagon12!@"
+          // defaultValue="lenapark47##"
           className={classes.input}
           name="password"
           placeholder="Password"
