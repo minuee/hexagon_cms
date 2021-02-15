@@ -7,7 +7,7 @@ import { Dashboard } from "./layouts";
 import { SignIn, SignUp, FindUserInfo } from "./pages/Auth";
 
 import { AdminHome } from "./pages/Admin/Home";
-import { UserList, UserDetail } from "./pages/Admin/User";
+import { MemberList, MemberDetail } from "./pages/Admin/Member";
 import { SalesmanList, SalesmanDetail, SalesmanRegister, SalesmanIncentive } from "./pages/Admin/Salesman";
 import { PurchaseList, PurchaseDetail } from "./pages/Admin/Purchase";
 import { CategoryList, CategoryDetail, ItemList, ItemDetail } from "./pages/Admin/Product";
@@ -18,7 +18,7 @@ import { CouponList, CouponRegister, CouponDetail } from "./pages/Admin/Coupon";
 import { BannerList, BannerDetail } from "./pages/Admin/Banner";
 
 import { SalesmanHome } from "./pages/Salesman/Home";
-import { MemberList, MemberDetail } from "./pages/Salesman/Member";
+import { ManageMemberList, ManageMemberDetail } from "./pages/Salesman/Member";
 import { IncentiveList, IncentiveDetail, UserPurchaseDetail } from "./pages/Salesman/Incentive";
 import { Setting } from "./pages/Salesman/Setting";
 
@@ -66,8 +66,8 @@ const AdminRoutes = () => {
       <Switch>
         <Route exact path="/" component={AdminHome} />
 
-        <Route exact path="/user/:member_pk" component={UserDetail} />
-        <Route path="/user" component={UserList} />
+        <Route exact path="/member/:member_pk" component={MemberDetail} />
+        <Route path="/member" component={MemberList} />
 
         <Route exact path="/purchase/:purchase_no" component={PurchaseDetail} />
         <Route path="/purchase" component={PurchaseList} />
@@ -112,8 +112,8 @@ const SalesmanRoutes = () => {
       <Switch>
         <Route exact path="/" component={SalesmanHome} />
 
-        <Route exact path="/member/:member_pk" component={MemberDetail} />
-        <Route path="/member" component={MemberList} />
+        <Route exact path="/member/:member_pk" component={ManageMemberDetail} />
+        <Route path="/member" component={ManageMemberList} />
 
         <Route exact path="/incentive/:incentive_pk/:purchase_no" component={UserPurchaseDetail} />
         <Route exact path="/incentive/:incentive_pk" component={IncentiveDetail} />

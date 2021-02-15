@@ -52,23 +52,28 @@ const user_reward_columns = [
 const user_reward_rows = [
   {
     user_no: 1,
-    user_name: "황지은",
-    reward_amount: 1111111111,
+    user_name: "박태호",
+    reward_amount: 4533215100,
   },
   {
     user_no: 2,
-    user_name: "유지은",
-    reward_amount: 1111111111,
+    user_name: "이호수",
+    reward_amount: 2798787900,
   },
   {
     user_no: 3,
-    user_name: "오지은",
-    reward_amount: 1111111111,
+    user_name: "김연화",
+    reward_amount: 562215520,
   },
   {
     user_no: 4,
-    user_name: "이지은",
-    reward_amount: 1111111111,
+    user_name: "김병찬",
+    reward_amount: 109837700,
+  },
+  {
+    user_no: 5,
+    user_name: "최인호",
+    reward_amount: 75306110,
   },
 ];
 
@@ -151,7 +156,7 @@ export const AdminHome = () => {
             <ColumnTable
               columns={user_reward_columns}
               data={userRewardData}
-              onRowClick={(row) => history.push(`/user/${row.user_no}`)}
+              // onRowClick={(row) => history.push(`/user/${row.user_no}`)}
             />
           </Box>
 

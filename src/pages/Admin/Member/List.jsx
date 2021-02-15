@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const user_list_columns = [
+const member_list_columns = [
   { title: "이름", field: "name" },
   { title: "코드값", field: "special_code", width: 100 },
   { title: "휴대폰번호", field: "phone", width: 160 },
@@ -75,25 +75,24 @@ const header_button_list = [
   },
 ];
 
-export const UserList = ({ location }) => {
+export const MemberList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
   const query = qs.parse(location.search);
 
-  const [userList, setUserList] = useState();
-  const [selectedUsers, setSelectedUsers] = useState([]);
-  const [searchWord, setSearchWord] = useState("");
+  const [memberList, setMemberList] = useState();
+  const [selectedMembers, setSelectedMembers] = useState([]);
 
-  async function getUserList() {
+  async function getMemberList() {
     let data = await apiObject.getMemberList({
       ...query,
     });
 
-    setUserList(data);
+    setMemberList(data);
   }
   async function approveSignIn() {
     let member_array = [];
-    selectedUsers.forEach((item) => {
+    selectedMembers.forEach((item) => {
       member_array.push({
         member_pk: item.member_pk,
       });
@@ -103,7 +102,7 @@ export const UserList = ({ location }) => {
       let resp = await apiObject.approveMembers({ member_array });
       console.log(resp);
 
-      getUserList();
+      getMemberList();
     }
   }
 
@@ -117,11 +116,11 @@ export const UserList = ({ location }) => {
     }
 
     query[q] = v;
-    history.push("/user?" + qs.stringify(query));
+    history.push("/member?" + qs.stringify(query));
   }
 
   useEffect(() => {
-    getUserList();
+    getMemberList();
   }, [query.page, query.search_word, query.sort_item, query.sort_type]);
 
   return (
@@ -149,11 +148,11 @@ export const UserList = ({ location }) => {
 
       <Box mt={2} mb={3}>
         <ColumnTable
-          columns={user_list_columns}
-          data={userList}
-          onRowClick={(row) => history.push(`/user/${row.member_pk}`)}
+          columns={member_list_columns}
+          data={memberList}
+          onRowClick={(row) => history.push(`/member/${row.member_pk}`)}
           selection
-          onSelectionChange={setSelectedUsers}
+          onSelectionChange={setSelectedMembers}
         />
       </Box>
 
@@ -163,7 +162,11 @@ export const UserList = ({ location }) => {
           엑셀저장
         </Button>
 
-        <Pagination page={query.page || 1} setPage={handleQueryChange} count={Math.ceil(+userList?.[0]?.total / 10)} />
+        <Pagination
+          page={query.page || 1}
+          setPage={handleQueryChange}
+          count={Math.ceil(+memberList?.[0]?.total / 10)}
+        />
 
         <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} />
       </Grid>

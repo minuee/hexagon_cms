@@ -13,7 +13,7 @@ const admin_page = [
   },
   {
     label: `유저관리`,
-    path: `/user`,
+    path: `/member`,
   },
   {
     label: `구매내역`,

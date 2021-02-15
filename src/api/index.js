@@ -140,8 +140,8 @@ export const apiObject = {
           sort_type,
         },
       });
-
       let ret = data.data.data.userList;
+
       ret.forEach((item) => {
         item.email = decrypt(item.email);
         item.phone = decrypt(item.phone);
@@ -167,10 +167,8 @@ export const apiObject = {
   getMemberDetail: async ({ member_pk }) => {
     try {
       let data = await axios.get(`/cms/member/view/${member_pk}`, {});
-
       let ret = data.data.data.userDetail;
 
-      // ret.img_url = getFullImgURL(ret.img_url);
       ret.email = decrypt(ret.email);
       ret.phone = decrypt(ret.phone);
 

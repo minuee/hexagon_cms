@@ -23,7 +23,6 @@ import {
 import { DescriptionOutlined, Search } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
 import { RowTable, ColumnTable, Pagination, Dropzone } from "components";
-import { UserDetail } from "pages/Admin/User/Detail";
 
 const useStyles = makeStyles((theme) => ({
   header_box: {
@@ -130,7 +129,7 @@ const purchase_history_rows = [
   },
 ];
 
-export const MemberDetail = () => {
+export const ManageMemberDetail = () => {
   const classes = useStyles();
   const { member_pk } = useParams();
   const { control, register, reset, watch, handleSubmit } = useForm();

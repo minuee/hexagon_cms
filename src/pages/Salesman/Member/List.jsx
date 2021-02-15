@@ -72,7 +72,7 @@ const header_button_list = [
   },
 ];
 
-export const MemberList = ({ location }) => {
+export const ManageMemberList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
   const query = qs.parse(location.search);

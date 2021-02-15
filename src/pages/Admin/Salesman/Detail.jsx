@@ -205,8 +205,8 @@ const SalesmanSubTable = ({ member_pk, special_code }) => {
   });
 
   const member_columns = [
-    { field: "user_name", title: "유저명" },
-    { field: "user_rank", title: "등급", width: 240 },
+    { field: "name", title: "유저명" },
+    { field: "grade_name", title: "등급", width: 240 },
   ];
   const incentive_columns = [
     {
@@ -240,7 +240,7 @@ const SalesmanSubTable = ({ member_pk, special_code }) => {
         break;
       case "incentive":
         if (member_pk) {
-          // data = await getSalesmanIncentiveList({member_pk})
+          data = await apiObject.getSalesmanIncentiveList({ member_pk });
         }
         break;
     }

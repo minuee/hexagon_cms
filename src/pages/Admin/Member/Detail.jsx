@@ -91,7 +91,7 @@ const reward_history_column = [
   {
     field: "regdatetime",
     title: "적립일자",
-    // render: ({ accumulate_dt }) => dayjs.unix(accumulate_dt).format("YYYY.MM.DD"),
+    render: ({ regdatetime }) => dayjs.unix(regdatetime).format("YYYY.MM.DD"),
   },
   { field: "name", title: "유저명" },
   { field: "reward_gubun", title: "내역" },
@@ -103,20 +103,20 @@ const reward_history_column = [
   },
 ];
 
-export const UserDetail = () => {
+export const MemberDetail = () => {
   const classes = useStyles();
   const { member_pk } = useParams();
   const { control, register, reset, setValue, watch, handleSubmit } = useForm();
   const cur_grade = grade_benefits[watch("grade_code")];
 
-  const [userInfo, setUserInfo] = useState();
+  const [memberInfo, setMemberInfo] = useState();
   const [rewardList, setRewardList] = useState();
   const [rewardPage, setRewardPage] = useState(1);
 
-  async function getUserDetail() {
+  async function getMemberDetail() {
     let data = await apiObject.getMemberDetail({ member_pk });
 
-    setUserInfo(data);
+    setMemberInfo(data);
     reset({
       ...data,
       grade_code: data.grade_code,
@@ -125,20 +125,20 @@ export const UserDetail = () => {
     });
     setValue("lisence_img", [{ file: null, path: data.img_url }]);
   }
-  async function getUserReward() {
+  async function getMemberReward() {
     let data = await apiObject.getMemberRewardList({ member_pk, page: 1 });
     setRewardList(data);
   }
 
-  async function approveUser() {
+  async function approveMember() {
     if (!window.confirm("해당 회원을 회원가입 승인하시겠습니까?")) return;
 
     await apiObject.approveMembers({
       member_array: [{ member_pk }],
     });
-    getUserDetail();
+    getMemberDetail();
   }
-  async function modifyUser(form) {
+  async function modifyMember(form) {
     if (!form.lisence_img) {
       alert("사업자등록증 이미지를 첨부해주세요");
       return;
@@ -154,19 +154,11 @@ export const UserDetail = () => {
       company_phone: form.phone,
       img_url: paths?.[0],
     });
-
-    // console.log(form.lisence_img?.[0]?.file);
-    // let path = await apiObject.uploadImage({
-    //   file: form.lisence_img?.[0]?.file,
-    // });
-
-    // getUserDetail();
-    // console.log(form);
   }
 
   useEffect(() => {
-    getUserDetail();
-    getUserReward();
+    getMemberDetail();
+    getMemberReward();
   }, [member_pk]);
 
   return (
@@ -202,7 +194,7 @@ export const UserDetail = () => {
           </Typography>
 
           <Typography textAlign="right" variant="h5" fontWeight="700">
-            {price(userInfo?.reward_point) || "-"} 원
+            {price(memberInfo?.reward_point) || "-"} 원
           </Typography>
         </Box>
       </Box>
@@ -215,7 +207,7 @@ export const UserDetail = () => {
       <RowTable width={"70%"}>
         <TableRow>
           <TableCell>상호명</TableCell>
-          <TableCell>{userInfo?.name}</TableCell>
+          <TableCell>{memberInfo?.name}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>업종</TableCell>
@@ -226,7 +218,7 @@ export const UserDetail = () => {
               name="company_class"
               placeholder="업종"
               inputRef={register({ required: true })}
-              disabled={!userInfo?.approval_dt}
+              disabled={!memberInfo?.approval_dt}
             />
           </TableCell>
         </TableRow>
@@ -239,7 +231,7 @@ export const UserDetail = () => {
               name="company_type"
               placeholder="업태"
               inputRef={register({ required: true })}
-              disabled={!userInfo?.approval_dt}
+              disabled={!memberInfo?.approval_dt}
             />
           </TableCell>
         </TableRow>
@@ -252,18 +244,18 @@ export const UserDetail = () => {
               name="company_address"
               placeholder="주소"
               inputRef={register({ required: true })}
-              disabled={!userInfo?.approval_dt}
+              disabled={!memberInfo?.approval_dt}
             />
           </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>사업자등록번호</TableCell>
-          <TableCell>{userInfo?.user_id}</TableCell>
+          <TableCell>{memberInfo?.user_id}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>사업자등록증 첨부</TableCell>
           <TableCell>
-            <Dropzone control={control} name="lisence_img" width="90px" readOnly={!userInfo?.approval_dt} />
+            <Dropzone control={control} name="lisence_img" width="90px" readOnly={!memberInfo?.approval_dt} />
           </TableCell>
         </TableRow>
       </RowTable>
@@ -283,7 +275,7 @@ export const UserDetail = () => {
               name="company_ceo"
               placeholder="대표자명"
               inputRef={register({ required: true })}
-              disabled={!userInfo?.approval_dt}
+              disabled={!memberInfo?.approval_dt}
             />
           </TableCell>
         </TableRow>
@@ -296,7 +288,7 @@ export const UserDetail = () => {
               name="phone"
               placeholder="전화번호"
               inputRef={register({ required: true })}
-              disabled={!userInfo?.approval_dt}
+              disabled={!memberInfo?.approval_dt}
             />
           </TableCell>
         </TableRow>
@@ -309,7 +301,7 @@ export const UserDetail = () => {
               name="email"
               placeholder="대표자 이메일"
               inputRef={register({ required: true })}
-              disabled={!userInfo?.approval_dt}
+              disabled={!memberInfo?.approval_dt}
             />
           </TableCell>
         </TableRow>
@@ -323,16 +315,16 @@ export const UserDetail = () => {
       <RowTable width={"70%"}>
         <TableRow>
           <TableCell>관리코드</TableCell>
-          <TableCell>{userInfo?.special_code}</TableCell>
+          <TableCell>{memberInfo?.special_code}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>가입일자</TableCell>
-          <TableCell>{dayjs.unix(userInfo?.reg_dt).format("YYYY-MM-DD")}</TableCell>
+          <TableCell>{dayjs.unix(memberInfo?.reg_dt).format("YYYY-MM-DD")}</TableCell>
         </TableRow>
-        {userInfo?.approval_dt && (
+        {memberInfo?.approval_dt && (
           <TableRow>
             <TableCell>가입승인일자</TableCell>
-            <TableCell>{dayjs.unix(userInfo?.approval_dt).format("YYYY-MM-DD")}</TableCell>
+            <TableCell>{dayjs.unix(memberInfo?.approval_dt).format("YYYY-MM-DD")}</TableCell>
           </TableRow>
         )}
         <TableRow>
@@ -353,17 +345,17 @@ export const UserDetail = () => {
         </TableRow>
         <TableRow>
           <TableCell>등급</TableCell>
-          <TableCell>{userInfo?.grade_name}</TableCell>
+          <TableCell>{memberInfo?.grade_name}</TableCell>
         </TableRow>
       </RowTable>
 
       <Box py={2} mb={4} display="flex">
-        {userInfo?.approval_dt ? (
-          <Button color="primary" onClick={handleSubmit(modifyUser)}>
+        {memberInfo?.approval_dt ? (
+          <Button color="primary" onClick={handleSubmit(modifyMember)}>
             정보 수정
           </Button>
         ) : (
-          <Button color="primary" onClick={approveUser}>
+          <Button color="primary" onClick={approveMember}>
             회원가입 승인
           </Button>
         )}

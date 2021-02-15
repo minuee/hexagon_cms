@@ -1,2 +1,2 @@
-export { MemberList } from "./List";
-export { MemberDetail } from "./Detail";
+export { ManageMemberList } from "./List";
+export { ManageMemberDetail } from "./Detail";
