@@ -197,12 +197,27 @@ export const apiObject = {
       return [];
     }
   },
-  updateMemberDetail: async ({ member_pk, grade_code, img_url, member_type }) => {
+  modifyMemberDetail: async ({
+    member_pk,
+    company_type,
+    company_class,
+    company_address,
+    company_zipcode,
+    company_ceo,
+    company_phone,
+    email,
+    img_url,
+  }) => {
     try {
       let response = await axios.put(`/cms/member/modify/${member_pk}`, {
-        grade_code,
+        company_type,
+        company_class,
+        company_address,
+        company_zipcode,
+        company_ceo,
+        company_phone: encrypt(company_phone),
+        email: encrypt(email),
         img_url,
-        member_type,
       });
 
       return response;

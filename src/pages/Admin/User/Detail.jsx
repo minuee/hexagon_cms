@@ -98,7 +98,7 @@ const reward_history_column = [
   {
     field: "reward_point",
     title: "리워드액",
-    render: ({ reward_point }) => `+${price(reward_point)}원`,
+    render: ({ reward_point }) => (price(reward_point) ? `+${price(reward_point)}원` : "-"),
     cellStyle: { textAlign: "right" },
   },
 ];
@@ -106,7 +106,7 @@ const reward_history_column = [
 export const UserDetail = () => {
   const classes = useStyles();
   const { member_pk } = useParams();
-  const { control, register, reset, watch, handleSubmit } = useForm();
+  const { control, register, reset, setValue, watch, handleSubmit } = useForm();
   const cur_grade = grade_benefits[watch("grade_code")];
 
   const [userInfo, setUserInfo] = useState();
@@ -121,36 +121,47 @@ export const UserDetail = () => {
       ...data,
       grade_code: data.grade_code,
       member_type: data.member_type,
-      lisence_img: [{ file: null, path: data.img_url }],
+      lisence_img: [],
     });
+    setValue("lisence_img", [{ file: null, path: data.img_url }]);
   }
   async function getUserReward() {
     let data = await apiObject.getMemberRewardList({ member_pk, page: 1 });
-
     setRewardList(data);
   }
 
   async function approveUser() {
+    if (!window.confirm("해당 회원을 회원가입 승인하시겠습니까?")) return;
+
     await apiObject.approveMembers({
       member_array: [{ member_pk }],
     });
-
     getUserDetail();
   }
-  async function modifyUser(data) {
-    await apiObject.updateMemberDetail({
-      ...data,
+  async function modifyUser(form) {
+    if (!form.lisence_img) {
+      alert("사업자등록증 이미지를 첨부해주세요");
+      return;
+    }
+    if (!window.confirm("해당 유저의 정보를 수정하시겠습니까?")) {
+      return;
+    }
+
+    let paths = await apiObject.uploadImageMultiple({ img_arr: form.lisence_img, page: "member" });
+    await apiObject.modifyMemberDetail({
+      ...form,
       member_pk,
-      img_url: userInfo.img_url,
-      member_type: "Normal",
+      company_phone: form.phone,
+      img_url: paths?.[0],
     });
 
-    // console.log(data.lisence_img?.[0]?.file);
+    // console.log(form.lisence_img?.[0]?.file);
     // let path = await apiObject.uploadImage({
-    //   file: data.lisence_img?.[0]?.file,
+    //   file: form.lisence_img?.[0]?.file,
     // });
 
-    getUserDetail();
+    // getUserDetail();
+    // console.log(form);
   }
 
   useEffect(() => {
@@ -164,7 +175,7 @@ export const UserDetail = () => {
         유저 정보 및 리워드 상세
       </Typography>
 
-      <Box my={2}>
+      <Box mt={2}>
         <Box className={classes.header_box}>
           <Typography variant="h6" fontWeight="500">
             등급
@@ -191,19 +202,132 @@ export const UserDetail = () => {
           </Typography>
 
           <Typography textAlign="right" variant="h5" fontWeight="700">
-            {price(userInfo?.accumulate_amount) || "-"} 원
+            {price(userInfo?.reward_point) || "-"} 원
           </Typography>
         </Box>
       </Box>
 
+      <Box mt={4} mb={1}>
+        <Typography variant="h5" fontWeight="500">
+          사업자 정보
+        </Typography>
+      </Box>
       <RowTable width={"70%"}>
         <TableRow>
-          <TableCell>이름</TableCell>
+          <TableCell>상호명</TableCell>
           <TableCell>{userInfo?.name}</TableCell>
         </TableRow>
         <TableRow>
-          <TableCell>코드번호</TableCell>
+          <TableCell>업종</TableCell>
+          <TableCell>
+            <TextField
+              size="small"
+              fullWidth
+              name="company_class"
+              placeholder="업종"
+              inputRef={register({ required: true })}
+              disabled={!userInfo?.approval_dt}
+            />
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>업태</TableCell>
+          <TableCell>
+            <TextField
+              size="small"
+              fullWidth
+              name="company_type"
+              placeholder="업태"
+              inputRef={register({ required: true })}
+              disabled={!userInfo?.approval_dt}
+            />
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>주소</TableCell>
+          <TableCell>
+            <TextField
+              size="small"
+              fullWidth
+              name="company_address"
+              placeholder="주소"
+              inputRef={register({ required: true })}
+              disabled={!userInfo?.approval_dt}
+            />
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>사업자등록번호</TableCell>
+          <TableCell>{userInfo?.user_id}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>사업자등록증 첨부</TableCell>
+          <TableCell>
+            <Dropzone control={control} name="lisence_img" width="90px" readOnly={!userInfo?.approval_dt} />
+          </TableCell>
+        </TableRow>
+      </RowTable>
+
+      <Box mt={4} mb={1}>
+        <Typography variant="h5" fontWeight="500">
+          대표자 정보
+        </Typography>
+      </Box>
+      <RowTable width={"70%"}>
+        <TableRow>
+          <TableCell>대표자명</TableCell>
+          <TableCell>
+            <TextField
+              size="small"
+              fullWidth
+              name="company_ceo"
+              placeholder="대표자명"
+              inputRef={register({ required: true })}
+              disabled={!userInfo?.approval_dt}
+            />
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>전화번호</TableCell>
+          <TableCell>
+            <TextField
+              size="small"
+              fullWidth
+              name="phone"
+              placeholder="전화번호"
+              inputRef={register({ required: true })}
+              disabled={!userInfo?.approval_dt}
+            />
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>대표자 이메일</TableCell>
+          <TableCell>
+            <TextField
+              size="small"
+              fullWidth
+              name="email"
+              placeholder="대표자 이메일"
+              inputRef={register({ required: true })}
+              disabled={!userInfo?.approval_dt}
+            />
+          </TableCell>
+        </TableRow>
+      </RowTable>
+
+      <Box mt={4} mb={1}>
+        <Typography variant="h5" fontWeight="500">
+          유저 정보
+        </Typography>
+      </Box>
+      <RowTable width={"70%"}>
+        <TableRow>
+          <TableCell>관리코드</TableCell>
           <TableCell>{userInfo?.special_code}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>가입일자</TableCell>
+          <TableCell>{dayjs.unix(userInfo?.reg_dt).format("YYYY-MM-DD")}</TableCell>
         </TableRow>
         {userInfo?.approval_dt && (
           <TableRow>
@@ -212,87 +336,28 @@ export const UserDetail = () => {
           </TableRow>
         )}
         <TableRow>
-          <TableCell>휴대폰번호</TableCell>
-          <TableCell>
-            <TextField size="small" name="phone" placeholder="휴대폰번호" inputRef={register({ required: true })} />
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>이메일</TableCell>
-          <TableCell>
-            <TextField size="small" name="email" placeholder="이메일" inputRef={register({ required: true })} />
-          </TableCell>
-        </TableRow>
-        {/* <TableRow>
-          <TableCell>권한</TableCell>
+          <TableCell>상태</TableCell>
           <TableCell>
             <Controller
-              as={
-                <TextField
-                  select
-                  size="small"
-                  variant="outlined"
-                  // readOnly={isModify}
-                >
-                  <MenuItem value={"Normal"}>일반</MenuItem>
-                  <MenuItem value={"Sales"}>영업사원</MenuItem>
-                  <MenuItem value={"Admin"}>관리자</MenuItem>
-                  <MenuItem value={"ETC"}>기타</MenuItem>
-                </TextField>
-              }
+              render={({ onChange, ...props }) => (
+                <RadioGroup row {...props} onChange={(e) => onChange(JSON.parse(e.target.value))}>
+                  <FormControlLabel value={false} control={<Radio color="primary" />} label="사용중" />
+                  <FormControlLabel value={true} control={<Radio color="primary" />} label="사용중지" />
+                </RadioGroup>
+              )}
+              name="is_retired"
               control={control}
-              name="member_type"
-              defaultValue=""
+              defaultValue={false}
             />
           </TableCell>
-        </TableRow> */}
+        </TableRow>
         <TableRow>
           <TableCell>등급</TableCell>
-          <TableCell>
-            <Controller
-              as={
-                <RadioGroup row>
-                  <FormControlLabel value="Bronze" control={<Radio color="primary" />} label="브론즈" />
-                  <FormControlLabel value="Silver" control={<Radio color="primary" />} label="실버" />
-                  <FormControlLabel value="Gold" control={<Radio color="primary" />} label="골드" />
-                  <FormControlLabel value="Platinum" control={<Radio color="primary" />} label="플래티넘" />
-                </RadioGroup>
-              }
-              name="grade_code"
-              control={control}
-              defaultValue="Bronze"
-            />
-          </TableCell>
-        </TableRow>
-        {/* {userInfo?.approval && (
-          <TableRow>
-            <TableCell>영업사원 코드</TableCell>
-            <TableCell>{userInfo?.salesman_code}</TableCell>
-          </TableRow>
-        )} */}
-        <TableRow>
-          <TableCell>적립률</TableCell>
-          <TableCell>{cur_grade?.rate * 100} %</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>사업자등록증 첨부</TableCell>
-          <TableCell>
-            <Dropzone
-              control={control}
-              name="lisence_img"
-              width="90px"
-              ratio={1}
-              // readOnly={isModify}
-            />
-          </TableCell>
+          <TableCell>{userInfo?.grade_name}</TableCell>
         </TableRow>
       </RowTable>
 
-      <Box
-        py={2}
-        display="flex"
-        // justifyContent="center"
-      >
+      <Box py={2} mb={4} display="flex">
         {userInfo?.approval_dt ? (
           <Button color="primary" onClick={handleSubmit(modifyUser)}>
             정보 수정
