@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
+import { price, decrypt } from "common";
+import { apiObject } from "api";
 import dayjs from "dayjs";
-import { price } from "common";
 import qs from "query-string";
+import jwt from "jsonwebtoken";
 
 import {
   Grid,
@@ -66,18 +68,28 @@ export const Setting = ({ location }) => {
 const ModifyInfo = () => {
   const { register, reset, handleSubmit, errors } = useForm();
 
+  const [memberInfo, setMemberInfo] = useState();
+
   async function getInfo() {
+    let member_pk = jwt.decode(localStorage.getItem("hexagon_cms_token")).member_pk;
+    let data = await apiObject.getMemberDetail({ member_pk });
+
+    console.log(data);
+    setMemberInfo(data);
     reset({
-      name: "전지현",
-      id: "jhlove1030",
-      email: "jhlove1030@naver.com",
-      phone: "01088716232",
+      email: data?.email,
+      phone: data?.phone,
     });
   }
   async function modifyInfo(form) {
-    if (!window.confirm("입력한 정보로 수정하시겠습니까?")) return;
+    if (!window.confirm("입력한 내용으로 정보를 수정하시겠습니까?")) return;
 
-    console.log(form);
+    await apiObject.modifySalesman({
+      member_pk: memberInfo.member_pk,
+      name: memberInfo.name,
+      is_retired: false,
+      ...form,
+    });
   }
 
   useEffect(() => {
@@ -89,34 +101,12 @@ const ModifyInfo = () => {
       <RowTable width={"70%"}>
         <TableRow>
           <TableCell>이름</TableCell>
-          <TableCell>
-            <Typography>전지현</Typography>
-            {/* <TextField
-              size="small"
-              variant="outlined"
-              fullWidth
-              name="name"
-              placeholder="이름을 입력해주세요"
-              inputRef={register({ required: true })}
-              error={!!errors.name}
-            /> */}
-          </TableCell>
+          <TableCell>{memberInfo?.name}</TableCell>
         </TableRow>
 
         <TableRow>
           <TableCell>아이디</TableCell>
-          <TableCell>
-            <Typography>jhlove1030</Typography>
-            {/* <TextField
-              size="small"
-              variant="outlined"
-              fullWidth
-              name="id"
-              placeholder="아이디를 입력해주세요"
-              inputRef={register({ required: true })}
-              error={!!errors.id}
-            /> */}
-          </TableCell>
+          <TableCell>{memberInfo?.user_id}</TableCell>
         </TableRow>
 
         <TableRow>
@@ -124,7 +114,6 @@ const ModifyInfo = () => {
           <TableCell>
             <TextField
               size="small"
-              variant="outlined"
               fullWidth
               name="email"
               placeholder="이메일을 입력해주세요"
@@ -139,7 +128,6 @@ const ModifyInfo = () => {
           <TableCell>
             <TextField
               size="small"
-              variant="outlined"
               fullWidth
               name="phone"
               placeholder="휴대폰 번호를 입력해주세요"
@@ -151,7 +139,7 @@ const ModifyInfo = () => {
       </RowTable>
 
       <Box mt={4}>
-        <Button variant="contained" color="primary" onClick={handleSubmit(modifyInfo)}>
+        <Button color="primary" onClick={handleSubmit(modifyInfo)}>
           수정
         </Button>
       </Box>
@@ -161,90 +149,88 @@ const ModifyInfo = () => {
 
 const ModifyPassword = () => {
   const classes = useStyles();
-  const { register, handleSubmit, errors, setError } = useForm();
+  const { register, handleSubmit, reset, errors, setError } = useForm();
 
-  const [isPasswordConfirmed, setIsPasswordConfirmed] = useState(false);
-
-  async function checkCurPassword(form) {
-    console.log(form);
-
-    if (form.cur_password === "yes1234") {
-      setIsPasswordConfirmed(true);
-    } else {
-      setError("cur_password", {
-        type: "manual",
-        message: "비밀번호가 틀립니다",
-      });
-    }
-  }
   async function modifyPassword(form) {
-    console.log(form);
-
-    if (form.new_password_1 === form.new_password_2) {
-      alert("비밀번호 변경이 완료되었습니다!");
-      setIsPasswordConfirmed(false);
-    } else {
+    if (form.new_password_1 !== form.new_password_2) {
       setError("new_password_1", {});
-      setError("new_password_2", {});
+      setError("new_password_2", {
+        type: "validate",
+        message: "새로운 비밀번호가 일치하지 않습니다",
+      });
+      return;
+    }
+
+    if (!window.confirm("입력한 정보로 비밀번호를 수정하시겠습니까?")) return;
+
+    let member_pk = jwt.decode(localStorage.getItem("hexagon_cms_token")).member_pk;
+    let resp = await apiObject.modifySalesmanPassword({
+      member_pk,
+      nowPassword: form.cur_password,
+      newPassword: form.new_password_1,
+    });
+
+    if (resp.data?.code === "1002") {
+      setError("cur_password", {
+        type: "validate",
+        message: "현재 비밀번호가 올바르지 않습니다",
+      });
+    } else {
+      alert("비밀번호가 수정되었습니다");
+      reset({
+        cur_password: "",
+        new_password_1: "",
+        new_password_2: "",
+      });
     }
   }
 
   return (
-    <Box p={2} bgcolor="#fff">
-      {!isPasswordConfirmed && (
-        <Box>
-          <Box mb={2}>
-            <Typography>보안을 위해 현재 비밀번호를 입력해주세요 (yes1234)</Typography>
-          </Box>
-          <TextField
-            className={classes.password_input}
-            variant="outlined"
-            type="password"
-            name="cur_password"
-            placeholder="현재 비밀번호를 입력해주세요"
-            inputRef={register({ required: true })}
-            error={!!errors.cur_password}
-            onKeyPress={(e) => e.key === "Enter" && handleSubmit(checkCurPassword)()}
-          />
-          <Box mt={2}>
-            <Button variant="contained" color="primary" onClick={handleSubmit(checkCurPassword)}>
-              확인
-            </Button>
-          </Box>
+    <Box p={2} width="70%" bgcolor="#fff">
+      <Box>
+        <Box mb={1}>
+          <Typography>현재 비밀번호</Typography>
         </Box>
-      )}
+        <TextField
+          className={classes.password_input}
+          type="password"
+          name="cur_password"
+          placeholder="현재 비밀번호를 입력해주세요"
+          inputRef={register({ required: "현재 비밀번호를 입력해주세요" })}
+          error={!!errors.cur_password}
+        />
+        <Typography variant="subtitle1">{errors.cur_password?.message}</Typography>
+      </Box>
 
-      {isPasswordConfirmed && (
-        <Box>
-          <Box mb={2}>
-            <Typography>변경할 비밀번호를 입력해주세요</Typography>
-          </Box>
-          <TextField
-            className={classes.password_input}
-            variant="outlined"
-            type="password"
-            name="new_password_1"
-            placeholder="변경할 비밀번호를 입력해주세요"
-            inputRef={register({ required: true })}
-            error={!!errors.new_password_1}
-          />
-          <TextField
-            className={classes.password_input}
-            variant="outlined"
-            type="password"
-            name="new_password_2"
-            placeholder="변경할 비밀번호를 다시 입력해주세요"
-            inputRef={register({ required: true })}
-            error={!!errors.new_password_2}
-            onKeyPress={(e) => e.key === "Enter" && handleSubmit(modifyPassword)()}
-          />
-          <Box mt={2}>
-            <Button variant="contained" color="primary" onClick={handleSubmit(modifyPassword)}>
-              변경
-            </Button>
-          </Box>
+      <Box mt={4}>
+        <Box mb={1}>
+          <Typography>변경할 비밀번호</Typography>
         </Box>
-      )}
+        <TextField
+          className={classes.password_input}
+          type="password"
+          name="new_password_1"
+          placeholder="변경할 비밀번호를 입력해주세요"
+          inputRef={register({ required: true })}
+          error={!!errors.new_password_1}
+        />
+        <TextField
+          className={classes.password_input}
+          type="password"
+          name="new_password_2"
+          placeholder="변경할 비밀번호를 다시 입력해주세요"
+          inputRef={register({ required: "변경할 비밀번호를 입력해주세요" })}
+          error={!!errors.new_password_2}
+          onKeyPress={(e) => e.key === "Enter" && handleSubmit(modifyPassword)()}
+        />
+        <Typography variant="subtitle1">{errors.new_password_2?.message}</Typography>
+      </Box>
+
+      <Box mt={3}>
+        <Button color="primary" onClick={handleSubmit(modifyPassword)}>
+          변경
+        </Button>
+      </Box>
     </Box>
   );
 };

@@ -58,5 +58,6 @@ export const theme = createMuiTheme({
     h4: { fontWeight: "400" },
     h5: { fontWeight: "400" },
     h6: { fontWeight: "400" },
+    subtitle1: { color: "red" },
   },
 });

@@ -57,8 +57,6 @@ const Header = () => {
       });
       localStorage.removeItem("hexagon_cms_token");
       localStorage.removeItem("hexagon_is_salesman");
-      localStorage.removeItem("hexagon_member_pk");
-      localStorage.removeItem("hexagon_member_name");
     }
   }
 

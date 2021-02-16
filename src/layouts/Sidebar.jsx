@@ -1,6 +1,5 @@
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
 
 import { Box, makeStyles } from "@material-ui/core";
 import { KeyboardArrowRight } from "@material-ui/icons";
@@ -91,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Sidebar = () => {
-  const { isSalesman } = useSelector((state) => state.reducer);
+  const isSalesman = JSON.parse(localStorage.getItem("hexagon_is_salesman"));
   const classes = useStyles();
   const location = useLocation();
 

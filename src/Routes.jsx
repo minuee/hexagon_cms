@@ -24,11 +24,11 @@ import { IncentiveList, IncentiveDetail, UserPurchaseDetail } from "./pages/Sale
 import { Setting } from "./pages/Salesman/Setting";
 
 const Routes = () => {
-  const { userState, isSalesman } = useSelector((state) => state.reducer);
+  const { userState } = useSelector((state) => state.reducer);
   const dispatch = useDispatch();
 
   let token = localStorage.getItem("hexagon_cms_token");
-  let is_salesman = localStorage.getItem("hexagon_is_salesman");
+  let is_salesman = JSON.parse(localStorage.getItem("hexagon_is_salesman"));
 
   useEffect(() => {
     if (!token) {
@@ -41,13 +41,13 @@ const Routes = () => {
   useEffect(() => {
     dispatch({
       type: "SET_IS_SALESMAN",
-      payload: JSON.parse(is_salesman),
+      payload: is_salesman,
     });
   }, [is_salesman]);
 
   return (
     <BrowserRouter>
-      {userState === "NOT_SIGN" ? <AuthRoutes /> : isSalesman ? <SalesmanRoutes /> : <AdminRoutes />}
+      {userState === "NOT_SIGN" ? <AuthRoutes /> : is_salesman ? <SalesmanRoutes /> : <AdminRoutes />}
     </BrowserRouter>
   );
 };

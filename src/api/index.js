@@ -1099,4 +1099,15 @@ export const apiObject = {
       console.log({ e });
     }
   },
+  modifySalesmanPassword: async ({ member_pk, nowPassword, newPassword }) => {
+    try {
+      let response = await axios.patch(`/cms/salesman/modify/pass/${member_pk}`, {
+        nowPassword,
+        newPassword,
+      });
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
 };
