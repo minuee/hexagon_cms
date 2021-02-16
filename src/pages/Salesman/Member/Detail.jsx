@@ -53,7 +53,12 @@ const useStyles = makeStyles((theme) => ({
   },
   lisence_img: {
     width: "180px",
-    height: "180px",
+    height: "360px",
+
+    "& img": {
+      objectFit: "contain",
+      objectPosition: "center center",
+    },
   },
 }));
 
@@ -91,7 +96,7 @@ const grade_benefits = {
   },
 };
 
-const purchase_history_column = [
+const reward_history_column = [
   {
     title: "번호",
     field: "no",
@@ -108,57 +113,30 @@ const purchase_history_column = [
   },
   { title: "주문상태", field: "delivery_state", width: 160 },
 ];
-const purchase_history_rows = [
-  {
-    no: 1,
-    purchase_dt: 1890298392,
-    purchase_amount: 2000000,
-    delivery_state: "배송중",
-  },
-  {
-    no: 2,
-    purchase_dt: 1710298392,
-    purchase_amount: 100000,
-    delivery_state: "주문취소",
-  },
-  {
-    no: 3,
-    purchase_dt: 1670298392,
-    purchase_amount: 4200000,
-    delivery_state: "배송완료",
-  },
-];
 
 export const ManageMemberDetail = () => {
   const classes = useStyles();
   const { member_pk } = useParams();
-  const { control, register, reset, watch, handleSubmit } = useForm();
+  const { control, reset, setValue, watch, handleSubmit } = useForm();
   const cur_grade = grade_benefits[watch("grade_code")];
 
-  const [userInfo, setUserInfo] = useState();
-  const [rewardList, setPurchaseList] = useState();
-  const [rewardPage, setRewardPage] = useState(1);
+  const [memberInfo, setMemberInfo] = useState();
 
-  async function getUserDetail() {
+  async function getMemberDetail() {
     let data = await apiObject.getMemberDetail({ member_pk });
 
-    setUserInfo(data);
+    setMemberInfo(data);
     reset({
       ...data,
       grade_code: data.grade_code,
       member_type: data.member_type,
-      lisence_img: [{ file: null, path: data.img_url }],
+      lisence_img: [],
     });
-  }
-  async function getUserPurchaseHistory() {
-    // let data = await apiObject.getMemberRewardList({ member_pk, page: 1 });
-    // setPurchaseList(data);
-    setPurchaseList(purchase_history_rows);
+    setValue("lisence_img", [{ file: null, path: data.img_url }]);
   }
 
   useEffect(() => {
-    getUserDetail();
-    getUserPurchaseHistory();
+    getMemberDetail();
   }, [member_pk]);
 
   return (
@@ -187,84 +165,122 @@ export const ManageMemberDetail = () => {
             </Box>
           </Box>
         </Box>
-
-        {/* <Box className={classes.header_box}>
-          <Typography variant="h6" fontWeight="500">
-            적립금 현황
-          </Typography>
-
-          <Typography textAlign="right" variant="h5" fontWeight="700">
-            {price(userInfo?.accumulate_amount) || "-"} 원
-          </Typography>
-        </Box> */}
       </Box>
 
+      <Box mt={4} mb={1}>
+        <Typography variant="h5" fontWeight="500">
+          사업자 정보
+        </Typography>
+      </Box>
       <RowTable width={"70%"}>
         <TableRow>
-          <TableCell>이름</TableCell>
-          <TableCell>{userInfo?.name}</TableCell>
+          <TableCell>상호명</TableCell>
+          <TableCell>{memberInfo?.name}</TableCell>
         </TableRow>
         <TableRow>
-          <TableCell>코드번호</TableCell>
-          <TableCell>{userInfo?.special_code}</TableCell>
+          <TableCell>업종</TableCell>
+          <TableCell>{memberInfo?.company_class}</TableCell>
         </TableRow>
-        {userInfo?.approval_dt && (
-          <TableRow>
-            <TableCell>가입승인일자</TableCell>
-            <TableCell>{dayjs.unix(userInfo?.approval_dt).format("YYYY-MM-DD")}</TableCell>
-          </TableRow>
-        )}
         <TableRow>
-          <TableCell>휴대폰번호</TableCell>
+          <TableCell>업태</TableCell>
+          <TableCell>{memberInfo?.company_type}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>주소</TableCell>
+          <TableCell>{memberInfo?.company_address}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>사업자등록번호</TableCell>
+          <TableCell>{memberInfo?.user_id}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>사업자등록증 첨부</TableCell>
           <TableCell>
-            <Typography>{userInfo?.phone}</Typography>
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>이메일</TableCell>
-          <TableCell>
-            <Typography>{userInfo?.email}</Typography>
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>등급</TableCell>
-          <TableCell>
-            <Typography>{userInfo?.grade_name}</Typography>
-          </TableCell>
-        </TableRow>
-        {/* {userInfo?.approval && (
-          <TableRow>
-            <TableCell>영업사원 코드</TableCell>
-            <TableCell>{userInfo?.salesman_code}</TableCell>
-          </TableRow>
-        )} */}
-        <TableRow>
-          <TableCell>적립률</TableCell>
-          <TableCell>{cur_grade?.rate * 100} %</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>사업자등록증</TableCell>
-          <TableCell>
-            <Avatar className={classes.lisence_img} src={getFullImgURL(userInfo?.img_url)} variant="square" />
-            {/* <Dropzone
-              control={control}
-              name="lisence_img"
-              width="90px"
-              ratio={1}
-              // readOnly={isModify}
-            /> */}
+            <Avatar variant="square" className={classes.lisence_img} src={getFullImgURL(memberInfo?.img_url)} />
           </TableCell>
         </TableRow>
       </RowTable>
 
-      <Box mt={4} mb={2}>
-        <Typography fontWeight="500">구매 히스토리</Typography>
+      <Box mt={4} mb={1}>
+        <Typography variant="h5" fontWeight="500">
+          대표자 정보
+        </Typography>
       </Box>
-      <ColumnTable columns={purchase_history_column} data={rewardList} />
-      <Box position="relative" py={6}>
-        <Pagination page={rewardPage} count={1} />
-        {/* <Pagination page={rewardPage} setPage={setRewardPage} count={Math.ceil(+rewardList?.[0]?.total / 10)} /> */}
+      <RowTable width={"70%"}>
+        <TableRow>
+          <TableCell>대표자명</TableCell>
+          <TableCell>{memberInfo?.company_ceo}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>전화번호</TableCell>
+
+          <TableCell>{memberInfo?.phone}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>대표자 이메일</TableCell>
+          <TableCell>{memberInfo?.email}</TableCell>
+        </TableRow>
+      </RowTable>
+
+      <Box mt={4} mb={1}>
+        <Typography variant="h5" fontWeight="500">
+          유저 정보
+        </Typography>
       </Box>
+      <RowTable width={"70%"}>
+        <TableRow>
+          <TableCell>관리코드</TableCell>
+          <TableCell>{memberInfo?.special_code}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>가입일자</TableCell>
+          <TableCell>{dayjs.unix(memberInfo?.reg_dt).format("YYYY-MM-DD")}</TableCell>
+        </TableRow>
+        {memberInfo?.approval_dt && (
+          <TableRow>
+            <TableCell>가입승인일자</TableCell>
+            <TableCell>{dayjs.unix(memberInfo?.approval_dt).format("YYYY-MM-DD")}</TableCell>
+          </TableRow>
+        )}
+        <TableRow>
+          <TableCell>상태</TableCell>
+          <TableCell>{memberInfo?.is_retired ? "사용중" : "사용중지"}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>등급</TableCell>
+          <TableCell>{memberInfo?.grade_name}</TableCell>
+        </TableRow>
+      </RowTable>
+
+      <MemberRewardTable member_pk={member_pk} />
     </Box>
+  );
+};
+
+const MemberRewardTable = ({ member_pk }) => {
+  const [rewardList, setRewardList] = useState();
+  const [rewardPage, setRewardPage] = useState();
+
+  async function getMemberReward() {
+    let data = await apiObject.getMemberRewardList({ member_pk, page: rewardPage });
+    setRewardList(data);
+  }
+
+  useEffect(() => {
+    getMemberReward();
+  }, [member_pk, rewardPage]);
+
+  return (
+    <>
+      <Box my={2}>
+        <Typography fontWeight="500">리워드 히스토리</Typography>
+      </Box>
+
+      <ColumnTable columns={reward_history_column} data={rewardList} />
+
+      <Box position="relative" py={6}>
+        <Pagination page={rewardPage} setPage={setRewardPage} count={Math.ceil(+rewardList?.[0]?.total / 10)} />
+      </Box>
+    </>
   );
 };

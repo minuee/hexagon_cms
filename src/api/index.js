@@ -178,7 +178,7 @@ export const apiObject = {
       return {};
     }
   },
-  getMemberRewardList: async ({ member_pk, page, paginate = 10 }) => {
+  getMemberRewardList: async ({ member_pk, page = 1, paginate = 10 }) => {
     try {
       let data = await axios.get(`/cms/member/reward/list/${member_pk}`, {
         params: { page, paginate },

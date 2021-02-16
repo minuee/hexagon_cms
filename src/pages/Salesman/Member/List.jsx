@@ -8,7 +8,7 @@ import qs from "query-string";
 import { Grid, Box, makeStyles, TextField, InputAdornment, IconButton } from "@material-ui/core";
 import { DescriptionOutlined, Search, ArrowDropDown, ArrowDropUp } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination } from "components";
+import { ColumnTable, Pagination, SearchBox } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header_buttons: {
@@ -78,8 +78,6 @@ export const ManageMemberList = ({ location }) => {
   const query = qs.parse(location.search);
 
   const [memberList, setMemberList] = useState();
-  const [selectedMembers, setSelectedMembers] = useState([]);
-  const [searchWord, setSearchWord] = useState("");
 
   async function getMemberList() {
     let data = await apiObject.getMemberList({
@@ -87,19 +85,6 @@ export const ManageMemberList = ({ location }) => {
     });
 
     setMemberList(data);
-  }
-  async function approveSignIn() {
-    // let member_array = [];
-    // selectedMembers.forEach((item) => {
-    //   member_array.push({
-    //     member_pk: item.member_pk,
-    //   });
-    // });
-    // if (window.confirm("선택한 유저들을 회원가입 승인하시겠습니까?")) {
-    //   let resp = await apiObject.approveMembers({ member_array });
-    //   console.log(resp);
-    //   getMemberList();
-    // }
   }
 
   function handleQueryChange(q, v) {
@@ -128,17 +113,13 @@ export const ManageMemberList = ({ location }) => {
 
         <Box className={classes.header_buttons}>
           {header_button_list.map((item, index) => (
-            <Button onClick={() => handleQueryChange("sort_item", item.value)} key={index}>
+            <Button variant="text" onClick={() => handleQueryChange("sort_item", item.value)} key={index}>
               <Typography fontWeight={query.sort_item === item.value ? "700" : undefined}>{item.label}</Typography>
               {query.sort_item === item.value && (
                 <>{query.sort_type === "DESC" ? <ArrowDropDown /> : <ArrowDropUp />}</>
               )}
             </Button>
           ))}
-
-          {/* <Button variant="contained" color="primary" ml={3} onClick={approveSignIn}>
-            회원가입 승인
-          </Button> */}
         </Box>
       </Grid>
 
@@ -147,39 +128,17 @@ export const ManageMemberList = ({ location }) => {
           columns={member_list_columns}
           data={memberList}
           onRowClick={(row) => history.push(`/member/${row.member_pk}`)}
-          // selection
-          // onSelectionChange={setSelectedMembers}
         />
       </Box>
 
       <Grid container className={classes.table_footer}>
-        {/* <Button variant="contained" p={1}>
-          <DescriptionOutlined />
-          엑셀저장
-        </Button> */}
-
         <Pagination
           page={query.page || 1}
           setPage={handleQueryChange}
           count={Math.ceil(+memberList?.[0]?.total / 10)}
         />
 
-        <TextField
-          name="search_word"
-          variant="outlined"
-          value={searchWord}
-          onChange={(e) => setSearchWord(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleQueryChange("search_word", searchWord)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <IconButton onClick={() => handleQueryChange("search_word", searchWord)}>
-                  <Search />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
+        <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} />
       </Grid>
     </Box>
   );
