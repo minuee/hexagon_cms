@@ -15,7 +15,6 @@ import {
   TextField,
   MenuItem,
   InputAdornment,
-  Avatar,
   Checkbox,
   FormControlLabel,
   TableRow,

@@ -6,10 +6,10 @@ import { price, getFullImgURL } from "common";
 import dayjs from "dayjs";
 import qs from "query-string";
 
-import { Grid, Box, makeStyles, TextField, InputAdornment, Avatar } from "@material-ui/core";
+import { Grid, Box, makeStyles, TextField, InputAdornment } from "@material-ui/core";
 import { DescriptionOutlined, Search } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination } from "components";
+import { ColumnTable, Pagination, ImageBox } from "components";
 
 const useStyles = makeStyles((theme) => ({
   table_header: {
@@ -82,7 +82,9 @@ export const PopupList = ({ location }) => {
   const cur_popup_columns = [
     {
       title: "이미지",
-      render: ({ img_url }) => <Avatar variant="square" src={getFullImgURL(img_url)} className={classes.table_image} />,
+      render: ({ img_url }) => (
+        <ImageBox src={getFullImgURL(img_url)} display="inline-block" width="60px" height="60px" />
+      ),
       width: 180,
     },
     {
@@ -100,7 +102,9 @@ export const PopupList = ({ location }) => {
   const prev_popup_columns = [
     {
       title: "이미지",
-      render: ({ img_url }) => <Avatar variant="square" src={getFullImgURL(img_url)} className={classes.table_image} />,
+      render: ({ img_url }) => (
+        <ImageBox src={getFullImgURL(img_url)} display="inline-block" width="60px" height="60px" />
+      ),
       width: 180,
     },
     {

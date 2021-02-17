@@ -3,5 +3,6 @@ export { RowTable } from "./RowTable";
 export { Pagination } from "./Pagination";
 export { SearchBox } from "./SearchBox";
 
+export { ImageBox } from "./ImageBox";
 export { RatioBox } from "./RatioBox";
 export { Dropzone } from "./Dropzone";

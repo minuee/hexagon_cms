@@ -1,10 +1,25 @@
 import React from "react";
-import { Box } from "@material-ui/core";
+import { makeStyles, Box } from "@material-ui/core";
 import { Pagination } from "@material-ui/lab";
 
+const useStyles = makeStyles((theme) => ({
+  container: {
+    position: "absolute",
+    left: 0,
+
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+
+    width: "100%",
+    height: "0px",
+  },
+}));
+
 const MyPagination = ({ page = 1, setPage = () => {}, name = "page", count }) => {
+  const classes = useStyles();
   return (
-    <Box position="absolute" display="flex" justifyContent="center" alignItems="center" width="100%" height="0px">
+    <Box className={classes.container}>
       <Pagination
         color="primary"
         count={count}

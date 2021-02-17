@@ -5,23 +5,14 @@ import { price, getFullImgURL } from "common";
 import dayjs from "dayjs";
 import qs from "query-string";
 
-import {
-  Grid,
-  Box,
-  makeStyles,
-  TextField,
-  InputAdornment,
-  Avatar,
-  Select,
-  MenuItem,
-  IconButton,
-} from "@material-ui/core";
+import { Grid, Box, makeStyles, TextField, InputAdornment, Select, MenuItem, IconButton } from "@material-ui/core";
 import { DescriptionOutlined, Search, EventNote } from "@material-ui/icons";
 import { DatePicker } from "@material-ui/pickers";
 
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, SearchBox } from "components";
 import { apiObject } from "api";
+import { ImageBox } from "components/ImageBox";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -79,7 +70,7 @@ export const CategoryList = ({ location }) => {
     {
       title: "로고",
       render: ({ category_logo }) => (
-        <Avatar variant="square" src={getFullImgURL(category_logo)} className={classes.logo_box} />
+        <ImageBox src={getFullImgURL(category_logo)} display="inline-block" width="60px" height="60px" />
       ),
       width: 180,
     },

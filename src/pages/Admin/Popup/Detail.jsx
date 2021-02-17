@@ -14,7 +14,6 @@ import {
   Select,
   MenuItem,
   InputAdornment,
-  Avatar,
   TableRow,
   TableCell,
   Checkbox,
@@ -45,14 +44,6 @@ const useStyles = makeStyles((theme) => ({
 
     "& > *": {
       marginRight: theme.spacing(2),
-    },
-
-    "& .MuiAvatar-root": {
-      width: theme.spacing(15),
-      height: theme.spacing(10),
-      "& img": {
-        objectFit: "contain",
-      },
     },
   },
 }));

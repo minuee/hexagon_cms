@@ -14,7 +14,6 @@ import {
   Select,
   MenuItem,
   InputAdornment,
-  Avatar,
   TableRow,
   TableCell,
   Checkbox,

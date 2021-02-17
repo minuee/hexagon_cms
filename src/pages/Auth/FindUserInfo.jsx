@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 
-import { makeStyles, Avatar, Box, Container, TextField, InputAdornment } from "@material-ui/core";
-import { Typography, Button } from "components/materialui";
+import { makeStyles, Box, Container, TextField, InputAdornment } from "@material-ui/core";
 import { PhoneOutlined, LockOutlined } from "@material-ui/icons";
+import { Typography, Button } from "components/materialui";
+import { ImageBox } from "components";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -16,15 +17,6 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-  },
-
-  logo: {
-    width: "20rem",
-    height: "7rem",
-    marginBottom: "2rem",
-    "& img": {
-      objectFit: "contain",
-    },
   },
 
   form_wrapper: {
@@ -78,7 +70,7 @@ export const FindUserInfo = ({}) => {
   return (
     <Container className={classes.container} maxWidth="md">
       <Box className={classes.wrapper}>
-        <Avatar className={classes.logo} variant="square" src="/image/logo_color.png" />
+        <ImageBox src="/image/logo_color.png" width="20rem" height="7rem" mb={4} />
 
         <Box className={classes.form_wrapper} mb={7}>
           <Typography>아이디/패스워드찾기</Typography>

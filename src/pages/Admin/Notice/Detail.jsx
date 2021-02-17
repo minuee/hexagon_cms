@@ -13,7 +13,6 @@ import {
   TextField,
   MenuItem,
   InputAdornment,
-  Avatar,
   TableRow,
   TableCell,
   Checkbox,

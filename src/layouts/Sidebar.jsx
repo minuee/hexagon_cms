@@ -68,6 +68,7 @@ const salesman_page = [
 
 const useStyles = makeStyles((theme) => ({
   container: {
+    minHeight: "calc(100vh - 100px)",
     width: "350px",
     background: theme.palette.secondary.main,
 

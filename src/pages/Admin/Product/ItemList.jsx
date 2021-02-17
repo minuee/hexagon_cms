@@ -3,24 +3,14 @@ import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useForm, Controller } from "react-hook-form";
 import { price, getFullImgURL } from "common";
+import { apiObject } from "api";
 import dayjs from "dayjs";
 import qs from "query-string";
 
-import {
-  Grid,
-  Box,
-  makeStyles,
-  TextField,
-  InputAdornment,
-  Avatar,
-  Select,
-  MenuItem,
-  IconButton,
-} from "@material-ui/core";
+import { Grid, Box, makeStyles, TextField, InputAdornment, Select, MenuItem, IconButton } from "@material-ui/core";
 import { DescriptionOutlined, Search } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination, SearchBox } from "components";
-import { apiObject } from "api";
+import { ColumnTable, Pagination, SearchBox, ImageBox } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -79,7 +69,7 @@ export const ItemList = ({ location }) => {
     {
       title: "상품 이미지",
       render: ({ thumb_img }) => (
-        <Avatar variant="square" src={getFullImgURL(thumb_img)} className={classes.logo_box} />
+        <ImageBox src={getFullImgURL(thumb_img)} display="inline-block" width="60px" height="60px" />
       ),
       width: 180,
     },

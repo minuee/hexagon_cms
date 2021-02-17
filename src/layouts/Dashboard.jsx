@@ -7,7 +7,7 @@ export const Dashboard = ({ children, ...props }) => {
   return (
     <Box minWidth="1280px" {...props}>
       <Header />
-      <Box display="flex" minHeight="calc(100vh - 100px)">
+      <Box display="flex">
         <Sidebar />
         <Box p={4} width="calc(100% - 350px)" bgcolor="rgba(223, 223, 223, 0.2)">
           {children}

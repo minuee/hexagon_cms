@@ -14,7 +14,6 @@ import {
   Select,
   MenuItem,
   InputAdornment,
-  Avatar,
   TableRow,
   TableCell,
   Checkbox,
@@ -26,7 +25,7 @@ import {
 import { EventNote } from "@material-ui/icons";
 import { DateTimePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, RowTable, Pagination, SearchBox, Dropzone } from "components";
+import { ColumnTable, RowTable, Pagination, SearchBox, Dropzone, ImageBox } from "components";
 
 const useStyles = makeStyles((theme) => ({
   logo_box: {
@@ -300,7 +299,7 @@ const InlinkModal = ({ open, onClose, onSelect, inlinkType }) => {
     {
       title: "상품 이미지",
       render: ({ thumb_img }) => (
-        <Avatar variant="square" src={getFullImgURL(thumb_img)} className={classes.logo_box} />
+        <ImageBox src={getFullImgURL(thumb_img)} display="inline-block" width="60px" height="60px" />
       ),
       width: 180,
     },
@@ -322,7 +321,7 @@ const InlinkModal = ({ open, onClose, onSelect, inlinkType }) => {
     {
       title: "로고",
       render: ({ category_logo }) => (
-        <Avatar variant="square" src={getFullImgURL(category_logo)} className={classes.logo_box} />
+        <ImageBox src={getFullImgURL(category_logo)} display="inline-block" width="60px" height="60px" />
       ),
       width: 180,
     },

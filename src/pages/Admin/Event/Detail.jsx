@@ -15,7 +15,6 @@ import {
   Select,
   MenuItem,
   InputAdornment,
-  Avatar,
   TableRow,
   TableCell,
   Checkbox,
@@ -31,6 +30,7 @@ import { EventNote, Search, HighlightOff } from "@material-ui/icons";
 import { DatePicker, TimePicker, DateTimePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
 import { Pagination, ColumnTable, RowTable, Dropzone } from "components";
+import { ImageBox } from "components/ImageBox";
 
 const useStyles = makeStyles((theme) => ({
   datetimepicker_wrapper: {
@@ -52,25 +52,8 @@ const useStyles = makeStyles((theme) => ({
     "& > *": {
       marginRight: theme.spacing(2),
     },
-
-    "& .MuiAvatar-root": {
-      width: theme.spacing(15),
-      height: theme.spacing(10),
-      "& img": {
-        objectFit: "contain",
-      },
-    },
   },
 
-  logo_box: {
-    display: "inline-block",
-    width: "60px",
-    height: "60px",
-
-    "& img": {
-      objectFit: "contain",
-    },
-  },
   product_list_header: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
@@ -288,7 +271,7 @@ export const EventDetail = () => {
                   <Controller
                     render={({ value }) => (
                       <>
-                        <Avatar variant="square" src={getFullImgURL(value.thumb_img)} />
+                        <ImageBox src={getFullImgURL(value.thumb_img)} width="120px" height="80px" />
                         <Box>
                           <Typography fontWeight="500">{value.product_name}</Typography>
                           <Typography fontWeight="500">{price(value.event_each_price)}원</Typography>
@@ -374,7 +357,7 @@ const ProductModal = ({ open, onClose, onSelect }) => {
     {
       title: "상품 이미지",
       render: ({ thumb_img }) => (
-        <Avatar variant="square" src={getFullImgURL(thumb_img)} className={classes.logo_box} />
+        <ImageBox src={getFullImgURL(thumb_img)} display="inline-block" width="60px" height="60px" />
       ),
       width: 180,
     },
@@ -512,27 +495,6 @@ const ProductModal = ({ open, onClose, onSelect }) => {
             }}
           />
         </Box>
-
-        {/* <Box px={2}>
-          {productList.map((item, index) => {
-            return (
-              <FormControlLabel
-                className={classes.item_wrapper}
-                key={index}
-                control={<Checkbox color="primary" />}
-                label={
-                  <Box display="flex" alignItems="center">
-                    <Avatar variant="square" src="/image/item_sample.png" />
-                    <Box ml={2}>
-                      <Typography fontWeight="500">{item.name}</Typography>
-                      <Typography fontWeight="500">{price(item.price)}원</Typography>
-                    </Box>
-                  </Box>
-                }
-              />
-            );
-          })}
-        </Box> */}
 
         <ColumnTable columns={product_columns} data={productList} selection onSelectionChange={setSelectedProducts} />
 

@@ -13,7 +13,6 @@ import {
   TextField,
   MenuItem,
   InputAdornment,
-  Avatar,
   TableRow,
   TableCell,
   RadioGroup,
@@ -22,7 +21,7 @@ import {
 } from "@material-ui/core";
 import { DescriptionOutlined, Search } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { RowTable, ColumnTable, Pagination, Dropzone } from "components";
+import { RowTable, ColumnTable, Pagination, ImageBox } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header_box: {
@@ -44,21 +43,10 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "flex-end",
-
-    "& .MuiAvatar-root": {
-      // marginLeft: theme.spacing(4),
-      width: "7rem",
-      height: "7rem",
-    },
   },
   lisence_img: {
     width: "180px",
     height: "360px",
-
-    "& img": {
-      objectFit: "contain",
-      objectPosition: "center center",
-    },
   },
 }));
 
@@ -152,7 +140,7 @@ export const ManageMemberDetail = () => {
           </Typography>
 
           <Box className={classes.grade_content}>
-            <Avatar src={`/image/rank_${cur_grade?.grade_code?.toLowerCase()}.png`} />
+            <ImageBox src={`/image/rank_${cur_grade?.grade_code?.toLowerCase()}.png`} width="7rem" height="7rem" />
             <Box textAlign="right">
               <Typography variant="h6" fontWeight="700">
                 {cur_grade?.grade_name || "-"}
@@ -196,7 +184,7 @@ export const ManageMemberDetail = () => {
         <TableRow>
           <TableCell>사업자등록증 첨부</TableCell>
           <TableCell>
-            <Avatar variant="square" className={classes.lisence_img} src={getFullImgURL(memberInfo?.img_url)} />
+            <ImageBox src={getFullImgURL(memberInfo?.img_url)} width="180px" height="360px" />
           </TableCell>
         </TableRow>
       </RowTable>

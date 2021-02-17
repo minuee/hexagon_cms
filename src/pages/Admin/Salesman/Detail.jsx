@@ -13,7 +13,6 @@ import {
   TextField,
   MenuItem,
   InputAdornment,
-  Avatar,
   TableRow,
   TableCell,
   Checkbox,
@@ -47,12 +46,6 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "flex-end",
-
-    "& .MuiAvatar-root": {
-      marginLeft: theme.spacing(8),
-      width: "7rem",
-      height: "7rem",
-    },
   },
 }));
 

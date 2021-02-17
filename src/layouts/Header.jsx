@@ -1,11 +1,11 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { decrypt } from "common";
 
-import { Grid, Box, Avatar, makeStyles } from "@material-ui/core";
-import { Typography, Button } from "components/materialui";
+import { Grid, Box, makeStyles } from "@material-ui/core";
 import { AccountCircle } from "@material-ui/icons";
+import { Typography, Button } from "components/materialui";
+import { ImageBox } from "components";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -26,14 +26,14 @@ const useStyles = makeStyles((theme) => ({
       width: "10rem",
       height: "60%",
       cursor: "pointer",
-
-      "& > img": {
-        objectFit: "contain",
-      },
     },
   },
 
   account: {
+    display: "flex",
+    alignItems: "center",
+    marginRight: theme.spacing(5),
+
     "& > *": {
       marginRight: "0.6rem",
     },
@@ -63,14 +63,14 @@ const Header = () => {
   return (
     <Grid container className={classes.container}>
       <Box bgcolor="secondary.main" className={classes.logo_box}>
-        <Avatar variant="square" src="/image/logo_white.png" onClick={() => history.push("/")} />
+        <ImageBox src="/image/logo_white.png" onClick={() => history.push("/")} />
       </Box>
 
       <Box display="flex" alignItems="stretch" mr={2}>
-        <Grid container alignItems="center" className={classes.account}>
+        <Box className={classes.account}>
           <AccountCircle color="inherit" />
           <Typography fontWeight={500}>{member?.name}</Typography>
-        </Grid>
+        </Box>
 
         <Button p={3} variant="contained" color="primary" onClick={handleSignOut}>
           Logout

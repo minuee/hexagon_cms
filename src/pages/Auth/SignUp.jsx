@@ -2,18 +2,10 @@ import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 
-import {
-  makeStyles,
-  Avatar,
-  Box,
-  Container,
-  TextField,
-  FormControlLabel,
-  Checkbox,
-  InputLabel,
-} from "@material-ui/core";
-import { Typography, Button } from "components/materialui";
+import { makeStyles, Box, Container, TextField, FormControlLabel, Checkbox, InputLabel } from "@material-ui/core";
 import { Label } from "@material-ui/icons";
+import { Typography, Button } from "components/materialui";
+import { ImageBox } from "components";
 
 const useStyles = makeStyles({
   container: {
@@ -24,16 +16,6 @@ const useStyles = makeStyles({
   wrapper: {
     display: "flex",
     flexDirection: "column",
-  },
-  logo: {
-    alignSelf: "center",
-    width: "20rem",
-    height: "7rem",
-    marginBottom: "2rem",
-
-    "& img": {
-      objectFit: "contain",
-    },
   },
 
   input: {
@@ -69,7 +51,7 @@ export const SignUp = ({}) => {
   return (
     <Container className={classes.container} maxWidth="md">
       <Box mt={16} mb={8} className={classes.wrapper}>
-        <Avatar className={classes.logo} variant="square" src="/image/logo_color.png" />
+        <ImageBox src="/image/logo_color.png" width="20rem" height="7rem" mb={4} />
         <Box mt={5} mb={3}>
           <Typography fontWeight={700}>회원가입</Typography>
         </Box>

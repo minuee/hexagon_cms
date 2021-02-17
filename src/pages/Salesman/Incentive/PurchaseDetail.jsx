@@ -21,7 +21,7 @@ import {
   FormControlLabel,
 } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
-import { RowTable } from "components";
+import { RowTable, ImageBox } from "components";
 
 const useStyles = makeStyles((theme) => ({
   product_divider: {
@@ -208,7 +208,7 @@ export const UserPurchaseDetail = () => {
               let isPassed = item.no <= purchaseInfo?.shipping.status;
               return (
                 <Box key={item.no}>
-                  <Avatar variant="square" src={`/image/order_state_${item.no}.png`} />
+                  <ImageBox src={`/image/order_state_${item.no}.png`} />
                   <Box px={2} py={1} mt={2} bgcolor={isPassed ? "#003a7b" : "#fff"} color={isPassed ? "#fff" : "#000"}>
                     {item.label}
                   </Box>
@@ -216,7 +216,8 @@ export const UserPurchaseDetail = () => {
               );
             })}
             <Box>
-              <Avatar variant="square" src={`/image/exchange_request.png`} />
+              <ImageBox src={`/image/exchange_request.png`} />
+              {/* <Avatar variant="square" src={`/image/exchange_request.png`} /> */}
               <Box px={2} py={1} mt={2} bgcolor="#003a7b" color="#fff">
                 교환요청
               </Box>

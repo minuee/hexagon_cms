@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 
 import { price } from "common";
 
-import { Grid, Box, Avatar, makeStyles } from "@material-ui/core";
+import { Grid, Box, makeStyles } from "@material-ui/core";
 import { KeyboardArrowRight } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
 import { ColumnTable } from "components";

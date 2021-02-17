@@ -15,7 +15,6 @@ import {
   Select,
   MenuItem,
   InputAdornment,
-  Avatar,
   IconButton,
   TableRow,
   TableCell,

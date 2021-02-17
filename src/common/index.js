@@ -41,6 +41,4 @@ export function getFullImgURL(relative_path) {
 export function getListIndex(total, page, idx) {
   let tmp = +total - (+page - 1) * 10 - +idx;
   return tmp;
-  // return parseInt(total) - (page - 1) * 10 - idx;
-  // return +total - (+page - 1) * 10 - +idx;
 }

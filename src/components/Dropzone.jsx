@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { useFormContext, useFieldArray, Controller } from "react-hook-form";
-import { Avatar, Box, makeStyles, Fade, Badge, Grid, InputLabel } from "@material-ui/core";
+import { Box, makeStyles, Fade, Badge, Grid, InputLabel } from "@material-ui/core";
 import { Close, Add } from "@material-ui/icons";
 import { useDropzone } from "react-dropzone";
-import { RatioBox } from "components/RatioBox";
+import { RatioBox, ImageBox } from "components";
 import { Button, Typography } from "components/materialui";
 
 import { getFullImgURL } from "common";
@@ -65,13 +65,6 @@ export const Dropzone = ({ control, name, width, ratio = 1, maxFiles = 1, minFil
 
   return (
     <Box className={classes.container}>
-      {/* <Button onClick={() => console.log(fields)}>dsfsdf</Button> */}
-      {/* <Button p={0} variant="contained">
-        <InputLabel htmlFor="dropzone" variant="standard" style={{ padding: "10px" }}>
-          <Typography fontWeight="500">파일 찾기</Typography>
-        </InputLabel>
-      </Button> */}
-
       {fields.length < maxFiles && (
         <RatioBox
           width={width}
@@ -94,17 +87,9 @@ export const Dropzone = ({ control, name, width, ratio = 1, maxFiles = 1, minFil
               ratio={ratio}
               border="solid 1px #dddddd"
               onClick={readOnly ? undefined : () => remove(index)}
-              // onClick={() => !readOnly && remove(index)}
-              // onClick={() => remove(index)}
             >
               <Controller
-                as={
-                  <Avatar
-                    src={(item.file ? item.path : getFullImgURL(item.path)) || "/image/default.jpg"}
-                    variant="square"
-                    className={classes.image}
-                  />
-                }
+                as={<ImageBox src={(item.file ? item.path : getFullImgURL(item.path)) || "/image/default.jpg"} />}
                 name={`${name}.[${index}]`}
                 control={control}
                 defaultValue={item}
