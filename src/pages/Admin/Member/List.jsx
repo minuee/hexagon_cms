@@ -114,6 +114,9 @@ export const MemberList = ({ location }) => {
         query.sort_type = "DESC";
       }
     }
+    if (q !== "page") {
+      query.page = 1;
+    }
 
     query[q] = v;
     history.push("/member?" + qs.stringify(query));

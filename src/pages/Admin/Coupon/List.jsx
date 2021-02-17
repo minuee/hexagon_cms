@@ -60,7 +60,6 @@ export const CouponList = ({ location }) => {
   const query = qs.parse(location.search);
 
   const [couponList, setCouponList] = useState();
-  const [searchWord, setSearchWord] = useState("");
 
   async function getCouponList() {
     let data;
@@ -75,6 +74,10 @@ export const CouponList = ({ location }) => {
   }
 
   function handleQueryChange(q, v) {
+    if (q !== "page") {
+      query.page = 1;
+    }
+
     query[q] = v;
     history.push("/coupon?" + qs.stringify(query));
   }

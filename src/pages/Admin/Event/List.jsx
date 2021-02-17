@@ -81,6 +81,10 @@ export const EventList = ({ location }) => {
   }
 
   function handleQueryChange(q, v) {
+    if (q !== "page") {
+      query.page = 1;
+    }
+
     query[q] = v;
     history.push("/event?" + qs.stringify(query));
   }

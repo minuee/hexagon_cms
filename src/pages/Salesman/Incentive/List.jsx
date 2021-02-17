@@ -86,6 +86,10 @@ export const IncentiveList = ({ location }) => {
   const [searchWord, setSearchWord] = useState("");
 
   function handleQueryChange(q, v) {
+    if (q !== "page") {
+      query.page = 1;
+    }
+
     query[q] = v;
     history.push("/incentive" + qs.stringify(query));
   }

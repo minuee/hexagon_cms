@@ -373,10 +373,15 @@ const EventModal = ({ open, onClose, onSelect }) => {
     });
   }
   function handleContextChange(name, value) {
-    setListContext({
+    let tmp = {
       ...listContext,
       [name]: value,
-    });
+    };
+    if (name != "page") {
+      tmp.page = 1;
+    }
+
+    setListContext(tmp);
   }
 
   useEffect(() => {

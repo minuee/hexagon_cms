@@ -73,7 +73,7 @@ export const BannerList = ({ location }) => {
     }
   }
   function handleQueryChange(q, v) {
-    if (q != "page") {
+    if (q !== "page") {
       query.page = 1;
     }
 

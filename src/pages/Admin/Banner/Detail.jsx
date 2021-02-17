@@ -423,7 +423,6 @@ const InlinkModal = ({ open, onClose, onSelect, inlinkType }) => {
       ...listContext,
       [name]: value,
     };
-
     if (name != "page") {
       tmp.page = 1;
     }

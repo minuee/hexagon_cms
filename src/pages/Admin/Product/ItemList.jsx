@@ -111,6 +111,10 @@ export const ItemList = ({ location }) => {
   }
 
   function handleQueryChange(q, v) {
+    if (q !== "page") {
+      query.page = 1;
+    }
+
     query[q] = v;
     history.push("/product/item?" + qs.stringify(query));
   }

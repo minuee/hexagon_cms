@@ -66,11 +66,11 @@ export const OrderList = ({ location }) => {
   }
 
   function handleQueryChange(q, v) {
-    query[q] = v;
     if (q !== "page") {
       query.page = 1;
     }
 
+    query[q] = v;
     history.push("/order?" + qs.stringify(query));
   }
 

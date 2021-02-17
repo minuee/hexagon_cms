@@ -133,6 +133,10 @@ export const CouponDetail = () => {
         </TableRow>
 
         <TableRow>
+          <TableCell>발급사유</TableCell>
+          <TableCell>{couponDetail?.issue_reason}</TableCell>
+        </TableRow>
+        <TableRow>
           <TableCell>수정사유</TableCell>
           <TableCell>
             <TextField

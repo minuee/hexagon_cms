@@ -163,14 +163,14 @@ export const PopupList = ({ location }) => {
   }
 
   function handleQueryChange(q, v) {
-    query[q] = v;
-    if (q !== "page") {
-      query.page = 1;
-    }
     if (q === "type") {
       query.filter = "now";
     }
+    if (q !== "page") {
+      query.page = 1;
+    }
 
+    query[q] = v;
     history.push("/popup?" + qs.stringify(query));
   }
 

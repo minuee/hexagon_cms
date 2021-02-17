@@ -392,21 +392,15 @@ const ProductModal = ({ open, onClose, onSelect }) => {
   }
 
   function handleContextChange(name, value) {
-    // let next_context = {
-    //   ...listContext,
-    //   [name]: value,
-    // };
-
-    // if (name !== "page") {
-    //   next_context.page = 1;
-    // }
-
-    // console.log(next_context);
-    // setListContext(next_context);
-    setListContext({
+    let tmp = {
       ...listContext,
       [name]: value,
-    });
+    };
+    if (name != "page") {
+      tmp.page = 1;
+    }
+
+    setListContext(tmp);
   }
 
   function handleEnter() {
