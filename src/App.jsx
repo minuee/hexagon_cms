@@ -1,18 +1,9 @@
 import React from "react";
 import { useSelector } from "react-redux";
-// import { Auth } from "@psyrenpark/auth";
-// import { Api } from "@psyrenpark/api";
-// import { Storage } from "@psyrenpark/storage";
-// import awsmobile from "./aws-exports";
-
-import Routes from "./Routes";
 
 import { styled } from "@material-ui/core/styles";
 import { Modal, CircularProgress } from "@material-ui/core";
-
-// Auth.setConfigure(awsmobile);
-// Api.setConfigure(awsmobile);
-// Storage.setConfigure(awsmobile);
+import Routes from "./Routes";
 
 const StyledModal = styled(Modal)({
   display: "flex",
