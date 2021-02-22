@@ -28,7 +28,7 @@ const Routes = () => {
   const dispatch = useDispatch();
 
   let token = localStorage.getItem("hexagon_cms_token");
-  let is_salesman = JSON.parse(localStorage.getItem("hexagon_is_salesman"));
+  let is_salesman = JSON.parse(localStorage.getItem("hexagon_is_salesman") || false);
 
   useEffect(() => {
     if (!token) {

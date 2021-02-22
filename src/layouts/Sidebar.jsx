@@ -91,7 +91,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Sidebar = () => {
-  const isSalesman = JSON.parse(localStorage.getItem("hexagon_is_salesman"));
+  const isSalesman = JSON.parse(localStorage.getItem("hexagon_is_salesman") || false);
   const classes = useStyles();
   const location = useLocation();
 

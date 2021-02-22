@@ -89,7 +89,9 @@ export const Dropzone = ({ control, name, width, ratio = 1, maxFiles = 1, minFil
               onClick={readOnly ? undefined : () => remove(index)}
             >
               <Controller
-                as={<ImageBox src={(item.file ? item.path : getFullImgURL(item.path)) || "/image/default.jpg"} />}
+                render={() => (
+                  <ImageBox src={(item.file ? item.path : getFullImgURL(item.path)) || "/image/default.jpg"} />
+                )}
                 name={`${name}.[${index}]`}
                 control={control}
                 defaultValue={item}
