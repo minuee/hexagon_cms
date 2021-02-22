@@ -9,6 +9,7 @@ import { Grid, Box, makeStyles } from "@material-ui/core";
 import { KeyboardArrowRight } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
 import { ColumnTable } from "components";
+import { apiObject } from "api";
 
 const useStyles = makeStyles((theme) => ({
   sales_amount: {
@@ -40,40 +41,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const user_reward_columns = [
-  { title: "번호", field: "user_no", width: 80 },
-  { title: "유저명", field: "user_name", width: 100 },
+const member_rank_columns = [
+  { title: "번호", field: "no", width: 80 },
+  { title: "유저명", field: "member_name", width: 160 },
   {
-    title: "리워드액",
-    render: ({ reward_amount }) => `${price(reward_amount)}원`,
+    title: "구매누적액",
+    render: ({ total_amount }) => `${price(total_amount)}원`,
     cellStyle: { textAlign: "right" },
-  },
-];
-const user_reward_rows = [
-  {
-    user_no: 1,
-    user_name: "박태호",
-    reward_amount: 4533215100,
-  },
-  {
-    user_no: 2,
-    user_name: "이호수",
-    reward_amount: 2798787900,
-  },
-  {
-    user_no: 3,
-    user_name: "김연화",
-    reward_amount: 562215520,
-  },
-  {
-    user_no: 4,
-    user_name: "김병찬",
-    reward_amount: 109837700,
-  },
-  {
-    user_no: 5,
-    user_name: "최인호",
-    reward_amount: 75306110,
   },
 ];
 
@@ -115,10 +89,15 @@ export const AdminHome = () => {
   const history = useHistory();
   const { member } = useSelector((state) => state.reducer);
 
-  const [userRewardData, setUserRewardData] = useState();
+  const [analisysData, setAnalisysData] = useState();
+
+  async function getAnalisysData() {
+    let data = await apiObject.getAnalisysData({});
+    setAnalisysData(data);
+  }
 
   useEffect(() => {
-    setUserRewardData(user_reward_rows);
+    getAnalisysData();
   }, []);
 
   return (
@@ -138,7 +117,7 @@ export const AdminHome = () => {
 
         <Box my={2}>
           <Typography variant="h5" textAlign="right">
-            <span>{price(2122332)}</span> 원
+            {`${price(analisysData?.today_sales?.daily_sales || 0)}원`}
           </Typography>
         </Box>
       </Box>
@@ -146,19 +125,19 @@ export const AdminHome = () => {
       <Box display="flex">
         <Box className={classes.column_table} mr={6}>
           <Typography variant="h6" fontWeight={700}>
-            유저 리워드 통계
+            유저 구매누적액 현황
           </Typography>
-          <Typography color="secondary">{dayjs().format("YYYY.MM.DD hh:mm")} 기준</Typography>
+          <Typography color="secondary">{dayjs().format("YYYY.MM.DD hh:mm 기준 (순상품금액기준)")}</Typography>
 
           <Box my={2}>
             <ColumnTable
-              columns={user_reward_columns}
-              data={userRewardData}
-              // onRowClick={(row) => history.push(`/user/${row.user_no}`)}
+              columns={member_rank_columns}
+              data={analisysData?.rank_data}
+              onRowClick={(row) => history.push(`/member/${row.member_pk}`)}
             />
           </Box>
 
-          <Button variant="text" onClick={() => history.push("/user")}>
+          <Button variant="text" onClick={() => history.push("/member")}>
             <Typography>더보기</Typography>
             <KeyboardArrowRight />
           </Button>

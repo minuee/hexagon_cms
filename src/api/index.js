@@ -126,6 +126,23 @@ export const apiObject = {
     }
   },
 
+  // Home
+  getAnalisysData: async ({ member_pk = 1 }) => {
+    try {
+      let data = await axios.get(`/cms/home/analyst/${member_pk}`);
+      let ret = data.data.data;
+
+      ret.rank_data.forEach((item, index) => {
+        item.no = index + 1;
+      });
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return {};
+    }
+  },
+
   // Member
   getMemberList: async ({ page = 1, paginate = 10, search_word, term_start, term_end, sort_item, sort_type }) => {
     try {
