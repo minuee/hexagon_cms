@@ -28,7 +28,7 @@ const Routes = () => {
   const dispatch = useDispatch();
 
   let token = localStorage.getItem("hexagon_cms_token");
-  let is_salesman = JSON.parse(localStorage.getItem("hexagon_is_salesman") || false);
+  let is_admin = !!localStorage.getItem("hexagon_is_admin");
 
   useEffect(() => {
     if (!token) {
@@ -40,14 +40,14 @@ const Routes = () => {
 
   useEffect(() => {
     dispatch({
-      type: "SET_IS_SALESMAN",
-      payload: is_salesman,
+      type: "SET_IS_ADMIN",
+      payload: is_admin,
     });
-  }, [is_salesman]);
+  }, [is_admin]);
 
   return (
     <BrowserRouter>
-      {userState === "NOT_SIGN" ? <AuthRoutes /> : is_salesman ? <SalesmanRoutes /> : <AdminRoutes />}
+      {userState === "NOT_SIGN" ? <AuthRoutes /> : is_admin ? <AdminRoutes /> : <SalesmanRoutes />}
     </BrowserRouter>
   );
 };

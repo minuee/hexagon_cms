@@ -91,7 +91,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Sidebar = () => {
-  const isSalesman = JSON.parse(localStorage.getItem("hexagon_is_salesman") || false);
+  const isAdmin = !!localStorage.getItem("hexagon_is_admin");
   const classes = useStyles();
   const location = useLocation();
 
@@ -104,7 +104,7 @@ const Sidebar = () => {
 
   return (
     <Box className={classes.container}>
-      {(isSalesman ? salesman_page : admin_page).map((nav) => {
+      {(isAdmin ? admin_page : salesman_page).map((nav) => {
         let isCur = nav.path.substring(1) === location.pathname.split("/")[1];
         return (
           <NavLink to={nav.path} activeClassName={classes.nav_selected} key={nav.label} isActive={checkIsActive}>

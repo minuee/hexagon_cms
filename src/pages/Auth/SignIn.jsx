@@ -39,7 +39,7 @@ export const SignIn = ({}) => {
     }
 
     localStorage.setItem("hexagon_cms_token", resp.token);
-    localStorage.setItem("hexagon_is_salesman", data.is_salesman + "");
+    localStorage.setItem("hexagon_is_admin", !data.is_salesman + "");
 
     dispatch({
       type: "SIGN_IN",
@@ -86,20 +86,18 @@ export const SignIn = ({}) => {
           error={!!errors?.password}
         />
 
-        <Box display="flex" alignItems="center" mt={2}>
-          {/* <Button onClick={() => history.push("/finduserinfo")}>아이디/패스워드 찾기</Button> */}
-          <Button variant="text">아이디/패스워드 찾기</Button>
+        {/* <Box display="flex" alignItems="center" mt={2}>
+          <Button  variant="text" onClick={() => history.push("/finduserinfo")}>아이디/패스워드 찾기</Button>
           &#x0007C;
-          <Button variant="text">회원가입</Button>
-          {/* <Button onClick={() => history.push("/signup")}>회원가입</Button> */}
-        </Box>
+          <Button  variant="text" onClick={() => history.push("/signup")}>회원가입</Button>
+        </Box> */}
 
-        <Box mb={4}>
-          <FormControlLabel
+        <Box mt={1} mb={4}>
+          {/* <FormControlLabel
             control={<Checkbox inputRef={register} color="primary" />}
             name="is_salesman"
             label="영업사원으로 로그인하기"
-          />
+          /> */}
         </Box>
 
         <Button variant="contained" color="primary" px={18} py={2} onClick={handleSubmit(signIn)}>
