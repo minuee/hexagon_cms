@@ -7,23 +7,12 @@ import dayjs from "dayjs";
 import qs from "query-string";
 
 import { Grid, Box, makeStyles, TextField, InputAdornment } from "@material-ui/core";
-import { DescriptionOutlined, Search, EventNote } from "@material-ui/icons";
-import { DatePicker } from "@material-ui/pickers";
+import { DescriptionOutlined, ArrowDropDown, ArrowDropUp } from "@material-ui/icons";
 
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination, SearchBox } from "components";
+import { ColumnTable, Pagination, SearchBox, TermSearchBox } from "components";
 
 const useStyles = makeStyles((theme) => ({
-  datepicker: {
-    display: "inline-flex",
-    alignItems: "center",
-
-    "& > .MuiFormControl-root": {
-      background: "#fff",
-      width: "10rem",
-    },
-  },
-
   table_footer: {
     position: "relative",
     display: "flex",
@@ -38,19 +27,33 @@ const useStyles = makeStyles((theme) => ({
 
 const order_list_columns = [
   { title: "번호", field: "no", width: 80 },
-  { title: "구매번호", field: "order_code", width: 160 },
+  { title: "구매번호", field: "order_no", width: 240 },
   {
     title: "구매일자",
-    render: ({ order_dt }) => dayjs.unix(order_dt).format("YYYY-MM-DD"),
+    render: ({ reg_dt }) => dayjs.unix(reg_dt).format("YYYY-MM-DD"),
     width: 160,
   },
-  { title: "유저명", field: "user_name", width: 100 },
+  { title: "유저명", field: "member_name", width: 160 },
   {
     title: "구매액",
-    render: ({ order_price }) => `${price(order_price)}원`,
+    render: ({ total_amount }) => `${price(total_amount)}원`,
     cellStyle: { textAlign: "right" },
   },
-  { title: "주문상태", field: "order_status", width: 100 },
+  { title: "주문상태", field: "order_status_name", width: 100 },
+];
+const header_button_list = [
+  {
+    label: "주문일자순",
+    value: "reg_dt",
+  },
+  {
+    label: "이름순",
+    value: "uname",
+  },
+  {
+    label: "구매액순",
+    value: "order",
+  },
 ];
 
 export const OrderList = ({ location }) => {
@@ -66,17 +69,28 @@ export const OrderList = ({ location }) => {
   }
 
   function handleQueryChange(q, v) {
+    if (q == "sort_item") {
+      if (v === (query[q] || "reg_dt")) {
+        query.sort_type = query?.sort_type === "ASC" ? "DESC" : "ASC";
+      } else {
+        query.sort_type = "DESC";
+      }
+    }
     if (q !== "page") {
       query.page = 1;
     }
 
-    query[q] = v;
+    if (q === "term") {
+      Object.assign(query, v);
+    } else {
+      query[q] = v;
+    }
     history.push("/order?" + qs.stringify(query));
   }
 
   useEffect(() => {
     getOrderList();
-  }, [query.page, query.search_word, query.start_dt, query.end_dt]);
+  }, [query.page, query.search_word, query.term_start, query.term_end, query.sort_item, query.sort_type]);
 
   return (
     <Box>
@@ -85,39 +99,20 @@ export const OrderList = ({ location }) => {
           주문내역
         </Typography>
 
-        <Box className={classes.datepicker}>
-          <DatePicker
-            value={query.start_dt ? dayjs.unix(query.start_dt) : null}
-            onChange={(d) => handleQueryChange("start_dt", d?.unix())}
-            format="YYYY-MM-DD"
-            size="small"
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <EventNote />
-                </InputAdornment>
-              ),
-            }}
-          />
-          <Box mx={1} fontWeight="700">
-            -
+        <Box>
+          <Box display="inline-block" mr={3}>
+            {header_button_list.map((item, index) => {
+              let is_cur = item.value === (query.sort_item || "reg_dt");
+              return (
+                <Button variant="text" onClick={() => handleQueryChange("sort_item", item.value)} key={index}>
+                  <Typography fontWeight={is_cur ? "700" : undefined}>{item.label}</Typography>
+                  {is_cur && <>{query.sort_type === "ASC" ? <ArrowDropUp /> : <ArrowDropDown />}</>}
+                </Button>
+              );
+            })}
           </Box>
-          <DatePicker
-            value={query.end_dt ? dayjs.unix(query.end_dt) : null}
-            onChange={(d) => handleQueryChange("end_dt", d?.unix())}
-            format="YYYY-MM-DD"
-            size="small"
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <EventNote />
-                </InputAdornment>
-              ),
-            }}
-          />
-          <Button ml={1} color="primary">
-            검색
-          </Button>
+
+          <TermSearchBox term_start={query.term_start} term_end={query.term_end} onTermSearch={handleQueryChange} />
         </Box>
       </Grid>
 
@@ -125,7 +120,7 @@ export const OrderList = ({ location }) => {
         <ColumnTable
           columns={order_list_columns}
           data={orderList}
-          onRowClick={(row) => history.push(`/order/${row.order_no}`)}
+          onRowClick={(row) => history.push(`/order/${row.order_pk}`)}
         />
       </Box>
 

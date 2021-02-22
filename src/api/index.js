@@ -225,13 +225,16 @@ export const apiObject = {
   },
 
   // Order
-  getOrderList: async ({ page = 1, paginate = 10, search_word, start_dt, end_dt }) => {
+  getOrderList: async ({ page = 1, paginate = 10, search_word, term_start, term_end, sort_item, sort_type }) => {
     try {
       let data = await axios.get("/cms/order/list", {
-        params: { page, paginate, search_word, start_dt, end_dt },
+        params: { page, paginate, search_word, term_start, term_end, sort_item, sort_type },
       });
-      let ret = data.data.data;
-      console.log(ret);
+      let ret = data.data.data.orderList;
+
+      ret.forEach((item, index) => {
+        item.no = getListIndex(item.total, page, index);
+      });
 
       return ret;
     } catch (e) {
@@ -239,7 +242,60 @@ export const apiObject = {
       return [];
     }
   },
+  getOrderDetail: async ({ order_pk }) => {
+    try {
+      let data = await axios.get(`/cms/order/view/${order_pk}`);
+      let ret = data.data.data;
 
+      ret.orderBase.email = decrypt(ret.orderBase.email);
+      ret.orderBase.phone = decrypt(ret.orderBase.phone);
+      ret.orderBase.delivery_phone = decrypt(ret.orderBase.delivery_phone);
+
+      if (ret.settleInfo.card_number) {
+        ret.settleInfo.card_number =
+          ret.settleInfo.card_number.substring(0, 4) + " **** **** " + ret.settleInfo.card_number.substring(12, 16);
+      }
+
+      switch (ret.orderBase.order_status) {
+        case "WAIT":
+          ret.orderBase.order_status_no = 1;
+          break;
+        case "INCOME":
+          ret.orderBase.order_status_no = 2;
+          break;
+        case "TRANSING":
+          ret.orderBase.order_status_no = 3;
+          break;
+        case "CANCEL_A":
+          ret.orderBase.order_status_no = 4;
+          break;
+        case "CANCEL_B":
+          ret.orderBase.order_status_no = 5;
+          break;
+        case "RETURN":
+          ret.orderBase.order_status_no = 6;
+          break;
+      }
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return {};
+    }
+  },
+  modifyOrderStatus: async ({ order_pk, member_pk, nowOrderStatus, newOrderStatus }) => {
+    try {
+      let response = await axios.put(`/cms/order/modify/${order_pk}`, {
+        member_pk,
+        nowOrderStatus,
+        newOrderStatus,
+      });
+
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
   // Category
   getCategoryList: async ({ search_word }) => {
     try {

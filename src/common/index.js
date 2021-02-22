@@ -27,11 +27,13 @@ export function decrypt(str) {
 }
 
 export function price(num) {
-  if (!Number.isInteger(+num) || !num) {
-    return null;
-  }
+  let tmp = parseInt(num);
 
-  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  if (Number.isNaN(tmp)) {
+    return null;
+  } else {
+    return tmp.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
 }
 
 export function getFullImgURL(relative_path) {
