@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useForm, Controller } from "react-hook-form";
+import { apiObject } from "api";
 import { price } from "common";
 import dayjs from "dayjs";
-import { apiObject } from "api";
 
 import {
   Grid,
@@ -29,7 +29,6 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     justifyContent: "space-between",
 
-    width: "25rem",
     height: "13rem",
     background: "#fff",
 
@@ -82,22 +81,27 @@ const grade_benefits = {
 
 const reward_history_column = [
   {
-    field: "regdatetime",
-    title: "적립일자",
-    render: ({ regdatetime }) => dayjs.unix(regdatetime).format("YYYY.MM.DD"),
+    title: "일자",
+    render: ({ reg_dt }) => dayjs.unix(reg_dt).format("YYYY-MM-DD HH:mm"),
+    width: 240,
   },
-  { field: "name", title: "유저명" },
-  { field: "reward_gubun", title: "내역" },
   {
-    field: "reward_point",
+    title: "내용",
+    render: ({ reward_gubun, order_pk, content }) =>
+      reward_gubun === "m" && order_pk > 0 ? "주문포인트 사용" : content,
+    width: 160,
+  },
+  {
     title: "리워드액",
-    render: ({ reward_point }) => (price(reward_point) ? `+${price(reward_point)}원` : "-"),
+    render: ({ reward_point, reward_gubun }) =>
+      price(reward_point) ? `${reward_gubun === "m" ? "-" : "+"}${price(reward_point)}원` : "-",
     cellStyle: { textAlign: "right" },
   },
 ];
 
 export const MemberDetail = () => {
   const classes = useStyles();
+  const history = useHistory();
   const { member_pk } = useParams();
   const { control, register, reset, setValue, watch, handleSubmit } = useForm();
   const cur_grade = grade_benefits[watch("grade_code")];
@@ -161,7 +165,7 @@ export const MemberDetail = () => {
       </Typography>
 
       <Box mt={2}>
-        <Box className={classes.header_box}>
+        <Box width="30rem" className={classes.header_box}>
           <Typography variant="h6" fontWeight="500">
             등급
           </Typography>
@@ -173,21 +177,21 @@ export const MemberDetail = () => {
                 {cur_grade?.grade_name || "-"}
               </Typography>
               <Typography>적립률 {cur_grade?.rate * 100 || "-"}% 적용</Typography>
-              {cur_grade?.coupon && <Typography>{cur_grade?.coupon}원 쿠폰 1회 제공</Typography>}
+              {cur_grade?.coupon && <Typography>{price(cur_grade?.coupon)}원 쿠폰 1회 제공</Typography>}
               <Typography>
-                {cur_grade?.delivery === 0 ? "배송비 무료" : `${cur_grade?.free_amount}이상 주문시 배송비 무료`}
+                {cur_grade?.delivery === 0 ? "배송비 무료" : `${price(cur_grade?.free_amount)}이상 주문시 배송비 무료`}
               </Typography>
             </Box>
           </Box>
         </Box>
 
-        <Box className={classes.header_box}>
+        <Box width="20rem" className={classes.header_box}>
           <Typography variant="h6" fontWeight="500">
             적립금 현황
           </Typography>
 
           <Typography textAlign="right" variant="h5" fontWeight="700">
-            {price(memberInfo?.reward_point) || "-"} 원
+            {price(memberInfo?.remain_reward) || "-"} 원
           </Typography>
         </Box>
       </Box>
@@ -357,7 +361,11 @@ export const MemberDetail = () => {
       <Box my={2}>
         <Typography fontWeight="500">리워드 히스토리</Typography>
       </Box>
-      <ColumnTable columns={reward_history_column} data={rewardList} />
+      <ColumnTable
+        columns={reward_history_column}
+        data={rewardList}
+        onRowClick={(row) => row?.order_pk != 0 && history.push(`/order/${row.order_pk}`)}
+      />
       <Box position="relative" py={6}>
         <Pagination page={rewardPage} setPage={setRewardPage} count={Math.ceil(+rewardList?.[0]?.total / 10)} />
       </Box>

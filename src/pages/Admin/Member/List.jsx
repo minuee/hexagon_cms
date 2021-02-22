@@ -34,15 +34,13 @@ const useStyles = makeStyles((theme) => ({
 const member_list_columns = [
   { title: "이름", field: "name" },
   { title: "코드값", field: "special_code", width: 100 },
-  { title: "휴대폰번호", field: "phone", width: 160 },
-  // { title: "이메일주소", field: "email" },
   {
-    title: "구매액",
+    title: "구매총액",
     render: ({ total_amount }) => `${price(total_amount) || 0}원`,
     cellStyle: { textAlign: "right" },
   },
   {
-    title: "리워드액",
+    title: "리워드잔액",
     render: ({ reward_point }) => `${price(reward_point) || 0}원`,
     cellStyle: { textAlign: "right" },
   },
