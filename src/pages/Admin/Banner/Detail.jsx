@@ -143,7 +143,7 @@ export const BannerDetail = ({ location }) => {
             />
           </TableCell>
         </TableRow>
-        {watch("link_type") === "INLINK" && (
+        {watch("link_type", "INLINK") === "INLINK" && (
           <>
             <TableRow>
               <TableCell>배너타입</TableCell>
@@ -187,7 +187,7 @@ export const BannerDetail = ({ location }) => {
             </TableRow>
           </>
         )}
-        {watch("link_type") === "OUTLINK" && (
+        {watch("link_type", "INLINK") === "OUTLINK" && (
           <TableRow>
             <TableCell>외부브라우저 링크</TableCell>
             <TableCell>

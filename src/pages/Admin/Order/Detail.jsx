@@ -210,7 +210,7 @@ export const OrderDetail = () => {
         </Box>
       </Box>
 
-      <RowTable>
+      <RowTable headerWidth={15}>
         <TableRow>
           <TableCell>주문상태</TableCell>
           <TableCell>
@@ -245,7 +245,7 @@ export const OrderDetail = () => {
       <Box mt={3} mb={1}>
         <Typography fontWeight="500">주문 상품</Typography>
       </Box>
-      <RowTable>
+      <RowTable headerWidth={15}>
         <TableRow>
           <TableCell>주문번호</TableCell>
           <TableCell colSpan={5}>{orderDetail?.orderBase.order_no}</TableCell>
@@ -262,7 +262,13 @@ export const OrderDetail = () => {
               <TableCell>{item.product_name}</TableCell>
               <TableCell>합계 금액</TableCell>
               <TableCell colSpan={3} align="right">
-                {price(item.total_price)}원
+                {item.discount_price > 0 ? (
+                  <Typography>
+                    <s>{price(item.total_price)}원</s> &gt; {price(item.discount_price)}원
+                  </Typography>
+                ) : (
+                  `${price(item.total_price)}원`
+                )}
               </TableCell>
             </TableRow>
 
@@ -286,7 +292,15 @@ export const OrderDetail = () => {
                   <TableCell>수량</TableCell>
                   <TableCell>{unit.quantity}</TableCell>
                   <TableCell>금액</TableCell>
-                  <TableCell align="right">{price(unit.price)}원</TableCell>
+                  <TableCell align="right">
+                    {unit.event_price > 0 ? (
+                      <Typography display="inline">
+                        <s>{price(unit.price)}원</s> &gt; {price(unit.event_price)}원
+                      </Typography>
+                    ) : (
+                      `${price(unit.price)}원`
+                    )}
+                  </TableCell>
                 </TableRow>
               );
             })}

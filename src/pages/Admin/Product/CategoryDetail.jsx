@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
-import dayjs from "dayjs";
-import { price, getRandomColor, getFullImgURL } from "common";
 import { apiObject } from "api";
+import { price, getRandomColor, getFullImgURL } from "common";
+import dayjs from "dayjs";
 import _ from "lodash";
 
 import {
@@ -34,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
 export const CategoryDetail = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
+  const { member } = useSelector((state) => state.reducer);
   const { category_pk } = useParams();
   const { control, watch, setValue, reset, handleSubmit, errors } = useForm();
 
@@ -77,6 +78,7 @@ export const CategoryDetail = ({ location }) => {
 
     await apiObject.registCategory({
       ...form,
+      reg_member: member.member_pk,
     });
     history.push(`product/category`);
   }

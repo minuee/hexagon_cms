@@ -274,7 +274,7 @@ export const EventDetail = () => {
                         <ImageBox src={getFullImgURL(value.thumb_img)} width="120px" height="80px" />
                         <Box>
                           <Typography fontWeight="500">{value.product_name}</Typography>
-                          <Typography fontWeight="500">{price(value.event_each_price)}원</Typography>
+                          <Typography fontWeight="500">{price(value?.event_each_price)}원</Typography>
                         </Box>
                       </>
                     )}
@@ -285,21 +285,6 @@ export const EventDetail = () => {
                   <IconButton onClick={() => remove(index)}>
                     <HighlightOff />
                   </IconButton>
-
-                  {/* {watch("event_gubun", "LIMIT") === "LIMIT" && (
-                    <TextField
-                      value={value.amount}
-                      onChange={(e) =>
-                        onChange({
-                          ...value,
-                          amount: e.target.value,
-                        })
-                      }
-                      placeholder="수량 입력"
-                      size="small"
-                      type="number"
-                    />
-                  )} */}
                 </Box>
               ))}
               <Button size="large" onClick={() => setIsModalOpen(true)}>
@@ -343,15 +328,15 @@ export const EventDetail = () => {
 
 const ProductModal = ({ open, onClose, onSelect }) => {
   const classes = useStyles();
-  const { control, register, watch } = useForm();
+  // const { control, register, watch } = useForm();
 
   const [selectedProducts, setSelectedProducts] = useState([]);
-  const [categoryList, setCategoryList] = useState([]);
+  // const [categoryList, setCategoryList] = useState([]);
   const [productList, setProductList] = useState();
-  const [listContext, setListContext] = useState({
-    page: 1,
-    search_word: "",
-  });
+  // const [listContext, setListContext] = useState({
+  //   page: 1,
+  //   search_word: "",
+  // });
 
   const product_columns = [
     {
@@ -364,68 +349,71 @@ const ProductModal = ({ open, onClose, onSelect }) => {
     { title: "상품명", field: "product_name", cellStyle: { textAlign: "left" } },
     {
       title: "가격",
-      render: ({ each_price, box_price, carton_price }) => (
-        <>
-          {each_price !== 0 && <p>{`낱개(${price(each_price)})`}</p>}
-          {box_price !== 0 && <p>{`박스(${price(box_price)})`}</p>}
-          {carton_price !== 0 && <p>{`카톤(${price(carton_price)})`}</p>}
-        </>
+      render: ({ each_price, event_each_price }) => (
+        <Typography fontWeight="500">
+          낱개 &#40;<s>{price(each_price)}</s> &gt; {price(event_each_price)}&#41;원
+        </Typography>
       ),
-      width: 200,
+      width: 320,
     },
   ];
 
   async function getProductList() {
-    let data = await apiObject.getItemList({
-      ...listContext,
-    });
+    let data = await apiObject.getEventProductList({});
+    console.log(data);
     setProductList(data);
   }
-  async function getCategoryList() {
-    let data = await apiObject.getCategoryList({});
-    setCategoryList(data);
-  }
+  // async function getCategoryList() {
+  //   let data = await apiObject.getCategoryList({});
+  //   setCategoryList(data);
+  // }
 
   function handleOnSelect() {
     onSelect(selectedProducts);
     onClose();
   }
 
-  function handleContextChange(name, value) {
-    let tmp = {
-      ...listContext,
-      [name]: value,
-    };
-    if (name != "page") {
-      tmp.page = 1;
-    }
+  // function handleContextChange(name, value) {
+  //   let tmp = {
+  //     ...listContext,
+  //     [name]: value,
+  //   };
+  //   if (name != "page") {
+  //     tmp.page = 1;
+  //   }
 
-    setListContext(tmp);
-  }
+  //   setListContext(tmp);
+  // }
 
   function handleEnter() {
-    getCategoryList();
-    setListContext({
-      page: 1,
-      search_word: "",
-    });
+    getProductList();
+    // setListContext({
+    //   page: 1,
+    //   search_word: "",
+    // });
   }
 
-  useEffect(() => {
-    handleContextChange("category_pk", "");
-  }, [watch("category_type")]);
-  useEffect(() => {
-    getProductList();
-  }, [listContext.page, listContext.category_pk]);
+  // useEffect(() => {
+  //   handleContextChange("category_pk", "");
+  // }, [watch("category_type")]);
+  // useEffect(() => {
+  //   getProductList();
+  // }, [listContext.page, listContext.category_pk]);
 
   return (
     <Dialog maxWidth="md" fullWidth open={open} onClose={onClose} onBackdropClick={onClose} onEnter={handleEnter}>
       <Box p={3} height="800px" bgcolor="#fff">
-        <Typography variant="h6" fontWeight="700">
-          이벤트 적용 상품
-        </Typography>
+        <Box mb={2} display="flex" justifyContent="space-between">
+          <Typography variant="h6" fontWeight="700" display="inline">
+            이벤트 적용 상품
+          </Typography>
 
-        <Box className={classes.product_list_header}>
+          <Button color="primary" onClick={handleOnSelect}>
+            선택
+          </Button>
+        </Box>
+
+        {/* <Box className={classes.product_list_header}>
           <Box>
             <Controller
               as={
@@ -488,11 +476,11 @@ const ProductModal = ({ open, onClose, onSelect }) => {
               ),
             }}
           />
-        </Box>
+        </Box> */}
 
         <ColumnTable columns={product_columns} data={productList} selection onSelectionChange={setSelectedProducts} />
 
-        <Box py={4} position="relative" display="flex" alignItems="center" justifyContent="flex-end">
+        {/* <Box py={4} position="relative" display="flex" alignItems="center" justifyContent="flex-end">
           <Pagination
             page={listContext.page}
             setPage={handleContextChange}
@@ -501,7 +489,7 @@ const ProductModal = ({ open, onClose, onSelect }) => {
           <Button color="primary" onClick={handleOnSelect}>
             선택
           </Button>
-        </Box>
+        </Box> */}
       </Box>
     </Dialog>
   );

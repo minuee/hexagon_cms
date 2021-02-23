@@ -9,13 +9,13 @@ const useStyles = makeStyles((theme) => ({
 
     "& td:nth-last-child(even)": {
       background: theme.palette.grey[300],
-      width: theme.spacing(25),
+      width: (props) => theme.spacing(props.headerWidth || 25),
     },
   },
 }));
 
-export const RowTable = ({ width, children }) => {
-  const classes = useStyles();
+export const RowTable = ({ width, children, headerWidth }) => {
+  const classes = useStyles({ headerWidth });
   return (
     <Box width={width}>
       <Table className={classes.table_wrapper}>

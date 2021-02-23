@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
 import { price } from "common";
 import { apiObject } from "api";
@@ -57,6 +57,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const ItemDetail = () => {
   const classes = useStyles();
+  const { member } = useSelector((state) => state.reducer);
   const { product_pk } = useParams();
   const { control, reset, setValue, watch, handleSubmit } = useForm();
 
@@ -92,9 +93,7 @@ export const ItemDetail = () => {
       return;
     }
 
-    let paths;
-
-    paths = await apiObject.uploadImageMultiple({ img_arr: form.thumb_img, page: "product" });
+    let paths = await apiObject.uploadImageMultiple({ img_arr: form.thumb_img, page: "product" });
     form.thumb_img = paths?.[0];
 
     paths = await apiObject.uploadImageMultiple({ img_arr: form.detail_img, page: "product" });
@@ -102,8 +101,10 @@ export const ItemDetail = () => {
       form[`detail_img${i + 1}`] = paths[i];
     }
 
-    // console.log(form);
-    await apiObject.registItem(form);
+    await apiObject.registItem({
+      ...form,
+      reg_member: member.member_pk,
+    });
   }
   async function modifyItem(form) {
     if (!form.thumb_img) {
@@ -126,7 +127,6 @@ export const ItemDetail = () => {
       form[`detail_img${i + 1}`] = paths[i];
     }
 
-    // console.log(form);
     await apiObject.modifyItem({ form, product_pk });
   }
 

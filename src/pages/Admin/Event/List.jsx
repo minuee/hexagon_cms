@@ -34,16 +34,12 @@ const useStyles = makeStyles((theme) => ({
 
 const header_button_list = [
   {
-    label: "전체",
-    // value: "",
-  },
-  {
     label: "진행중",
-    value: "N",
+    value: "now",
   },
   {
     label: "마감",
-    value: "Y",
+    value: "stop",
   },
 ];
 const event_list_columns = [
@@ -60,11 +56,6 @@ const event_list_columns = [
     render: ({ start_dt }) => dayjs.unix(start_dt).format("YYYY-MM-DD"),
     width: 120,
   },
-  // {
-  //   title: "종료일",
-  //   render: ({ event_end_dt }) => dayjs.unix(event_end_dt).format("YYYY-MM-DD"),
-  //   width: 120,
-  // },
   { title: "종료여부", render: ({ termination_yn }) => (termination_yn ? "Y" : "N"), width: 100 },
 ];
 
@@ -101,11 +92,15 @@ export const EventList = ({ location }) => {
         </Typography>
 
         <Box className={classes.header_buttons}>
-          {header_button_list.map((item, index) => (
-            <Button variant="text" onClick={() => handleQueryChange("filter_item", item.value)} key={index}>
-              <Typography fontWeight={query.filter_item === item.value ? "700" : undefined}>{item.label}</Typography>
-            </Button>
-          ))}
+          {header_button_list.map((item, index) => {
+            let is_cur = item.value === (query.filter_item || "now");
+
+            return (
+              <Button variant="text" onClick={() => handleQueryChange("filter_item", item.value)} key={index}>
+                <Typography fontWeight={is_cur ? "700" : undefined}>{item.label}</Typography>
+              </Button>
+            );
+          })}
 
           <Button color="primary" ml={3} onClick={() => history.push(`/event/add`)}>
             이벤트 등록

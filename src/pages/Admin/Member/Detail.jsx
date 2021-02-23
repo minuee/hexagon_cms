@@ -329,7 +329,7 @@ export const MemberDetail = () => {
           <TableCell>
             <Controller
               render={({ onChange, ...props }) => (
-                <RadioGroup row {...props} onChange={(e) => onChange(JSON.parse(e.target.value))}>
+                <RadioGroup row {...props} onChange={(e) => !!e.target.value}>
                   <FormControlLabel value={false} control={<Radio color="primary" />} label="사용중" />
                   <FormControlLabel value={true} control={<Radio color="primary" />} label="사용중지" />
                 </RadioGroup>

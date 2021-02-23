@@ -25,6 +25,11 @@ export const ColumnTable = ({ columns, data = [], onRowClick = () => {}, selecti
         data={data}
         columns={columns}
         onRowClick={(e, row) => onRowClick(row)}
+        localization={{
+          body: {
+            emptyDataSourceMessage: "검색 조건에 부합하는 데이터를 찾을 수 없습니다",
+          },
+        }}
         options={{
           toolbar: false,
           search: false,

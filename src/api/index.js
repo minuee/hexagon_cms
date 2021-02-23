@@ -1,6 +1,6 @@
 import axios from "axios";
 import { store } from "redux/index";
-import { encrypt, decrypt, getFullImgURL, getListIndex } from "common";
+import { encrypt, decrypt, getFullImgURL, getListIndex, price } from "common";
 import dayjs from "dayjs";
 import _ from "lodash";
 
@@ -294,6 +294,15 @@ export const apiObject = {
           break;
       }
 
+      // ret.product.product_info.child.forEach((item) => {
+
+      //   if(item.event_price > 0){
+      //     item.price_text = `${price(item.price)}원`;
+      //   } else {
+      //     item.price_text = `${price(item.price)}원`;
+      //   }
+      // });
+
       return ret;
     } catch (e) {
       console.log({ e });
@@ -398,7 +407,14 @@ export const apiObject = {
       return [];
     }
   },
-  registCategory: async ({ category_name, category_logo, category_seq = 1, category_type, normalcategory_pk }) => {
+  registCategory: async ({
+    category_name,
+    category_logo,
+    category_seq = 1,
+    category_type,
+    normalcategory_pk,
+    reg_member,
+  }) => {
     try {
       let response = await axios.post("/cms/category/regist", {
         category_name,
@@ -406,6 +422,7 @@ export const apiObject = {
         category_seq,
         category_type,
         normalcategory_pk,
+        reg_member,
       });
 
       return response;
@@ -505,9 +522,9 @@ export const apiObject = {
   },
 
   // Event
-  getEventList: async ({ page = 1, paginate = 10, search_word }) => {
+  getEventList: async ({ page = 1, paginate = 10, search_word, filter_item = "now" }) => {
     try {
-      let data = await axios.get("/cms/event/list", {
+      let data = await axios.get(`/cms/event/list/${filter_item}`, {
         params: { page, paginate, search_word },
       });
 
@@ -544,6 +561,37 @@ export const apiObject = {
     } catch (e) {
       console.log({ e });
       return {};
+    }
+  },
+  getEventProductList: async () => {
+    try {
+      let data = await axios.get("/cms/product/all");
+      let ret = data.data.data.productList;
+
+      // ret.forEach((item) => {
+      //   item.price_list = [
+      //     {
+      //       label: "낱개",
+      //       price: item.each_price,
+      //       event_price: item.event_each_price,
+      //     },
+      //     {
+      //       label: "박스",
+      //       price: item.box_price,
+      //       event_price: item.event_box_price,
+      //     },
+      //     {
+      //       label: "카톤",
+      //       price: item.carton_price,
+      //       event_price: item.event_carton_price,
+      //     },
+      //   ];
+      // });
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return [];
     }
   },
   registEvent: async ({ event_gubun, start_dt, end_dt, title, product }) => {
