@@ -56,7 +56,6 @@ const event_list_columns = [
     render: ({ start_dt }) => dayjs.unix(start_dt).format("YYYY-MM-DD"),
     width: 120,
   },
-  { title: "종료여부", render: ({ termination_yn }) => (termination_yn ? "Y" : "N"), width: 100 },
 ];
 
 export const EventList = ({ location }) => {

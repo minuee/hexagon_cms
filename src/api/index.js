@@ -563,30 +563,27 @@ export const apiObject = {
       return {};
     }
   },
-  getEventProductList: async () => {
+  getEventProductData: async () => {
     try {
       let data = await axios.get("/cms/product/all");
-      let ret = data.data.data.productList;
+      let ret = {
+        product_list: data.data.data.productList,
+        category_list: [
+          {
+            label: "전체",
+            category_pk: "",
+          },
+        ],
+      };
 
-      // ret.forEach((item) => {
-      //   item.price_list = [
-      //     {
-      //       label: "낱개",
-      //       price: item.each_price,
-      //       event_price: item.event_each_price,
-      //     },
-      //     {
-      //       label: "박스",
-      //       price: item.box_price,
-      //       event_price: item.event_box_price,
-      //     },
-      //     {
-      //       label: "카톤",
-      //       price: item.carton_price,
-      //       event_price: item.event_carton_price,
-      //     },
-      //   ];
-      // });
+      ret.product_list.forEach((item) => {
+        if (_.last(ret.category_list).category_pk != item.category_pk) {
+          ret.category_list.push({
+            label: item.category_name,
+            category_pk: item.category_pk,
+          });
+        }
+      });
 
       return ret;
     } catch (e) {

@@ -29,7 +29,7 @@ import {
 import { EventNote, Search, HighlightOff } from "@material-ui/icons";
 import { DatePicker, TimePicker, DateTimePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
-import { Pagination, ColumnTable, RowTable, Dropzone } from "components";
+import { Pagination, ColumnTable, RowTable, Dropzone, SearchBox } from "components";
 import { ImageBox } from "components/ImageBox";
 
 const useStyles = makeStyles((theme) => ({
@@ -83,10 +83,12 @@ export const EventDetail = () => {
     control: control,
   });
 
+  const [isTerminated, setIsTerminated] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   async function getEventDetail() {
     let data = await apiObject.getEventDetail({ event_pk });
+    setIsTerminated(data.end_dt && data.end_dt < dayjs().unix());
 
     reset({
       ...data,
@@ -100,7 +102,6 @@ export const EventDetail = () => {
       tmp.push(item);
     });
     setValue("event_product", tmp);
-    // setEventDetail(data);
   }
   async function registEvent(form) {
     if (!form.event_product) {
@@ -144,6 +145,21 @@ export const EventDetail = () => {
     await apiObject.modifyEvent({ event_pk, ...form });
     getEventDetail();
   }
+  async function haltEvent(form) {
+    if (!window.confirm("선택한 이벤트를 중지시키시겠습니까?")) return;
+
+    form.product = [];
+    form.event_product.forEach((item) => {
+      form.product.push({
+        product_pk: item.product_pk,
+      });
+    });
+
+    form.start_dt = form.start_dt.unix();
+    form.end_dt = dayjs().unix();
+
+    await apiObject.modifyEvent({ event_pk, ...form });
+  }
   async function removeEvent() {
     if (!window.confirm("현재 이벤트를 삭제하시겠습니까?")) return;
 
@@ -178,7 +194,13 @@ export const EventDetail = () => {
         <TableRow>
           <TableCell>이벤트 제목</TableCell>
           <TableCell>
-            <TextField inputRef={register({ required: true })} size="small" name="title" placeholder="제목 입력" />
+            <TextField
+              inputRef={register({ required: true })}
+              size="small"
+              name="title"
+              placeholder="제목 입력"
+              disabled={isTerminated}
+            />
           </TableCell>
         </TableRow>
         <TableRow>
@@ -187,11 +209,26 @@ export const EventDetail = () => {
             <Controller
               as={
                 <RadioGroup row>
-                  <FormControlLabel value="LIMIT" control={<Radio color="primary" />} label="한정특가" />
+                  <FormControlLabel
+                    value="LIMIT"
+                    control={<Radio color="primary" />}
+                    label="한정특가"
+                    disabled={isTerminated}
+                  />
                   <Box display="inline" ml={2} />
-                  <FormControlLabel value="TERM" control={<Radio color="primary" />} label="기간할인이벤트" />
+                  <FormControlLabel
+                    value="TERM"
+                    control={<Radio color="primary" />}
+                    label="기간할인이벤트"
+                    disabled={isTerminated}
+                  />
                   <Box display="inline" ml={2} />
-                  <FormControlLabel value="SALE" control={<Radio color="primary" />} label="할인이벤트" />
+                  <FormControlLabel
+                    value="SALE"
+                    control={<Radio color="primary" />}
+                    label="할인이벤트"
+                    disabled={isTerminated}
+                  />
                 </RadioGroup>
               }
               name="event_gubun"
@@ -221,6 +258,7 @@ export const EventDetail = () => {
                       ),
                     }}
                     size="small"
+                    disabled={isTerminated}
                   />
                 )}
                 name={"start_dt"}
@@ -250,6 +288,7 @@ export const EventDetail = () => {
                           ),
                         }}
                         size="small"
+                        disabled={isTerminated}
                       />
                     )}
                     name={"end_dt"}
@@ -282,12 +321,14 @@ export const EventDetail = () => {
                     name={`event_product.[${index}]`}
                     defaultValue={item}
                   />
-                  <IconButton onClick={() => remove(index)}>
-                    <HighlightOff />
-                  </IconButton>
+                  {!isTerminated && (
+                    <IconButton onClick={() => remove(index)}>
+                      <HighlightOff />
+                    </IconButton>
+                  )}
                 </Box>
               ))}
-              <Button size="large" onClick={() => setIsModalOpen(true)}>
+              <Button size="large" onClick={() => setIsModalOpen(true)} disabled={isTerminated}>
                 상품 검색
               </Button>
             </Box>
@@ -308,17 +349,19 @@ export const EventDetail = () => {
           </Button>
         ) : (
           <>
-            <Button color="primary" onClick={handleSubmit(modifyEvent)}>
-              수정
-            </Button>
-            <Button ml={2} color="primary" onClick={removeEvent}>
+            {!isTerminated && (
+              <>
+                <Button mr={2} color="primary" onClick={handleSubmit(modifyEvent)}>
+                  수정
+                </Button>
+                <Button mr={2} style={{ background: "#333", color: "#fff" }} onClick={handleSubmit(haltEvent)}>
+                  중지
+                </Button>
+              </>
+            )}
+            <Button color="secondary" onClick={removeEvent}>
               삭제
             </Button>
-            {/* {!eventDetail?.terminate_yn && (
-              <Button ml={2} color="secondary" onClick={() => console.log("termination")}>
-                마감
-              </Button>
-            )} */}
           </>
         )}
       </Box>
@@ -328,15 +371,19 @@ export const EventDetail = () => {
 
 const ProductModal = ({ open, onClose, onSelect }) => {
   const classes = useStyles();
-  // const { control, register, watch } = useForm();
+  const { control, register, watch } = useForm();
 
-  const [selectedProducts, setSelectedProducts] = useState([]);
   // const [categoryList, setCategoryList] = useState([]);
-  const [productList, setProductList] = useState();
+  // const [productList, setProductList] = useState();
   // const [listContext, setListContext] = useState({
   //   page: 1,
   //   search_word: "",
   // });
+
+  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [productData, setProductData] = useState();
+  const [productList, setProductList] = useState();
+  const [curCategory, setCurCategory] = useState("");
 
   const product_columns = [
     {
@@ -359,15 +406,21 @@ const ProductModal = ({ open, onClose, onSelect }) => {
   ];
 
   async function getProductList() {
-    let data = await apiObject.getEventProductList({});
-    console.log(data);
-    setProductList(data);
+    let data = await apiObject.getEventProductData({});
+    setProductData(data);
+    setProductList(data.product_list);
   }
-  // async function getCategoryList() {
-  //   let data = await apiObject.getCategoryList({});
-  //   setCategoryList(data);
-  // }
 
+  function handleCategoryChange(category_pk) {
+    setCurCategory(category_pk);
+
+    if (!category_pk) {
+      setProductList(productData.product_list);
+    } else {
+      let tmp = productData.product_list.filter((item) => item.category_pk == category_pk);
+      setProductList(tmp);
+    }
+  }
   function handleOnSelect() {
     onSelect(selectedProducts);
     onClose();
@@ -387,6 +440,7 @@ const ProductModal = ({ open, onClose, onSelect }) => {
 
   function handleEnter() {
     getProductList();
+    setCurCategory("");
     // setListContext({
     //   page: 1,
     //   search_word: "",
@@ -398,7 +452,7 @@ const ProductModal = ({ open, onClose, onSelect }) => {
   // }, [watch("category_type")]);
   // useEffect(() => {
   //   getProductList();
-  // }, [listContext.page, listContext.category_pk]);
+  // }, [listContext]);
 
   return (
     <Dialog maxWidth="md" fullWidth open={open} onClose={onClose} onBackdropClick={onClose} onEnter={handleEnter}>
@@ -407,6 +461,20 @@ const ProductModal = ({ open, onClose, onSelect }) => {
           <Typography variant="h6" fontWeight="700" display="inline">
             이벤트 적용 상품
           </Typography>
+        </Box>
+        <Box mb={2} display="flex" justifyContent="space-between">
+          <Select
+            displayEmpty
+            margin="dense"
+            value={curCategory}
+            onChange={(e) => handleCategoryChange(e.target.value)}
+          >
+            {productData?.category_list?.map((item, index) => (
+              <MenuItem value={item.category_pk} key={index}>
+                {item.label}
+              </MenuItem>
+            ))}
+          </Select>
 
           <Button color="primary" onClick={handleOnSelect}>
             선택
@@ -436,7 +504,7 @@ const ProductModal = ({ open, onClose, onSelect }) => {
                 onChange={(e) => handleContextChange("category_pk", e.target.value)}
               >
                 <MenuItem value="">카테고리 분류</MenuItem>
-                {categoryList.categoryBrandList.map((item, index) => (
+                {categoryList.categoryBrandList?.map((item, index) => (
                   <MenuItem value={item.category_pk} key={index}>
                     {item.category_name}
                   </MenuItem>
@@ -451,7 +519,7 @@ const ProductModal = ({ open, onClose, onSelect }) => {
                 onChange={(e) => handleContextChange("category_pk", e.target.value)}
               >
                 <MenuItem value="">카테고리 분류</MenuItem>
-                {categoryList.categoryNormalList.map((item, index) => (
+                {categoryList.categoryNormalList?.map((item, index) => (
                   <MenuItem value={item.category_pk} key={index}>
                     {`${item.depth1name}  >  ${item.depth2name}  >  ${item.depth3name}`}
                   </MenuItem>
@@ -460,22 +528,7 @@ const ProductModal = ({ open, onClose, onSelect }) => {
             )}
           </Box>
 
-          <TextField
-            size="small"
-            placeholder="상품검색"
-            value={listContext.search_word}
-            onChange={(e) => handleContextChange("search_word", e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && getProductList()}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={getProductList}>
-                    <Search />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
+          <SearchBox defaultValue={listContext?.search_word} onSearch={handleContextChange} />
         </Box> */}
 
         <ColumnTable columns={product_columns} data={productList} selection onSelectionChange={setSelectedProducts} />
