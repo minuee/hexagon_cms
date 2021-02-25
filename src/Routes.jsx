@@ -84,7 +84,7 @@ const AdminRoutes = () => {
         <Route path="/event/:event_pk" component={EventDetail} />
         <Route path="/event" component={EventList} />
 
-        <Route exact path="/popup/add" component={PopupRegister} />
+        <Route exact path="/popup/add/:popup_gubun" component={PopupRegister} />
         <Route exact path="/popup/:popup_gubun/:popup_pk" component={PopupDetail} />
         <Route path="/popup" component={PopupList} />
 

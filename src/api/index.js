@@ -709,9 +709,13 @@ export const apiObject = {
       return {};
     }
   },
-  getEventPopupDetail: async ({ popup_pk }) => {
+  getEventPopupDetail: async ({ popup_pk, inlink_type }) => {
     try {
-      let data = await axios.get(`/cms/popevent/view/${popup_pk}`);
+      let data = await axios.get(`/cms/popevent/view/${popup_pk}`, {
+        params: {
+          inlink_type,
+        },
+      });
       let ret = data.data.data.popEventDetail;
 
       return ret;
@@ -737,16 +741,17 @@ export const apiObject = {
       console.log({ e });
     }
   },
-  registEventPopup: async ({ popup_gubun, popup_type, title, start_dt, end_dt, img_url, event_pk }) => {
+  registEventPopup: async ({ popup_gubun, start_dt, end_dt, img_url, title, popup_type, target_pk, inlink_type }) => {
     try {
       let response = await axios.post("/cms/popevent/regist", {
         popup_gubun,
-        popup_type,
-        title,
         start_dt,
         end_dt,
         img_url,
-        event_pk,
+        title,
+        popup_type,
+        target_pk,
+        inlink_type,
       });
 
       return response;
@@ -771,16 +776,27 @@ export const apiObject = {
       console.log({ e });
     }
   },
-  modifyEventPopup: async ({ popup_pk, popup_gubun, popup_type, title, start_dt, end_dt, img_url, event_pk }) => {
+  modifyEventPopup: async ({
+    popup_pk,
+    popup_gubun,
+    start_dt,
+    end_dt,
+    img_url,
+    title,
+    popup_type,
+    target_pk,
+    inlink_type,
+  }) => {
     try {
       let response = await axios.put(`/cms/popevent/modify/${popup_pk}`, {
         popup_gubun,
-        popup_type,
-        title,
         start_dt,
         end_dt,
         img_url,
-        event_pk,
+        title,
+        popup_type,
+        target_pk,
+        inlink_type,
       });
 
       return response;
@@ -1178,6 +1194,15 @@ export const apiObject = {
       let ret = data.data.data.salesmanList;
 
       return ret;
+    } catch (e) {
+      console.log({ e });
+      return [];
+    }
+  },
+  getSalesmanMonthlyIncentiveList: async ({ member_pk }) => {
+    try {
+      let data = await axios.get(`/cms/salesman/incentive/list/${member_pk}`);
+      console.log(data);
     } catch (e) {
       console.log({ e });
       return [];

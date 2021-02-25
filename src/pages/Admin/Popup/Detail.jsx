@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useParams, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Controller, useForm, useFieldArray } from "react-hook-form";
-import { price } from "common";
+import { price, getFullImgURL } from "common";
 import { apiObject } from "api";
 import dayjs from "dayjs";
 
@@ -28,7 +28,7 @@ import {
 import { EventNote, Search, HighlightOff } from "@material-ui/icons";
 import { DateTimePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, RowTable, Pagination, SearchBox, Dropzone } from "components";
+import { ColumnTable, RowTable, Pagination, SearchBox, Dropzone, ImageBox } from "components";
 
 const useStyles = makeStyles((theme) => ({
   datetimepicker: {
@@ -51,6 +51,7 @@ const useStyles = makeStyles((theme) => ({
 export const PopupDetail = () => {
   const history = useHistory();
   const classes = useStyles();
+  const { state } = useLocation();
   const { popup_gubun, popup_pk } = useParams();
   const { control, register, reset, watch, setValue, handleSubmit, errors } = useForm();
 
@@ -64,7 +65,7 @@ export const PopupDetail = () => {
         data = await apiObject.getNoticePopupDetail({ popup_pk });
         break;
       case "Event":
-        data = await apiObject.getEventPopupDetail({ popup_pk });
+        data = await apiObject.getEventPopupDetail({ popup_pk, inlink_type: state?.inlink_type });
         break;
     }
 
@@ -75,10 +76,15 @@ export const PopupDetail = () => {
       popup_img: [],
     });
     setValue("popup_img", [{ file: null, path: data?.img_url }]);
-    setValue("selected_event", {
-      title: data.event_title,
-      event_pk: data.event_pk,
-    });
+
+    if (popup_gubun === "Event") {
+      setValue("inlink_type", state?.inlink_type);
+      setValue("selected_target", {
+        target_name: state?.inlink_type === "EVENT" ? data.event_title : data.product_name,
+        target_pk: state?.inlink_type === "EVENT" ? data.event_pk : data.product_pk,
+      });
+    }
+
     setIsUsePopup(data.use_yn);
   }
   async function modifyPopup(form) {
@@ -86,8 +92,8 @@ export const PopupDetail = () => {
       alert("팝업 이미지를 선택해주세요");
       return;
     }
-    if (form.popup_gubun === "Event" && !form.selected_event) {
-      alert("적용 이벤트를 선택해주세요");
+    if (form.popup_gubun === "Event" && !form.selected_target) {
+      alert("이벤트 적용 대상을 선택해주세요");
       return;
     }
     if (!window.confirm("입력한 정보로 팝업을 수정하시겠습니까?")) {
@@ -98,18 +104,16 @@ export const PopupDetail = () => {
 
     form.img_url = paths?.[0];
     form.start_dt = form.start_dt?.unix();
-    form.event_pk = form.selected_event?.event_pk;
 
     switch (form.popup_gubun) {
       case "Notice":
         await apiObject.modifyNoticePopup({ popup_pk, ...form });
         break;
       case "Event":
-        await apiObject.modifyEventPopup({ popup_pk, ...form });
+        form.target_pk = form.selected_target?.target_pk;
+        await apiObject.modifyEventPopup({ popup_pk, inlink_type: state?.inlink_type, ...form });
         break;
     }
-
-    getPopupDetail();
   }
   async function haltPopup() {
     if (!window.confirm("해당 팝업을 게시 중지시키시겠습니까?")) return;
@@ -142,7 +146,11 @@ export const PopupDetail = () => {
 
   useEffect(() => {
     getPopupDetail();
-  }, [popup_gubun, popup_pk]);
+  }, [popup_gubun, popup_pk, state]);
+
+  useEffect(() => {
+    console.log(watch("selected_target"));
+  }, [watch("selected_target")]);
 
   return (
     <Box>
@@ -163,19 +171,46 @@ export const PopupDetail = () => {
               control={control}
               defaultValue="Notice"
             />
-            {/* <Controller
-              as={
-                <RadioGroup row>
-                  <FormControlLabel value="Notice" control={<Radio color="primary" />} label="공지팝업" />
-                  <FormControlLabel value="Event" control={<Radio color="primary" />} label="이벤트팝업" />
-                </RadioGroup>
-              }
-              name="popup_gubun"
-              control={control}
-              defaultValue="Notice"
-            /> */}
           </TableCell>
         </TableRow>
+        {watch("popup_gubun", "Event") === "Event" && (
+          <>
+            <TableRow>
+              <TableCell>이벤트 적용 대상 구분</TableCell>
+              <TableCell>
+                <Controller
+                  as={
+                    <RadioGroup row>
+                      <FormControlLabel value="EVENT" control={<Radio color="primary" />} label="이벤트" />
+                      <FormControlLabel value="PRODUCT" control={<Radio color="primary" />} label="상품" />
+                    </RadioGroup>
+                  }
+                  name="inlink_type"
+                  control={control}
+                  defaultValue="EVENT"
+                />
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>이벤트 적용 대상</TableCell>
+              <TableCell>
+                <Controller
+                  render={({ value }) => (
+                    <Typography>{value?.target_name || "이벤트 적용 대상을 선택해주세요"}</Typography>
+                  )}
+                  name="selected_target"
+                  control={control}
+                  defaultValue={null}
+                  rules={{ required: watch("popup_gubun", "Event") === "Event" }}
+                />
+
+                <Button mt={2} size="large" onClick={() => setIsEventModalOpen(true)}>
+                  적용대상 선택
+                </Button>
+              </TableCell>
+            </TableRow>
+          </>
+        )}
         <TableRow>
           <TableCell>팝업 종류</TableCell>
           <TableCell>
@@ -280,33 +315,21 @@ export const PopupDetail = () => {
             <Dropzone control={control} name="popup_img" width="250px" ratio={1.8} readOnly={!isUsePopup} />
           </TableCell>
         </TableRow>
-        {watch("popup_gubun", "Event") === "Event" && (
-          <TableRow>
-            <TableCell>적용 이벤트 선택</TableCell>
-            <TableCell>
-              <Controller
-                render={({ value }) => <Typography>{value?.title || "이벤트를 선택해주세요"}</Typography>}
-                name="selected_event"
-                control={control}
-                defaultValue={null}
-                rules={{ required: watch("popup_gubun", "Event") === "Event" }}
-              />
-
-              {isUsePopup && (
-                <Button mt={2} size="large" onClick={() => setIsEventModalOpen(true)}>
-                  이벤트 선택
-                </Button>
-              )}
-            </TableCell>
-          </TableRow>
-        )}
       </RowTable>
 
-      <EventModal
-        open={isEventModalOpen}
-        onClose={() => setIsEventModalOpen(false)}
-        onSelect={(target) => setValue("selected_event", target)}
-      />
+      {watch("inlink_type", "EVENT") === "EVENT" ? (
+        <EventModal
+          open={isEventModalOpen}
+          onClose={() => setIsEventModalOpen(false)}
+          onSelect={(target) => setValue("selected_target", target)}
+        />
+      ) : (
+        <ProductModal
+          open={isEventModalOpen}
+          onClose={() => setIsEventModalOpen(false)}
+          onSelect={(target) => setValue("selected_target", target)}
+        />
+      )}
 
       <Box mt={4} textAlign="center">
         <Button mr={2} onClick={() => history.push("/popup")}>
@@ -332,10 +355,7 @@ export const PopupDetail = () => {
 
 const EventModal = ({ open, onClose, onSelect }) => {
   const [eventList, setEventList] = useState();
-  const [listContext, setListContext] = useState({
-    page: 1,
-    search_word: "",
-  });
+  const [listContext, setListContext] = useState();
 
   const event_columns = [
     { title: "번호", field: "event_pk", width: 80 },
@@ -362,11 +382,14 @@ const EventModal = ({ open, onClose, onSelect }) => {
   }
 
   function handleOnSelect(target) {
-    onSelect(target);
+    onSelect({
+      ...target,
+      target_name: target.title,
+      target_pk: target.event_pk,
+    });
     onClose();
   }
   function handleOnEnter() {
-    getEventList();
     setListContext({
       page: 1,
       search_word: "",
@@ -403,11 +426,68 @@ const EventModal = ({ open, onClose, onSelect }) => {
 
         <Box py={6} position="relative" display="flex" alignItems="center" justifyContent="flex-end">
           <Pagination
-            page={listContext.page}
+            page={listContext?.page}
             setPage={handleContextChange}
             count={Math.ceil(eventList?.[0]?.total / 10)}
           />
         </Box>
+      </Box>
+    </Dialog>
+  );
+};
+const ProductModal = ({ open, onClose, onSelect }) => {
+  const classes = useStyles();
+
+  const [productList, setProductList] = useState();
+
+  const product_columns = [
+    {
+      title: "상품 이미지",
+      render: ({ thumb_img }) => (
+        <ImageBox src={getFullImgURL(thumb_img)} display="inline-block" width="60px" height="60px" />
+      ),
+      width: 180,
+    },
+    { title: "상품명", field: "product_name", cellStyle: { textAlign: "left" } },
+    {
+      title: "가격",
+      render: ({ each_price, event_each_price }) => (
+        <Typography fontWeight="500">
+          낱개 &#40;<s>{price(each_price)}</s> &gt; {price(event_each_price)}&#41;원
+        </Typography>
+      ),
+      width: 320,
+    },
+  ];
+
+  async function getProductList() {
+    let data = await apiObject.getEventProductList({});
+    setProductList(data);
+  }
+
+  function handleOnSelect(target) {
+    onSelect({
+      ...target,
+      target_name: target.product_name,
+      target_pk: target.product_pk,
+    });
+    onClose();
+  }
+
+  function handleEnter() {
+    getProductList();
+  }
+
+  return (
+    <Dialog maxWidth="md" fullWidth open={open} onClose={onClose} onBackdropClick={onClose} onEnter={handleEnter}>
+      <Box p={3} height="800px" bgcolor="#fff">
+        <Box mb={2} display="flex" justifyContent="space-between">
+          <Typography variant="h6" fontWeight="700" display="inline">
+            상품 선택
+          </Typography>
+        </Box>
+
+        <ColumnTable columns={product_columns} data={productList} onRowClick={handleOnSelect} />
       </Box>
     </Dialog>
   );

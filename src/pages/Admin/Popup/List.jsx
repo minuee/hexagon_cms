@@ -92,6 +92,12 @@ export const PopupList = ({ location }) => {
       render: ({ popup_type }) => (popup_type === "Layer" ? "레이어" : "전체화면"),
       width: 120,
     },
+    {
+      title: "대상",
+      render: ({ inlink_type }) => (inlink_type === "EVENT" ? "이벤트" : "상품"),
+      width: 120,
+      hidden: query.type !== "event",
+    },
     { title: "제목", field: "title", cellStyle: { textAlign: "left" } },
     {
       title: "시작 시간",
@@ -216,7 +222,7 @@ export const PopupList = ({ location }) => {
           </Box>
 
           <Box>
-            <Button color="primary" onClick={() => history.push(`/popup/add`)}>
+            <Button color="primary" onClick={() => history.push(`/popup/add/${query.type || "notice"}`)}>
               등록
             </Button>
             <Button ml={1} color="secondary" onClick={removePopups}>
@@ -230,7 +236,14 @@ export const PopupList = ({ location }) => {
         <ColumnTable
           columns={query.filter === "stop" ? prev_popup_columns : cur_popup_columns}
           data={popupList}
-          onRowClick={(row) => history.push(`/popup/${row.popup_gubun}/${row.popup_pk}`)}
+          onRowClick={(row) =>
+            history.push({
+              pathname: `/popup/${row.popup_gubun}/${row.popup_pk}`,
+              state: {
+                inlink_type: row.inlink_type,
+              },
+            })
+          }
           selection
           onSelectionChange={setSelectedPopup}
         />

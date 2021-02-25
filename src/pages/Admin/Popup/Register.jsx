@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Controller, useForm, useFieldArray } from "react-hook-form";
-import { price } from "common";
+import { price, getFullImgURL } from "common";
 import { apiObject } from "api";
 import dayjs from "dayjs";
+import _ from "lodash";
 
 import {
   Grid,
@@ -28,7 +29,7 @@ import {
 import { EventNote, Search, HighlightOff } from "@material-ui/icons";
 import { DateTimePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, RowTable, Pagination, SearchBox, Dropzone } from "components";
+import { ColumnTable, RowTable, Pagination, SearchBox, Dropzone, ImageBox } from "components";
 
 const useStyles = makeStyles((theme) => ({
   datetimepicker: {
@@ -49,8 +50,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const PopupRegister = () => {
-  const history = useHistory();
   const classes = useStyles();
+  const history = useHistory();
+  const { popup_gubun } = useParams();
   const { control, register, reset, watch, setValue, handleSubmit, errors } = useForm();
 
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
@@ -60,8 +62,8 @@ export const PopupRegister = () => {
       alert("팝업 이미지를 선택해주세요");
       return;
     }
-    if (form.popup_gubun === "Event" && !form.selected_event) {
-      alert("적용 이벤트를 선택해주세요");
+    if (form.popup_gubun === "Event" && !form.selected_target) {
+      alert("이벤트 적용 대상을 선택해주세요");
       return;
     }
     if (!window.confirm("입력한 정보로 팝업을 등록하시겠습니까?")) {
@@ -72,7 +74,11 @@ export const PopupRegister = () => {
 
     form.img_url = paths?.[0];
     form.start_dt = form.start_dt?.unix();
-    form.event_pk = form.selected_event?.event_pk;
+    if (form.inlink_type === "EVENT") {
+      form.target_pk = form.selected_target?.event_pk;
+    } else {
+      form.target_pk = form.selected_target?.product_pk;
+    }
 
     switch (form.popup_gubun) {
       case "Notice":
@@ -84,6 +90,12 @@ export const PopupRegister = () => {
     }
     history.push("/popup");
   }
+
+  useEffect(() => {
+    reset({
+      popup_gubun: _.upperFirst(popup_gubun),
+    });
+  }, [popup_gubun]);
 
   return (
     <Box>
@@ -110,6 +122,42 @@ export const PopupRegister = () => {
             />
           </TableCell>
         </TableRow>
+        {watch("popup_gubun", "Event") === "Event" && (
+          <>
+            <TableRow>
+              <TableCell>이벤트 적용 대상 구분</TableCell>
+              <TableCell>
+                <Controller
+                  as={
+                    <RadioGroup row>
+                      <FormControlLabel value="EVENT" control={<Radio color="primary" />} label="이벤트" />
+                      <FormControlLabel value="PRODUCT" control={<Radio color="primary" />} label="상품" />
+                    </RadioGroup>
+                  }
+                  name="inlink_type"
+                  control={control}
+                  defaultValue="EVENT"
+                />
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>이벤트 적용 대상</TableCell>
+              <TableCell>
+                <Controller
+                  as={({ value }) => <Typography>{value?.target_name || "이벤트 적용 대상을 선택해주세요"}</Typography>}
+                  name="selected_target"
+                  control={control}
+                  defaultValue={null}
+                  rules={{ required: watch("popup_gubun", "Event") === "Event" }}
+                />
+
+                <Button mt={2} size="large" onClick={() => setIsEventModalOpen(true)}>
+                  적용대상 선택
+                </Button>
+              </TableCell>
+            </TableRow>
+          </>
+        )}
         <TableRow>
           <TableCell>팝업 종류</TableCell>
           <TableCell>
@@ -176,32 +224,21 @@ export const PopupRegister = () => {
             <Dropzone control={control} name="popup_img" width="250px" ratio={1.8} />
           </TableCell>
         </TableRow>
-
-        {watch("popup_gubun", "Event") === "Event" && (
-          <TableRow>
-            <TableCell>적용 이벤트 선택</TableCell>
-            <TableCell>
-              <Controller
-                as={({ value }) => <Typography>{value?.title || "이벤트를 선택해주세요"}</Typography>}
-                name="selected_event"
-                control={control}
-                defaultValue={null}
-                rules={{ required: watch("popup_gubun", "Event") === "Event" }}
-              />
-
-              <Button mt={2} size="large" onClick={() => setIsEventModalOpen(true)}>
-                이벤트 선택
-              </Button>
-            </TableCell>
-          </TableRow>
-        )}
       </RowTable>
 
-      <EventModal
-        open={isEventModalOpen}
-        onClose={() => setIsEventModalOpen(false)}
-        onSelect={(target) => setValue("selected_event", target)}
-      />
+      {watch("inlink_type", "EVENT") === "EVENT" ? (
+        <EventModal
+          open={isEventModalOpen}
+          onClose={() => setIsEventModalOpen(false)}
+          onSelect={(target) => setValue("selected_target", target)}
+        />
+      ) : (
+        <ProductModal
+          open={isEventModalOpen}
+          onClose={() => setIsEventModalOpen(false)}
+          onSelect={(target) => setValue("selected_target", target)}
+        />
+      )}
 
       <Box mt={4} textAlign="center">
         <Button mr={2} onClick={() => history.push("/notice")}>
@@ -248,7 +285,10 @@ const EventModal = ({ open, onClose, onSelect }) => {
   }
 
   function handleOnSelect(target) {
-    onSelect(target);
+    onSelect({
+      ...target,
+      target_name: target.title,
+    });
     onClose();
   }
   function handleOnEnter() {
@@ -294,6 +334,62 @@ const EventModal = ({ open, onClose, onSelect }) => {
             count={Math.ceil(eventList?.[0]?.total / 10)}
           />
         </Box>
+      </Box>
+    </Dialog>
+  );
+};
+const ProductModal = ({ open, onClose, onSelect }) => {
+  const classes = useStyles();
+
+  const [productList, setProductList] = useState();
+
+  const product_columns = [
+    {
+      title: "상품 이미지",
+      render: ({ thumb_img }) => (
+        <ImageBox src={getFullImgURL(thumb_img)} display="inline-block" width="60px" height="60px" />
+      ),
+      width: 180,
+    },
+    { title: "상품명", field: "product_name", cellStyle: { textAlign: "left" } },
+    {
+      title: "가격",
+      render: ({ each_price, event_each_price }) => (
+        <Typography fontWeight="500">
+          낱개 &#40;<s>{price(each_price)}</s> &gt; {price(event_each_price)}&#41;원
+        </Typography>
+      ),
+      width: 320,
+    },
+  ];
+
+  async function getProductList() {
+    let data = await apiObject.getEventProductList({});
+    setProductList(data);
+  }
+
+  function handleOnSelect(target) {
+    onSelect({
+      ...target,
+      target_name: target.product_name,
+    });
+    onClose();
+  }
+
+  function handleEnter() {
+    getProductList();
+  }
+
+  return (
+    <Dialog maxWidth="md" fullWidth open={open} onClose={onClose} onBackdropClick={onClose} onEnter={handleEnter}>
+      <Box p={3} height="800px" bgcolor="#fff">
+        <Box mb={2} display="flex" justifyContent="space-between">
+          <Typography variant="h6" fontWeight="700" display="inline">
+            상품 선택
+          </Typography>
+        </Box>
+
+        <ColumnTable columns={product_columns} data={productList} onRowClick={handleOnSelect} />
       </Box>
     </Dialog>
   );
