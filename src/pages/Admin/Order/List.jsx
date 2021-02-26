@@ -10,7 +10,7 @@ import { Grid, Box, makeStyles, TextField, InputAdornment } from "@material-ui/c
 import { DescriptionOutlined, ArrowDropDown, ArrowDropUp } from "@material-ui/icons";
 
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination, SearchBox, TermSearchBox } from "components";
+import { ColumnTable, Pagination, SearchBox, TermSearchBox, ExcelExportButton } from "components";
 
 const useStyles = makeStyles((theme) => ({
   table_footer: {
@@ -55,6 +55,22 @@ const header_button_list = [
     value: "order",
   },
 ];
+const excel_columns = [
+  { label: "번호", value: "no" },
+  { label: "구매번호", value: "order_no" },
+  {
+    label: "구매일자",
+    value: "reg_dt",
+    render: ({ reg_dt }) => dayjs.unix(reg_dt).format("YYYY-MM-DD"),
+  },
+  { label: "유저명", value: "member_name" },
+  {
+    label: "구매액",
+    value: "total_amount",
+    render: ({ total_amount }) => `${price(total_amount)}원`,
+  },
+  { label: "주문상태", value: "order_status_name" },
+];
 
 export const OrderList = ({ location }) => {
   const classes = useStyles();
@@ -65,6 +81,7 @@ export const OrderList = ({ location }) => {
 
   async function getOrderList() {
     let data = await apiObject.getOrderList({ ...query });
+    console.log(data);
     setOrderList(data);
   }
 
@@ -125,12 +142,9 @@ export const OrderList = ({ location }) => {
       </Box>
 
       <Grid container className={classes.table_footer}>
-        <Button p={1}>
-          <DescriptionOutlined />
-          엑셀저장
-        </Button>
+        <ExcelExportButton data={orderList} columns={excel_columns} path="Order" />
 
-        <Pagination page={query.page} setPage={handleQueryChange} />
+        <Pagination page={query.page} setPage={handleQueryChange} count={Math.ceil(+orderList?.[0]?.total / 10)} />
 
         <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} />
       </Grid>

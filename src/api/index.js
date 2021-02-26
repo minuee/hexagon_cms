@@ -253,6 +253,8 @@ export const apiObject = {
       });
       let ret = data.data.data.orderList;
 
+      console.log(ret);
+
       ret.forEach((item, index) => {
         item.no = getListIndex(item.total, page, index);
       });
@@ -460,7 +462,7 @@ export const apiObject = {
   },
 
   // Product
-  getItemList: async ({ category_pk, page, paginate = 10, search_word }) => {
+  getProductList: async ({ category_pk, page, paginate = 10, search_word }) => {
     try {
       let data = await axios.get("/cms/product/list", {
         params: { category_pk, page, paginate, search_word },
@@ -492,7 +494,7 @@ export const apiObject = {
       return {};
     }
   },
-  removeItems: async ({ product_array }) => {
+  removeProduct: async ({ product_array }) => {
     try {
       let response = await axios.delete("/cms/product/remove", {
         data: { product_array },

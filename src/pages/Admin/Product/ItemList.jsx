@@ -8,9 +8,8 @@ import dayjs from "dayjs";
 import qs from "query-string";
 
 import { Grid, Box, makeStyles, TextField, InputAdornment, Select, MenuItem, IconButton } from "@material-ui/core";
-import { DescriptionOutlined, Search } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination, SearchBox, ImageBox } from "components";
+import { ColumnTable, Pagination, SearchBox, ImageBox, ExcelExportButton } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -54,18 +53,38 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const excel_columns = [
+  { label: "카테고리구분", value: "category_type", render: ({ category_yn }) => (category_yn ? "브랜드" : "제품군") },
+  { label: "카테고리명", value: "category_name" },
+  { label: "상품명", value: "product_name" },
+  {
+    label: "낱개당",
+    value: "each_price",
+    render: ({ each_price }) => price(each_price),
+  },
+  {
+    label: "박스당",
+    value: "box_price",
+    render: ({ box_price }) => price(box_price),
+  },
+  {
+    label: "카톤당",
+    value: "carton_price",
+    render: ({ carton_price }) => price(carton_price),
+  },
+];
+
 export const ItemList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
   const query = qs.parse(location.search);
   const { control, watch } = useForm();
 
-  const [itemList, setItemList] = useState();
-  const [selectedItems, setSelectedItems] = useState([]);
+  const [productList, setProductList] = useState();
+  const [selectedProducts, setSelectedProducts] = useState([]);
   const [categoryList, setCategoryList] = useState();
-  const [searchWord, setSearchWord] = useState("");
 
-  const item_list_columns = [
+  const product_list_columns = [
     {
       title: "상품 이미지",
       render: ({ thumb_img }) => (
@@ -88,26 +107,26 @@ export const ItemList = ({ location }) => {
     },
   ];
 
-  async function getItemList() {
-    let data = await apiObject.getItemList({
+  async function getProductList() {
+    let data = await apiObject.getProductList({
       ...query,
     });
-    setItemList(data);
+    setProductList(data);
   }
   async function getCategoryList() {
     let data = await apiObject.getCategoryList({});
     setCategoryList(data);
   }
-  async function removeItems() {
+  async function removeProduct() {
     if (!window.confirm("선택한 상품들을 삭제하시겠습니까?")) return;
 
     let product_array = [];
-    selectedItems.forEach((item) => {
+    selectedProducts.forEach((item) => {
       product_array.push({ product_pk: item.product_pk });
     });
 
-    let resp = await apiObject.removeItems({ product_array });
-    getItemList();
+    await apiObject.removeProduct({ product_array });
+    getProductList();
   }
 
   function handleQueryChange(q, v) {
@@ -124,7 +143,7 @@ export const ItemList = ({ location }) => {
   }, [watch("category_type", "")]);
 
   useEffect(() => {
-    getItemList();
+    getProductList();
   }, [query.page, query.search_word, query.category_pk]);
 
   useEffect(() => {
@@ -183,7 +202,6 @@ export const ItemList = ({ location }) => {
               <MenuItem value="">카테고리 분류</MenuItem>
               {categoryList.categoryNormalList.map((item, index) => (
                 <MenuItem value={item.category_pk} key={index}>
-                  {/* {item.category_name} */}
                   {`${item.depth1name}  >  ${item.depth2name}  >  ${item.depth3name}`}
                 </MenuItem>
               ))}
@@ -191,7 +209,7 @@ export const ItemList = ({ location }) => {
           )}
 
           <Box ml={2}>
-            <Typography>등록 상품 수: {itemList?.[0]?.total}</Typography>
+            <Typography>등록 상품 수: {productList?.[0]?.total}</Typography>
           </Box>
         </Box>
 
@@ -199,7 +217,7 @@ export const ItemList = ({ location }) => {
           <Button color="primary" onClick={() => history.push("/product/item/add")}>
             등록
           </Button>
-          <Button color="secondary" ml={2} onClick={removeItems}>
+          <Button color="secondary" ml={2} onClick={removeProduct}>
             삭제
           </Button>
         </Box>
@@ -207,38 +225,24 @@ export const ItemList = ({ location }) => {
 
       <Box mt={2} mb={3}>
         <ColumnTable
-          columns={item_list_columns}
-          data={itemList}
+          columns={product_list_columns}
+          data={productList}
           onRowClick={(row) => history.push(`/product/item/${row.product_pk}`)}
           selection
-          onSelectionChange={setSelectedItems}
+          onSelectionChange={setSelectedProducts}
         />
       </Box>
 
       <Grid container className={classes.table_footer}>
-        <Button p={1}>
-          <DescriptionOutlined />
-          엑셀저장
-        </Button>
+        <ExcelExportButton data={productList} columns={excel_columns} path="Product" />
 
-        <Pagination page={query.page || 1} setPage={handleQueryChange} count={Math.ceil(itemList?.[0]?.total / 10)} />
+        <Pagination
+          page={query.page || 1}
+          setPage={handleQueryChange}
+          count={Math.ceil(productList?.[0]?.total / 10)}
+        />
 
         <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} />
-        {/* <TextField
-          name="search_word"
-          value={searchWord}
-          onChange={(e) => setSearchWord(e.target.value)}
-          onKeyPress={(e) => e.key === "Enter" && handleQueryChange("search_word", searchWord)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <IconButton onClick={() => handleQueryChange("search_word", searchWord)}>
-                  <Search />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        /> */}
       </Grid>
     </Box>
   );

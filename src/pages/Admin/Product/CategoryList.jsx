@@ -7,12 +7,10 @@ import qs from "query-string";
 
 import { Grid, Box, makeStyles, TextField, InputAdornment, Select, MenuItem, IconButton } from "@material-ui/core";
 import { DescriptionOutlined, Search, EventNote } from "@material-ui/icons";
-import { DatePicker } from "@material-ui/pickers";
 
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, SearchBox } from "components";
+import { ColumnTable, SearchBox, ImageBox, ExcelExportButton } from "components";
 import { apiObject } from "api";
-import { ImageBox } from "components/ImageBox";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -57,6 +55,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const excel_columns = [
+  {
+    label: "카테고리구분",
+    value: "category_type",
+    render: ({ category_type }) => (category_type === "B" ? "브랜드" : "제품군"),
+  },
+  {
+    label: "카테고리명 (상품 수)",
+    value: "category_name",
+    render: (props) =>
+      props.category_type === "N"
+        ? `${props.depth1name} > ${props.depth2name} > ${props.depth3name}  (${props.product_count})`
+        : `${props.category_name} (${props.product_count})`,
+  },
+];
+
 export const CategoryList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
@@ -64,7 +78,6 @@ export const CategoryList = ({ location }) => {
 
   const [categoryList, setCategoryList] = useState();
   const [selectedCategorys, setSelectedCategorys] = useState([]);
-  const [searchWord, setSearchWord] = useState("");
 
   const category_list_columns = [
     {
@@ -174,10 +187,13 @@ export const CategoryList = ({ location }) => {
       </Box>
 
       <Grid container className={classes.table_footer}>
-        <Button p={1}>
-          <DescriptionOutlined />
-          엑셀저장
-        </Button>
+        <ExcelExportButton
+          data={
+            (query.category_type || "B") === "B" ? categoryList?.categoryBrandList : categoryList?.categoryNormalList
+          }
+          columns={excel_columns}
+          path="Category"
+        />
 
         <Box className={classes.search_section}>
           <Box display="inline-block" mx={1} />

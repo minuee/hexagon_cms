@@ -8,7 +8,7 @@ import qs from "query-string";
 import { Grid, Box, makeStyles } from "@material-ui/core";
 import { DescriptionOutlined, ArrowDropDown, ArrowDropUp } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination, SearchBox } from "components";
+import { ColumnTable, Pagination, SearchBox, ExcelExportButton } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header_buttons: {
@@ -70,6 +70,26 @@ const header_button_list = [
   {
     label: "리워드액순",
     value: "reward",
+  },
+];
+const excel_columns = [
+  { label: "이름", value: "name" },
+  { label: "코드값", value: "special_code" },
+  {
+    label: "구매총액",
+    value: "total_amount",
+    render: ({ total_amount }) => `${price(total_amount) || 0}원`,
+  },
+  {
+    label: "리워드잔액",
+    value: "reward_point",
+    render: ({ reward_point }) => `${price(reward_point) || 0}원`,
+  },
+  { label: "등급", value: "grade_name" },
+  {
+    label: "비고",
+    value: "approval",
+    render: ({ approval, agent_code }) => (approval ? `영업사원코드:  ${agent_code}` : "회원가입 미승인"),
   },
 ];
 
@@ -165,10 +185,7 @@ export const MemberList = ({ location }) => {
       </Box>
 
       <Grid container className={classes.table_footer}>
-        <Button p={1}>
-          <DescriptionOutlined />
-          엑셀저장
-        </Button>
+        <ExcelExportButton data={memberList} columns={excel_columns} path="Member" />
 
         <Pagination
           page={query.page || 1}

@@ -9,7 +9,7 @@ import qs from "query-string";
 import { Grid, Box, makeStyles, TextField, InputAdornment } from "@material-ui/core";
 import { DescriptionOutlined, ArrowDropDown, ArrowDropUp } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination, SearchBox } from "components";
+import { ColumnTable, Pagination, SearchBox, ExcelExportButton } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header_buttons: {
@@ -64,6 +64,26 @@ const header_button_list = [
   {
     label: "인센티브액순",
     value: "incentive",
+  },
+];
+const excel_columns = [
+  { label: "이름", value: "name" },
+  { label: "코드값", value: "special_code" },
+  { label: "휴대폰번호", value: "phone" },
+  {
+    label: "구매대행액",
+    value: "total_amount",
+    render: ({ total_amount }) => `${price(total_amount)}원`,
+  },
+  {
+    label: "인센티브액",
+    value: "total_incentive",
+    render: ({ total_incentive }) => `${price(total_incentive)}원`,
+  },
+  {
+    label: "상태",
+    value: "use_yn",
+    render: ({ use_yn }) => (use_yn ? "이용중" : "퇴사"),
   },
 ];
 
@@ -130,10 +150,7 @@ export const SalesmanList = ({ location }) => {
       </Box>
 
       <Grid container className={classes.table_footer}>
-        <Button p={1}>
-          <DescriptionOutlined />
-          엑셀저장
-        </Button>
+        <ExcelExportButton data={salesmanList} columns={excel_columns} path="Salesman" />
 
         <Pagination page={query.page} setPage={handleQueryChange} count={Math.ceil(+salesmanList?.[0]?.total / 10)} />
 
