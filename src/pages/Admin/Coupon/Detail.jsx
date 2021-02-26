@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Controller, useForm, useFieldArray } from "react-hook-form";
-import dayjs from "dayjs";
 import { price, getRandomColor, getFullImgURL } from "common";
 import { apiObject } from "api";
+import dayjs from "dayjs";
 import _ from "lodash";
 
 import {
@@ -40,9 +40,11 @@ export const CouponDetail = () => {
   const { control, register, reset, handleSubmit, errors } = useForm();
 
   const [couponDetail, setCouponDetail] = useState();
+  const [isTerminated, setIsTerminated] = useState(false);
 
   async function getCouponDetail() {
     let data = await apiObject.getCouponDetail({ coupon_pk });
+    setIsTerminated(data.end_dt < dayjs().unix());
 
     setCouponDetail(data);
     reset({
@@ -89,7 +91,7 @@ export const CouponDetail = () => {
           <TableCell>
             <Controller
               as={
-                <Select displayEmpty error={!!errors?.coupon_type}>
+                <Select displayEmpty error={!!errors?.coupon_type} disabled={isTerminated}>
                   <MenuItem value="">쿠폰 종류 선택</MenuItem>
                   <MenuItem value={5000}>5000원권</MenuItem>
                   <MenuItem value={10000}>10000원권</MenuItem>
@@ -122,7 +124,7 @@ export const CouponDetail = () => {
               </Box>
               <Controller
                 render={({ ref, ...props }) => (
-                  <DatePicker {...props} inputRef={ref} format="YYYY.MM.DD" size="small" />
+                  <DatePicker {...props} inputRef={ref} format="YYYY.MM.DD" size="small" disabled={isTerminated} />
                 )}
                 control={control}
                 name="end_dt"
@@ -136,24 +138,29 @@ export const CouponDetail = () => {
           <TableCell>발급사유</TableCell>
           <TableCell>{couponDetail?.issue_reason}</TableCell>
         </TableRow>
-        <TableRow>
-          <TableCell>수정사유</TableCell>
-          <TableCell>
-            <TextField
-              size="small"
-              name="update_reason"
-              placeholder="수정사유 입력"
-              inputRef={register({ required: true })}
-              error={!!errors.update_reason}
-            />
-          </TableCell>
-        </TableRow>
+        {!isTerminated && (
+          <TableRow>
+            <TableCell>수정사유</TableCell>
+            <TableCell>
+              <TextField
+                size="small"
+                name="update_reason"
+                placeholder="수정사유 입력"
+                inputRef={register({ required: true })}
+                error={!!errors.update_reason}
+              />
+            </TableCell>
+          </TableRow>
+        )}
       </RowTable>
 
       <Box mt={4} textAlign="center">
-        <Button color="primary" onClick={handleSubmit(modifyCoupon)}>
-          수정
-        </Button>
+        <Button onClick={() => history.push("/coupon")}>목록</Button>
+        {!isTerminated && (
+          <Button ml={2} color="primary" onClick={handleSubmit(modifyCoupon)}>
+            수정
+          </Button>
+        )}
         <Button ml={2} color="secondary" onClick={removeCoupon}>
           삭제
         </Button>

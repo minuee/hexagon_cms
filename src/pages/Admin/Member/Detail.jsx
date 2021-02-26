@@ -145,7 +145,7 @@ export const MemberDetail = () => {
     }
 
     let paths = await apiObject.uploadImageMultiple({ img_arr: form.lisence_img, page: "member" });
-    await apiObject.modifyMemberDetail({
+    await apiObject.modifyMember({
       ...form,
       member_pk,
       company_phone: form.phone,
@@ -164,37 +164,41 @@ export const MemberDetail = () => {
         유저 정보 및 리워드 상세
       </Typography>
 
-      <Box mt={2}>
-        <Box width="30rem" className={classes.header_box}>
-          <Typography variant="h6" fontWeight="500">
-            등급
-          </Typography>
+      {memberInfo?.approval_dt && (
+        <Box mt={2}>
+          <Box width="30rem" className={classes.header_box}>
+            <Typography variant="h6" fontWeight="500">
+              등급
+            </Typography>
 
-          <Box className={classes.grade_content}>
-            <ImageBox src={`/image/rank_${cur_grade?.grade_code?.toLowerCase()}.png`} width="7rem" height="7rem" />
-            <Box textAlign="right">
-              <Typography variant="h6" fontWeight="700">
-                {cur_grade?.grade_name || "-"}
-              </Typography>
-              <Typography>적립률 {cur_grade?.rate * 100 || "-"}% 적용</Typography>
-              {cur_grade?.coupon && <Typography>{price(cur_grade?.coupon)}원 쿠폰 1회 제공</Typography>}
-              <Typography>
-                {cur_grade?.delivery === 0 ? "배송비 무료" : `${price(cur_grade?.free_amount)}이상 주문시 배송비 무료`}
-              </Typography>
+            <Box className={classes.grade_content}>
+              <ImageBox src={`/image/rank_${cur_grade?.grade_code?.toLowerCase()}.png`} width="7rem" height="7rem" />
+              <Box textAlign="right">
+                <Typography variant="h6" fontWeight="700">
+                  {cur_grade?.grade_name || "-"}
+                </Typography>
+                <Typography>적립률 {cur_grade?.rate * 100 || "-"}% 적용</Typography>
+                {cur_grade?.coupon && <Typography>{price(cur_grade?.coupon)}원 쿠폰 1회 제공</Typography>}
+                <Typography>
+                  {cur_grade?.delivery === 0
+                    ? "배송비 무료"
+                    : `${price(cur_grade?.free_amount)}이상 주문시 배송비 무료`}
+                </Typography>
+              </Box>
             </Box>
           </Box>
-        </Box>
 
-        <Box width="20rem" className={classes.header_box}>
-          <Typography variant="h6" fontWeight="500">
-            적립금 현황
-          </Typography>
+          <Box width="20rem" className={classes.header_box}>
+            <Typography variant="h6" fontWeight="500">
+              적립금 현황
+            </Typography>
 
-          <Typography textAlign="right" variant="h5" fontWeight="700">
-            {price(memberInfo?.remain_reward) || "-"} 원
-          </Typography>
+            <Typography textAlign="right" variant="h5" fontWeight="700">
+              {price(memberInfo?.remain_reward) || "-"} 원
+            </Typography>
+          </Box>
         </Box>
-      </Box>
+      )}
 
       <Box mt={4} mb={1}>
         <Typography variant="h5" fontWeight="500">
@@ -327,33 +331,40 @@ export const MemberDetail = () => {
         <TableRow>
           <TableCell>상태</TableCell>
           <TableCell>
-            <Controller
-              render={({ onChange, ...props }) => (
-                <RadioGroup row {...props} onChange={(e) => !!e.target.value}>
-                  <FormControlLabel value={false} control={<Radio color="primary" />} label="사용중" />
-                  <FormControlLabel value={true} control={<Radio color="primary" />} label="사용중지" />
-                </RadioGroup>
-              )}
-              name="is_retired"
-              control={control}
-              defaultValue={false}
-            />
+            {memberInfo?.approval_dt ? (
+              <Controller
+                render={({ onChange, ...props }) => (
+                  <RadioGroup row {...props} onChange={(e) => !!e.target.value}>
+                    <FormControlLabel value={false} control={<Radio color="primary" />} label="사용중" />
+                    <FormControlLabel value={true} control={<Radio color="primary" />} label="사용중지" />
+                  </RadioGroup>
+                )}
+                name="is_retired"
+                control={control}
+                defaultValue={false}
+              />
+            ) : (
+              <Box display="flex" justifyContent="space-between" alignItems="center">
+                <Typography>회원가입 승인 대기</Typography>
+                <Button color="primary" onClick={approveMember}>
+                  회원가입 승인
+                </Button>
+              </Box>
+            )}
           </TableCell>
         </TableRow>
-        <TableRow>
-          <TableCell>등급</TableCell>
-          <TableCell>{memberInfo?.grade_name}</TableCell>
-        </TableRow>
+        {memberInfo?.approval_dt && (
+          <TableRow>
+            <TableCell>등급</TableCell>
+            <TableCell>{memberInfo?.grade_name}</TableCell>
+          </TableRow>
+        )}
       </RowTable>
 
       <Box py={2} mb={4} display="flex">
-        {memberInfo?.approval_dt ? (
+        {memberInfo?.approval_dt && (
           <Button color="primary" onClick={handleSubmit(modifyMember)}>
             정보 수정
-          </Button>
-        ) : (
-          <Button color="primary" onClick={approveMember}>
-            회원가입 승인
           </Button>
         )}
       </Box>

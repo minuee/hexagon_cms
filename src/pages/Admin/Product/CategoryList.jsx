@@ -76,11 +76,12 @@ export const CategoryList = ({ location }) => {
     },
     { title: "카테고리구분", render: ({ category_type }) => (category_type === "B" ? "브랜드" : "제품군"), width: 120 },
     {
-      title: "카테고리명",
+      title: "카테고리명 (상품 수)",
       render: (props) =>
         props.category_type === "N"
-          ? `${props.depth1name} > ${props.depth2name} > ${props.depth3name}`
-          : props.category_name,
+          ? `${props.depth1name} > ${props.depth2name} > ${props.depth3name}  (${props.product_count})`
+          : `${props.category_name} (${props.product_count})`,
+      cellStyle: { textAlign: "N" === (query.category_type || "N") && "left" },
     },
     // { field: "exposure_priority", title: "노출순위" },
   ];

@@ -89,19 +89,19 @@ export const MemberList = ({ location }) => {
     setMemberList(data);
   }
   async function approveSignIn() {
+    if (!window.confirm("선택한 유저들을 회원가입 승인하시겠습니까?")) return;
+
     let member_array = [];
     selectedMembers.forEach((item) => {
-      member_array.push({
-        member_pk: item.member_pk,
-      });
+      if (!item.approval) {
+        member_array.push({
+          member_pk: item.member_pk,
+        });
+      }
     });
 
-    if (window.confirm("선택한 유저들을 회원가입 승인하시겠습니까?")) {
-      let resp = await apiObject.approveMembers({ member_array });
-      console.log(resp);
-
-      getMemberList();
-    }
+    await apiObject.approveMembers({ member_array });
+    getMemberList();
   }
 
   function handleQueryChange(q, v) {
@@ -154,6 +154,13 @@ export const MemberList = ({ location }) => {
           onRowClick={(row) => history.push(`/member/${row.member_pk}`)}
           selection
           onSelectionChange={setSelectedMembers}
+          options={{
+            selectionProps: (props) => ({
+              style: {
+                display: props.approval && "none",
+              },
+            }),
+          }}
         />
       </Box>
 

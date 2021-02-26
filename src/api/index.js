@@ -212,7 +212,7 @@ export const apiObject = {
       return [];
     }
   },
-  modifyMemberDetail: async ({
+  modifyMember: async ({
     member_pk,
     company_type,
     company_class,
@@ -222,6 +222,8 @@ export const apiObject = {
     company_phone,
     email,
     img_url,
+    is_approval = true,
+    new_approval = false,
   }) => {
     try {
       let response = await axios.put(`/cms/member/modify/${member_pk}`, {
@@ -233,6 +235,8 @@ export const apiObject = {
         company_phone: encrypt(company_phone),
         email: encrypt(email),
         img_url,
+        is_approval,
+        new_approval,
       });
 
       return response;

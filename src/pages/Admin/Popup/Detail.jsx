@@ -55,8 +55,8 @@ export const PopupDetail = () => {
   const { popup_gubun, popup_pk } = useParams();
   const { control, register, reset, watch, setValue, handleSubmit, errors } = useForm();
 
-  const [isUsePopup, setIsUsePopup] = useState(true);
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
+  const [isTerminated, setIsTerminated] = useState(false);
 
   async function getPopupDetail() {
     let data;
@@ -85,7 +85,7 @@ export const PopupDetail = () => {
       });
     }
 
-    setIsUsePopup(data.use_yn);
+    setIsTerminated(!data.use_yn);
   }
   async function modifyPopup(form) {
     if (!form.popup_img) {
@@ -177,8 +177,18 @@ export const PopupDetail = () => {
                 <Controller
                   as={
                     <RadioGroup row>
-                      <FormControlLabel value="EVENT" control={<Radio color="primary" />} label="이벤트" />
-                      <FormControlLabel value="PRODUCT" control={<Radio color="primary" />} label="상품" />
+                      <FormControlLabel
+                        value="EVENT"
+                        control={<Radio color="primary" />}
+                        label="이벤트"
+                        disabled={isTerminated}
+                      />
+                      <FormControlLabel
+                        value="PRODUCT"
+                        control={<Radio color="primary" />}
+                        label="상품"
+                        disabled={isTerminated}
+                      />
                     </RadioGroup>
                   }
                   name="inlink_type"
@@ -200,7 +210,7 @@ export const PopupDetail = () => {
                   rules={{ required: watch("popup_gubun", "Event") === "Event" }}
                 />
 
-                <Button mt={2} size="large" onClick={() => setIsEventModalOpen(true)}>
+                <Button mt={2} size="large" onClick={() => setIsEventModalOpen(true)} disabled={isTerminated}>
                   적용대상 선택
                 </Button>
               </TableCell>
@@ -211,16 +221,22 @@ export const PopupDetail = () => {
           <TableCell>팝업 종류</TableCell>
           <TableCell>
             <Controller
-              render={(props) =>
-                isUsePopup ? (
-                  <RadioGroup row {...props}>
-                    <FormControlLabel value="Layer" control={<Radio color="primary" />} label="레이어 팝업창" />
-                    <FormControlLabel value="FullScreen" control={<Radio color="primary" />} label="전면 팝업창" />
-                  </RadioGroup>
-                ) : (
-                  <Typography>{props.value === "Layer" ? "레이어 팝업창" : "전면 팝업창"}</Typography>
-                )
-              }
+              render={(props) => (
+                <RadioGroup row {...props}>
+                  <FormControlLabel
+                    value="Layer"
+                    control={<Radio color="primary" />}
+                    label="레이어 팝업창"
+                    disabled={isTerminated}
+                  />
+                  <FormControlLabel
+                    value="FullScreen"
+                    control={<Radio color="primary" />}
+                    label="전면 팝업창"
+                    disabled={isTerminated}
+                  />
+                </RadioGroup>
+              )}
               name="popup_type"
               control={control}
               defaultValue="Layer"
@@ -238,12 +254,12 @@ export const PopupDetail = () => {
               placeholder="제목 입력"
               inputRef={register({ required: true })}
               error={!!errors.title}
-              disabled={!isUsePopup}
+              disabled={isTerminated}
             />
           </TableCell>
         </TableRow>
         <TableRow>
-          <TableCell>{isUsePopup ? "오픈시간설정" : "게시기간"}</TableCell>
+          <TableCell>{isTerminated ? "오픈시간설정" : "게시기간"}</TableCell>
           <TableCell>
             <Controller
               render={({ ref, ...props }) => (
@@ -262,7 +278,7 @@ export const PopupDetail = () => {
                   }}
                   size="small"
                   error={!!errors.start_dt}
-                  disabled={!isUsePopup}
+                  disabled={isTerminated}
                 />
               )}
               control={control}
@@ -271,7 +287,7 @@ export const PopupDetail = () => {
               rules={{ required: true }}
             />
 
-            {!isUsePopup && (
+            {!isTerminated && (
               <>
                 <Box mx={3} display="inline-flex" alignItems="center" height="40px">
                   ~
@@ -293,7 +309,7 @@ export const PopupDetail = () => {
                       }}
                       size="small"
                       error={!!errors.end_dt}
-                      disabled={!isUsePopup}
+                      disabled={isTerminated}
                     />
                   )}
                   control={control}
@@ -308,7 +324,7 @@ export const PopupDetail = () => {
         <TableRow>
           <TableCell>이미지</TableCell>
           <TableCell>
-            <Dropzone control={control} name="popup_img" width="250px" ratio={1.8} readOnly={!isUsePopup} />
+            <Dropzone control={control} name="popup_img" width="250px" ratio={1.8} readOnly={isTerminated} />
           </TableCell>
         </TableRow>
       </RowTable>
@@ -331,7 +347,7 @@ export const PopupDetail = () => {
         <Button mr={2} onClick={() => history.push("/popup")}>
           목록
         </Button>
-        {isUsePopup && (
+        {!isTerminated && (
           <>
             <Button mr={2} color="primary" onClick={handleSubmit(modifyPopup)}>
               수정

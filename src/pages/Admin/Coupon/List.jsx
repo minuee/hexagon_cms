@@ -51,6 +51,11 @@ const coupon_list_columns = [
     render: ({ reg_dt }) => dayjs.unix(reg_dt).format("YYYY-MM-DD"),
     width: 160,
   },
+  {
+    title: "만료일자",
+    render: ({ end_dt }) => dayjs.unix(end_dt).format("YYYY-MM-DD"),
+    width: 160,
+  },
   // { title: "사용여부", render: ({ use_yn }) => (use_yn ? "Y" : "N"), width: 120 },
 ];
 

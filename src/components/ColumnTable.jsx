@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const ColumnTable = ({ columns, data = [], onRowClick = () => {}, selection, ...props }) => {
+export const ColumnTable = ({ columns, data = [], onRowClick = () => {}, selection, options, ...props }) => {
   const classes = useStyles();
   return (
     <Box className={classes.table_wrapper}>
@@ -39,6 +39,8 @@ export const ColumnTable = ({ columns, data = [], onRowClick = () => {}, selecti
           paging: false,
 
           selection: !!selection || false,
+
+          ...options,
         }}
         components={{
           Container: (props) => <Box bgcolor="#fff" {...props} />,

@@ -251,7 +251,7 @@ export const OrderDetail = () => {
           <TableCell colSpan={5}>{orderDetail?.orderBase.order_no}</TableCell>
         </TableRow>
 
-        {orderDetail?.product?.product?.map((item) => (
+        {orderDetail?.product?.map((item) => (
           <Fragment key={item.product_pk}>
             <TableRow>
               <TableCell colSpan={6} className={classes.product_divider} />
@@ -259,7 +259,12 @@ export const OrderDetail = () => {
 
             <TableRow>
               <TableCell>상품명</TableCell>
-              <TableCell>{item.product_name}</TableCell>
+              <TableCell>
+                {item.product_name}
+                <Typography display="inline" variant="subtitle1">
+                  {item.event_limit_price > 0 && " (한정판매 대상상품)"}
+                </Typography>
+              </TableCell>
               <TableCell>합계 금액</TableCell>
               <TableCell colSpan={3} align="right">
                 {item.discount_price > 0 ? (
