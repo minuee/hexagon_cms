@@ -99,7 +99,7 @@ const AdminRoutes = () => {
         <Route path="/banner" component={BannerList} />
 
         <Route exact path="/salesman/add" component={SalesmanRegister} />
-        <Route exact path="/salesman/incentive/:month_no" component={SalesmanIncentive} />
+        <Route exact path="/salesman/incentive/:member_pk/:sales_month" component={SalesmanIncentive} />
         <Route exact path="/salesman/:member_pk" component={SalesmanDetail} />
         <Route path="/salesman" component={SalesmanList} />
 

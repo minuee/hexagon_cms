@@ -1191,9 +1191,15 @@ export const apiObject = {
       return {};
     }
   },
-  getSalsemanClientList: async ({ special_code }) => {
+  getSalsemanClientList: async ({ special_code, page = 1, paginate = 10, search_word }) => {
     try {
-      let data = await axios.get(`/cms/salesman/charge/list/${special_code}`);
+      let data = await axios.get(`/cms/salesman/charge/list/${special_code}`, {
+        params: {
+          page,
+          paginate,
+          search_word,
+        },
+      });
       let ret = data.data.data.salesmanList;
 
       return ret;
@@ -1202,19 +1208,14 @@ export const apiObject = {
       return [];
     }
   },
-  getSalesmanMonthlyIncentiveList: async ({ member_pk }) => {
+  getSalesmanMonthlyIncentiveList: async ({ member_pk, sales_month }) => {
     try {
-      let data = await axios.get(`/cms/salesman/incentive/list/${member_pk}`);
-      console.log(data);
-    } catch (e) {
-      console.log({ e });
-      return [];
-    }
-  },
-  getSalesmanIncentiveList: async ({ member_pk }) => {
-    try {
-      let data = await axios.get(`/cms/salesman/incentive/list/${member_pk}`);
-      console.log(data);
+      let data = await axios.get(`/cms/salesman/incentive/month/${member_pk}`, {
+        params: { sales_month },
+      });
+      let ret = data.data.data.monthData;
+
+      return ret;
     } catch (e) {
       console.log({ e });
       return [];

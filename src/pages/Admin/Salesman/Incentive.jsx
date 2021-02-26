@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
+import { apiObject } from "api";
 import { price } from "common";
 import dayjs from "dayjs";
 
@@ -13,59 +14,57 @@ import { RowTable, ColumnTable, Pagination, Dropzone } from "components";
 const useStyles = makeStyles((theme) => ({}));
 
 const incentive_list_columns = [
-  { field: "purchase_dt", title: "날짜", render: ({ incentive_dt }) => dayjs.unix(incentive_dt).format("YYYY-MM-DD") },
+  { title: "날짜", render: ({ order_reg_dt }) => dayjs.unix(order_reg_dt).format("YYYY-MM-DD"), width: 160 },
+  { title: "주문자", field: "member_name", width: 160 },
+  { title: "주문번호", field: "order_no", width: 240 },
   {
-    field: "total_amount",
     title: "총구매대행액",
-    render: ({ total_amount }) => `${price(total_amount)}원`,
+    render: ({ total_price }) => `${price(total_price)}원`,
     cellStyle: { textAlign: "right" },
   },
   {
     field: "incentive_amount",
-    title: "인센티브액",
-    render: ({ incentive_amount }) => `${price(incentive_amount)}원`,
+    title: "인센티브대상금액",
+    render: ({ event_limit_price, total_price }) => (event_limit_price > 0 ? "0원" : `${price(total_price)}원`),
     cellStyle: { textAlign: "right" },
-  },
-];
-const incentive_list_rows = [
-  {
-    purchase_no: 1,
-    incentive_dt: 1882783984,
-    total_amount: 123456000,
-    incentive_amount: 126000,
-  },
-  {
-    purchase_no: 3,
-    incentive_dt: 1120973984,
-    total_amount: 323456000,
-    incentive_amount: 526000,
-  },
-  {
-    purchase_no: 6,
-    incentive_dt: 2092883984,
-    total_amount: 223456000,
-    incentive_amount: 426000,
   },
 ];
 
 export const SalesmanIncentive = () => {
   const history = useHistory();
+  const { member_pk, sales_month } = useParams();
+
+  const [incentiveData, setIncentiveData] = useState();
+
+  async function getIncentiveList() {
+    let data = await apiObject.getSalesmanMonthlyIncentiveList({ member_pk, sales_month });
+    setIncentiveData(data);
+  }
+
+  useEffect(() => {
+    getIncentiveList();
+  }, [member_pk, sales_month]);
 
   return (
     <Box>
-      <Typography variant="h5" fontWeight="500">
-        {2029}년 {1}월 인센티브 상세
-      </Typography>
+      <Box mb={2}>
+        <Typography variant="h5" fontWeight="500">
+          {sales_month.substring(0, 4)}년 {sales_month.substring(5)}월 인센티브 상세
+        </Typography>
 
-      <Box mt={4} />
+        <Box mt={2}>
+          <Typography>구매액: {price(incentiveData?.total_amount)}원</Typography>
+          <Typography>인센티브액: {price(incentiveData?.total_incentive)}원</Typography>
+        </Box>
+      </Box>
 
       <ColumnTable
         columns={incentive_list_columns}
-        data={incentive_list_rows}
-        onRowClick={(row) => history.push(`/purchase/${row.purchase_no}`)}
+        data={incentiveData?.order_data}
+        onRowClick={(row) => history.push(`/order/${row.order_pk}`)}
       />
       <Box position="relative" py={6}>
-        <Pagination />
+        {/* <Pagination /> */}
       </Box>
     </Box>
   );

@@ -183,18 +183,23 @@ export const SalesmanDetail = () => {
         )}
       </Box>
 
-      <SalesmanSubTable member_pk={member_pk} special_code={salesmanInfo?.special_code} />
+      <SalesmanSubTable
+        member_pk={member_pk}
+        special_code={salesmanInfo?.special_code}
+        incentive_list={salesmanInfo?.incentive}
+      />
     </Box>
   );
 };
 
-const SalesmanSubTable = ({ member_pk, special_code }) => {
+const SalesmanSubTable = ({ member_pk, special_code, incentive_list }) => {
   const history = useHistory();
 
   const [subTableData, setSubTableData] = useState();
   const [tableContext, setTableContext] = useState({
     tab: "member",
     page: 1,
+    search_word: "",
   });
 
   const member_columns = [
@@ -203,21 +208,20 @@ const SalesmanSubTable = ({ member_pk, special_code }) => {
   ];
   const incentive_columns = [
     {
-      field: "incentive_dt",
       title: "날짜",
-      render: ({ incentive_dt }) => dayjs.unix(incentive_dt).format("YYYY-MM"),
-      width: 160,
+      field: "sales_month",
+      width: 120,
     },
     {
-      field: "total_amount",
       title: "총구매대행액",
+      field: "total_amount",
       render: ({ total_amount }) => `${price(total_amount)}원`,
       cellStyle: { textAlign: "right" },
     },
     {
-      field: "incentive_amount",
       title: "인센티브액",
-      render: ({ incentive_amount }) => `${price(incentive_amount)}원`,
+      field: "total_incentive",
+      render: ({ total_incentive }) => `${price(total_incentive)}원`,
       cellStyle: { textAlign: "right" },
     },
   ];
@@ -228,13 +232,15 @@ const SalesmanSubTable = ({ member_pk, special_code }) => {
     switch (tableContext?.tab) {
       case "member":
         if (special_code) {
-          data = await apiObject.getSalsemanClientList({ special_code });
+          data = await apiObject.getSalsemanClientList({ special_code, ...tableContext });
         }
         break;
       case "incentive":
-        if (member_pk) {
-          data = await apiObject.getSalesmanIncentiveList({ member_pk });
-        }
+        data = incentive_list;
+        // setSubTableData(incentive_list);
+        // if (member_pk) {
+        //   data = await apiObject.getSalesmanIncentiveList({ member_pk });
+        // }
         break;
     }
 
@@ -271,18 +277,22 @@ const SalesmanSubTable = ({ member_pk, special_code }) => {
           data={subTableData}
           onRowClick={(row) =>
             history.push(
-              tableContext.tab === "member" ? `/user/${row.member_pk}` : `/salesman/incentive/${row.month_no}`,
+              tableContext.tab === "member"
+                ? `/user/${row.member_pk}`
+                : `/salesman/incentive/${member_pk}/${row.sales_month}`,
             )
           }
         />
       </Box>
 
       <Box position="relative" py={6}>
-        <Pagination
-          page={tableContext.page}
-          setPage={handleTableContextChange}
-          count={Math.ceil(+subTableData?.[0]?.total / 10)}
-        />
+        {tableContext.tab === "member" && (
+          <Pagination
+            page={tableContext.page}
+            setPage={handleTableContextChange}
+            count={Math.ceil(+subTableData?.[0]?.total / 10)}
+          />
+        )}
       </Box>
     </Box>
   );
