@@ -148,10 +148,6 @@ export const PopupDetail = () => {
     getPopupDetail();
   }, [popup_gubun, popup_pk, state]);
 
-  useEffect(() => {
-    console.log(watch("selected_target"));
-  }, [watch("selected_target")]);
-
   return (
     <Box>
       <Box mb={1}>
@@ -408,7 +404,9 @@ const EventModal = ({ open, onClose, onSelect }) => {
   }
 
   useEffect(() => {
-    getEventList();
+    if (open) {
+      getEventList();
+    }
   }, [listContext]);
 
   return (
@@ -437,8 +435,16 @@ const EventModal = ({ open, onClose, onSelect }) => {
 };
 const ProductModal = ({ open, onClose, onSelect }) => {
   const classes = useStyles();
+  const { control, watch, setValue } = useForm();
 
+  const [categoryList, setCategoryList] = useState();
   const [productList, setProductList] = useState();
+  const [listContext, setListContext] = useState({
+    page: 1,
+    search_word: "",
+    category_type: "B",
+    category_pk: "",
+  });
 
   const product_columns = [
     {
@@ -448,20 +454,23 @@ const ProductModal = ({ open, onClose, onSelect }) => {
       ),
       width: 180,
     },
+    { title: "카테고리구분", render: ({ category_yn }) => (category_yn ? "브랜드" : "제품군"), width: 120 },
+    { title: "카테고리명", field: "category_name" },
     { title: "상품명", field: "product_name", cellStyle: { textAlign: "left" } },
     {
       title: "가격",
-      render: ({ each_price, event_each_price }) => (
-        <Typography fontWeight="500">
-          낱개 &#40;<s>{price(each_price)}</s> &gt; {price(event_each_price)}&#41;원
-        </Typography>
+      render: ({ each_price, box_price, carton_price }) => (
+        <>
+          {each_price !== 0 && <p>{`낱개(${price(each_price)})`}</p>}
+          {box_price !== 0 && <p>{`박스(${price(box_price)})`}</p>}
+          {carton_price !== 0 && <p>{`카톤(${price(carton_price)})`}</p>}
+        </>
       ),
-      width: 320,
     },
   ];
 
   async function getProductList() {
-    let data = await apiObject.getEventProductList({});
+    let data = await apiObject.getItemList({ ...listContext });
     setProductList(data);
   }
 
@@ -474,9 +483,39 @@ const ProductModal = ({ open, onClose, onSelect }) => {
     onClose();
   }
 
-  function handleEnter() {
-    getProductList();
+  function handleContextChange(name, value) {
+    let tmp = {
+      ...listContext,
+      [name]: value,
+    };
+    if (name != "page") {
+      tmp.page = 1;
+    }
+
+    setListContext(tmp);
   }
+
+  async function handleEnter() {
+    let data = await apiObject.getCategoryList({});
+    setCategoryList(data);
+
+    setListContext({
+      page: 1,
+      search_word: "",
+      category_type: "B",
+      category_pk: "",
+    });
+  }
+
+  useEffect(() => {
+    if (open) {
+      getProductList();
+    }
+  }, [listContext]);
+  useEffect(() => {
+    setValue("category_pk", "");
+    handleContextChange("category_pk", "");
+  }, [watch("category_type", "")]);
 
   return (
     <Dialog maxWidth="md" fullWidth open={open} onClose={onClose} onBackdropClick={onClose} onEnter={handleEnter}>
@@ -487,7 +526,71 @@ const ProductModal = ({ open, onClose, onSelect }) => {
           </Typography>
         </Box>
 
+        <Box mb={2} display="flex" justifyContent="space-between" alignItems="center">
+          <Box>
+            <Box mr={1} display="inline-block">
+              <Controller
+                as={
+                  <Select displayEmpty margin="dense">
+                    <MenuItem value="">카테고리 구분</MenuItem>
+                    <MenuItem value="B">브랜드</MenuItem>
+                    <MenuItem value="N">제품군</MenuItem>
+                  </Select>
+                }
+                control={control}
+                name="category_type"
+                defaultValue=""
+              />
+            </Box>
+
+            {watch("category_type", "") === "B" && (
+              <Select
+                displayEmpty
+                margin="dense"
+                value={listContext.category_pk}
+                onChange={(e) => handleContextChange("category_pk", e.target.value)}
+              >
+                <MenuItem value="">카테고리 분류</MenuItem>
+                {categoryList?.categoryBrandList.map((item, index) => (
+                  <MenuItem value={item.category_pk} key={index}>
+                    {item.category_name}
+                  </MenuItem>
+                ))}
+              </Select>
+            )}
+            {watch("category_type", "") === "N" && (
+              <Select
+                displayEmpty
+                margin="dense"
+                value={listContext.category_pk}
+                onChange={(e) => handleContextChange("category_pk", e.target.value)}
+              >
+                <MenuItem value="">카테고리 분류</MenuItem>
+                {categoryList?.categoryNormalList.map((item, index) => (
+                  <MenuItem value={item.category_pk} key={index}>
+                    {`${item.depth1name}  >  ${item.depth2name}  >  ${item.depth3name}`}
+                  </MenuItem>
+                ))}
+              </Select>
+            )}
+
+            <Box ml={1} display="inline-block">
+              <Typography>등록 상품 수: {productList?.[0]?.total}</Typography>
+            </Box>
+          </Box>
+
+          <SearchBox placeholder="검색어를 입력해주세요" onSearch={handleContextChange} />
+        </Box>
+
         <ColumnTable columns={product_columns} data={productList} onRowClick={handleOnSelect} />
+
+        <Box py={6}>
+          <Pagination
+            page={listContext?.page}
+            setPage={handleContextChange}
+            count={Math.ceil(productList?.[0]?.total / 10)}
+          />
+        </Box>
       </Box>
     </Dialog>
   );
