@@ -269,7 +269,8 @@ export const OrderDetail = () => {
               <TableCell colSpan={3} align="right">
                 {item.discount_price > 0 ? (
                   <Typography>
-                    <s>{price(item.total_price)}원</s> &gt; {price(item.discount_price)}원
+                    <s style={{ fontSize: "14px", color: "#888" }}>{price(item.total_price)}원</s> &gt;{" "}
+                    {price(item.discount_price)}원
                   </Typography>
                 ) : (
                   `${price(item.total_price)}원`
@@ -300,7 +301,8 @@ export const OrderDetail = () => {
                   <TableCell align="right">
                     {unit.event_price > 0 ? (
                       <Typography display="inline">
-                        <s>{price(unit.price)}원</s> &gt; {price(unit.event_price)}원
+                        <s style={{ fontSize: "14px", color: "#888" }}>{price(unit.price)}원</s> &gt;{" "}
+                        {price(unit.event_price)}원
                       </Typography>
                     ) : (
                       `${price(unit.price)}원`
@@ -345,7 +347,7 @@ export const OrderDetail = () => {
         </TableRow>
         <TableRow>
           <TableCell>배송지주소</TableCell>
-          <TableCell>{`[${orderDetail?.orderBase?.delivery_address}] ${orderDetail?.orderBase?.delivery_address}`}</TableCell>
+          <TableCell>{orderDetail?.orderBase?.delivery_address}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>배송시 요청사항</TableCell>
@@ -398,10 +400,14 @@ export const OrderDetail = () => {
               <TableCell>입금계좌</TableCell>
               <TableCell>{`${orderDetail?.settleInfo?.vbank_name} ${orderDetail?.settleInfo?.vbank_num} ${orderDetail?.settleInfo?.vbank_holder}`}</TableCell>
             </TableRow>
-            <TableRow>
-              <TableCell>입금기한</TableCell>
-              <TableCell>{dayjs.unix(orderDetail?.settleInfo?.vbank_date).format(`YYYY-MM-DD  HH:mm 까지`)}</TableCell>
-            </TableRow>
+            {orderDetail?.orderBase?.order_status === "WAIT" && (
+              <TableRow>
+                <TableCell>입금기한</TableCell>
+                <TableCell>
+                  {dayjs.unix(orderDetail?.settleInfo?.vbank_date).format(`YYYY-MM-DD  HH:mm 까지`)}
+                </TableCell>
+              </TableRow>
+            )}
           </>
         )}
         {orderDetail?.orderBase?.settle_type === "card" && (

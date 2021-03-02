@@ -5,6 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { price } from "common";
 import { apiObject } from "api";
 import dayjs from "dayjs";
+import qs from "query-string";
 
 import {
   Grid,
@@ -49,16 +50,42 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const SalesmanDetail = () => {
+const member_columns = [
+  { field: "name", title: "유저명" },
+  { field: "grade_name", title: "등급", width: 240 },
+];
+const incentive_columns = [
+  {
+    title: "날짜",
+    field: "sales_month",
+    width: 120,
+  },
+  {
+    title: "총구매대행액",
+    field: "total_amount",
+    render: ({ total_amount }) => `${price(total_amount)}원`,
+    cellStyle: { textAlign: "right" },
+  },
+  {
+    title: "인센티브액",
+    field: "total_incentive",
+    render: ({ total_incentive }) => `${price(total_incentive)}원`,
+    cellStyle: { textAlign: "right" },
+  },
+];
+
+export const SalesmanDetail = ({ location }) => {
   const classes = useStyles();
+  const history = useHistory();
   const { member_pk } = useParams();
   const { control, register, reset, handleSubmit } = useForm();
+  const query = qs.parse(location.search);
 
   const [salesmanInfo, setUserInfo] = useState();
+  const [subTableData, setSubTableData] = useState();
 
   async function getSalesmanDetail() {
     let data = await apiObject.getSalesmanDetail({ member_pk });
-
     reset({
       ...data,
     });
@@ -66,17 +93,46 @@ export const SalesmanDetail = () => {
   }
   async function modifySalesman(form) {
     if (!window.confirm("입력한 정보로 영업사원을 수정하시겠습니까?")) return;
-
-    console.log("form", form);
-
     await apiObject.modifySalesman({ member_pk, ...form });
+  }
+  async function getSubTableData() {
+    let data = [];
 
-    // getSalesmanDetail();
+    switch (query?.tab || "member") {
+      case "member":
+        if (salesmanInfo?.special_code) {
+          data = await apiObject.getSalsemanClientList({
+            special_code: salesmanInfo?.special_code,
+            ...query,
+          });
+        }
+        break;
+      case "incentive":
+        data = salesmanInfo?.incentive;
+        // setSubTableData(incentive_list);
+        // if (member_pk) {
+        //   data = await apiObject.getSalesmanIncentiveList({ member_pk });
+        // }
+        break;
+    }
+    setSubTableData(data);
+  }
+
+  function handleQueryChange(q, v) {
+    if (q !== "page") {
+      query["page"] = 1;
+    }
+
+    query[q] = v;
+    history.push(`/salesman/${member_pk}/?` + qs.stringify(query));
   }
 
   useEffect(() => {
     getSalesmanDetail();
   }, [member_pk]);
+  useEffect(() => {
+    getSubTableData();
+  }, [salesmanInfo, query.page, query.tab]);
 
   return (
     <Box>
@@ -183,116 +239,35 @@ export const SalesmanDetail = () => {
         )}
       </Box>
 
-      <SalesmanSubTable
-        member_pk={member_pk}
-        special_code={salesmanInfo?.special_code}
-        incentive_list={salesmanInfo?.incentive}
-      />
-    </Box>
-  );
-};
+      <Box>
+        <Tabs value={query?.tab || "member"} onChange={(e, v) => handleQueryChange("tab", v)}>
+          <Tab value="member" label="회원관리" />
+          <Tab value="incentive" label="인센티브월별현황" />
+        </Tabs>
 
-const SalesmanSubTable = ({ member_pk, special_code, incentive_list }) => {
-  const history = useHistory();
-
-  const [subTableData, setSubTableData] = useState();
-  const [tableContext, setTableContext] = useState({
-    tab: "member",
-    page: 1,
-    search_word: "",
-  });
-
-  const member_columns = [
-    { field: "name", title: "유저명" },
-    { field: "grade_name", title: "등급", width: 240 },
-  ];
-  const incentive_columns = [
-    {
-      title: "날짜",
-      field: "sales_month",
-      width: 120,
-    },
-    {
-      title: "총구매대행액",
-      field: "total_amount",
-      render: ({ total_amount }) => `${price(total_amount)}원`,
-      cellStyle: { textAlign: "right" },
-    },
-    {
-      title: "인센티브액",
-      field: "total_incentive",
-      render: ({ total_incentive }) => `${price(total_incentive)}원`,
-      cellStyle: { textAlign: "right" },
-    },
-  ];
-
-  async function getSubTableData() {
-    let data = [];
-
-    switch (tableContext?.tab) {
-      case "member":
-        if (special_code) {
-          data = await apiObject.getSalsemanClientList({ special_code, ...tableContext });
-        }
-        break;
-      case "incentive":
-        data = incentive_list;
-        // setSubTableData(incentive_list);
-        // if (member_pk) {
-        //   data = await apiObject.getSalesmanIncentiveList({ member_pk });
-        // }
-        break;
-    }
-
-    setSubTableData(data);
-  }
-
-  function handleTableContextChange(name, value) {
-    let tmp = {
-      ...tableContext,
-      [name]: value,
-    };
-
-    if (name !== "page") {
-      tmp.page = 1;
-    }
-
-    setTableContext(tmp);
-  }
-
-  useEffect(() => {
-    getSubTableData();
-  }, [tableContext, member_pk, special_code]);
-
-  return (
-    <Box>
-      <Tabs value={tableContext.tab} onChange={(e, v) => handleTableContextChange("tab", v)}>
-        <Tab value="member" label="회원관리" />
-        <Tab value="incentive" label="인센티브월별현황" />
-      </Tabs>
-
-      <Box my={2}>
-        <ColumnTable
-          columns={tableContext.tab === "member" ? member_columns : incentive_columns}
-          data={subTableData}
-          onRowClick={(row) =>
-            history.push(
-              tableContext.tab === "member"
-                ? `/user/${row.member_pk}`
-                : `/salesman/incentive/${member_pk}/${row.sales_month}`,
-            )
-          }
-        />
-      </Box>
-
-      <Box position="relative" py={6}>
-        {tableContext.tab === "member" && (
-          <Pagination
-            page={tableContext.page}
-            setPage={handleTableContextChange}
-            count={Math.ceil(+subTableData?.[0]?.total / 10)}
+        <Box my={2}>
+          <ColumnTable
+            columns={query.tab === "incentive" ? incentive_columns : member_columns}
+            data={subTableData}
+            onRowClick={(row) =>
+              history.push(
+                query.tab === "incentive"
+                  ? `/salesman/incentive/${member_pk}/${row.sales_month}`
+                  : `/user/${row.member_pk}`,
+              )
+            }
           />
-        )}
+        </Box>
+
+        <Box position="relative" py={6}>
+          {query.tab !== "incentive" && (
+            <Pagination
+              page={query.page}
+              setPage={handleQueryChange}
+              count={Math.ceil(+subTableData?.[0]?.total / 10)}
+            />
+          )}
+        </Box>
       </Box>
     </Box>
   );

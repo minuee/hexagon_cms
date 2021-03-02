@@ -7,7 +7,7 @@ import { price } from "common";
 import dayjs from "dayjs";
 
 import { Box, makeStyles } from "@material-ui/core";
-import { DescriptionOutlined, Search } from "@material-ui/icons";
+import { HelpOutlineOutlined, Search } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
 import { RowTable, ColumnTable, Pagination, Dropzone } from "components";
 
@@ -63,7 +63,14 @@ export const SalesmanIncentive = () => {
         data={incentiveData?.order_data}
         onRowClick={(row) => history.push(`/order/${row.order_pk}`)}
       />
-      <Box position="relative" py={6}>
+
+      <Box py={6} display="flex" alignItems="center">
+        <HelpOutlineOutlined />
+        <Box mr={1} />
+        <Typography display="inline">
+          월간 누적금액이 2천 이상일 경우 그 금액의 1%, 3천 이상일 경우 1.5%로 인센티브액이 정산됩니다 (특가한정상품은
+          인센티브 대상에서 제외됩니다)
+        </Typography>
         {/* <Pagination /> */}
       </Box>
     </Box>
