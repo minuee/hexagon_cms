@@ -1164,6 +1164,16 @@ export const apiObject = {
       console.log({ e });
     }
   },
+  modifyBannerSequence: async ({ banner_array }) => {
+    try {
+      let response = await axios.put(`/cms/banner/seqmodify`, {
+        banner_array,
+      });
+      return response;
+    } catch (e) {
+      console.log({ e });
+    }
+  },
   removeBanner: async ({ banner_pk }) => {
     try {
       let response = await axios.delete(`/cms/banner/remove/${banner_pk}`);
@@ -1224,6 +1234,11 @@ export const apiObject = {
         },
       });
       let ret = data.data.data.salesmanList;
+
+      ret.forEach((item) => {
+        item.email = decrypt(item.email);
+        item.phone = decrypt(item.phone);
+      });
 
       return ret;
     } catch (e) {

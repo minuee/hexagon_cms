@@ -8,7 +8,7 @@ import qs from "query-string";
 import { Grid, Box, makeStyles, TextField, InputAdornment, IconButton } from "@material-ui/core";
 import { DescriptionOutlined, Search } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, SearchBox } from "components";
+import { ColumnTable, SearchBox, DnDList } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header_buttons: {
@@ -29,23 +29,38 @@ const useStyles = makeStyles((theme) => ({
       background: "#fff",
     },
   },
+
+  dnd_container: {
+    background: "#fff",
+
+    "& th": {
+      background: "#ddd",
+      fontWeight: "700",
+      textAlign: "center",
+    },
+    "& td": {
+      textAlign: "center",
+    },
+  },
 }));
 
 const banner_list_columns = [
-  { title: "번호", field: "no", width: 80 },
-  { title: "타입", field: "link_type_text", width: 120 },
-  {
-    title: "제목",
-    render: ({ title }) => (title?.length > 20 ? title?.substring(0, 20) : title),
-    cellStyle: { textAlign: "left" },
-  },
   {
     title: "노출순서",
     field: "display_seq",
-    width: 120,
+    width: 100,
   },
+  { title: "타입", field: "link_type_text", width: 120 },
+  {
+    title: "제목",
+    field: "title",
+    render: ({ title }) => (title?.length > 20 ? title?.substring(0, 20) : title),
+    cellStyle: { textAlign: "left" },
+  },
+
   {
     title: "등록일시",
+    field: "reg_dt",
     render: ({ reg_dt }) => dayjs.unix(reg_dt).format("YYYY-MM-DD hh:mm"),
     width: 240,
   },
@@ -56,13 +71,27 @@ export const BannerList = ({ location }) => {
   const history = useHistory();
   const query = qs.parse(location.search);
 
-  const [searchWord, setSearchWord] = useState("");
   const [bannerList, setBannerList] = useState();
+  const [isModify, setIsModify] = useState(false);
 
   async function getBannerList() {
     let data = await apiObject.getBannerList({ ...query });
-
     setBannerList(data);
+  }
+  async function modifyExposureSequence(data) {
+    if (!window.confirm("배너 노출순서를 수정하시겠습니까?")) return;
+
+    let banner_array = [];
+    data.forEach((item, index) => {
+      banner_array.push({
+        banner_pk: item.banner_pk,
+        display_seq: index + 1,
+      });
+    });
+
+    await apiObject.modifyBannerSequence({ banner_array });
+    getBannerList();
+    setIsModify(false);
   }
 
   function handleAddBanner() {
@@ -92,36 +121,48 @@ export const BannerList = ({ location }) => {
           배너 목록
         </Typography>
 
-        <Button color="primary" onClick={handleAddBanner}>
-          등록
-        </Button>
+        <Box>
+          {!isModify && (
+            <>
+              <Button mr={2} onClick={() => setIsModify(true)}>
+                노출순서 수정
+              </Button>
+              <Button color="primary" onClick={handleAddBanner}>
+                등록
+              </Button>
+            </>
+          )}
+        </Box>
       </Grid>
 
       <Box mt={2} mb={3}>
-        <ColumnTable
-          columns={banner_list_columns}
-          data={bannerList}
-          onRowClick={(row) =>
-            history.push({
-              pathname: `/banner/${row.banner_pk}`,
-              state: {
-                link_type: row.link_type,
-                inlink_type: row.inlink_type,
-              },
-            })
-          }
-        />
+        {isModify ? (
+          <DnDList
+            data={bannerList}
+            columns={banner_list_columns}
+            className={classes.dnd_container}
+            onModifyFinish={modifyExposureSequence}
+            onCancel={() => setIsModify(false)}
+          />
+        ) : (
+          <ColumnTable
+            columns={banner_list_columns}
+            data={bannerList}
+            onRowClick={(row) =>
+              history.push({
+                pathname: `/banner/${row.banner_pk}`,
+                state: {
+                  link_type: row.link_type,
+                  inlink_type: row.inlink_type,
+                },
+              })
+            }
+          />
+        )}
       </Box>
 
       <Grid container className={classes.table_footer}>
-        {/* <Button p={1}>
-          <DescriptionOutlined />
-          엑셀저장
-        </Button> */}
-
-        {/* <Pagination page={query.page || 1} setPage={handleQueryChange} /> */}
-
-        <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} />
+        {!isModify && <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} />}
       </Grid>
     </Box>
   );
