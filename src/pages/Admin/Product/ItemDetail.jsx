@@ -57,6 +57,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const ItemDetail = () => {
   const classes = useStyles();
+  const history = useHistory();
   const { member } = useSelector((state) => state.reducer);
   const { product_pk } = useParams();
   const { control, reset, setValue, watch, handleSubmit } = useForm();
@@ -68,8 +69,8 @@ export const ItemDetail = () => {
 
     setCategoryList(data);
   }
-  async function getItemDetail() {
-    let data = await apiObject.getItemDetail({ product_pk });
+  async function getProductDetail() {
+    let data = await apiObject.getProductDetail({ product_pk });
 
     reset({
       ...data,
@@ -82,7 +83,7 @@ export const ItemDetail = () => {
     setValue("detail_img", data.detail_img);
   }
 
-  async function registItem(form) {
+  async function registProduct(form) {
     if (!form.thumb_img) {
       alert("대표이미지를 추가해주세요");
       return;
@@ -101,12 +102,13 @@ export const ItemDetail = () => {
       form[`detail_img${i + 1}`] = paths[i];
     }
 
-    await apiObject.registItem({
+    await apiObject.registProduct({
       ...form,
       reg_member: member.member_pk,
     });
+    // history.push("/product/item");
   }
-  async function modifyItem(form) {
+  async function modifyProduct(form) {
     if (!form.thumb_img) {
       alert("대표이미지를 추가해주세요");
       return;
@@ -127,7 +129,7 @@ export const ItemDetail = () => {
       form[`detail_img${i + 1}`] = paths[i];
     }
 
-    await apiObject.modifyItem({ form, product_pk });
+    await apiObject.modifyProduct({ form, product_pk });
   }
 
   useEffect(() => {
@@ -137,7 +139,7 @@ export const ItemDetail = () => {
   useEffect(() => {
     getCategoryList();
     if (product_pk !== "add") {
-      getItemDetail();
+      getProductDetail();
     }
   }, [product_pk]);
 
@@ -563,11 +565,11 @@ export const ItemDetail = () => {
 
       <Box mt={4} textAlign="center">
         {product_pk === "add" ? (
-          <Button color="primary" onClick={handleSubmit(registItem)}>
+          <Button color="primary" onClick={handleSubmit(registProduct)}>
             등록
           </Button>
         ) : (
-          <Button color="primary" onClick={handleSubmit(modifyItem)}>
+          <Button color="primary" onClick={handleSubmit(modifyProduct)}>
             수정
           </Button>
         )}

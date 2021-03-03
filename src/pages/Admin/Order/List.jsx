@@ -81,7 +81,6 @@ export const OrderList = ({ location }) => {
 
   async function getOrderList() {
     let data = await apiObject.getOrderList({ ...query });
-    console.log(data);
     setOrderList(data);
   }
 

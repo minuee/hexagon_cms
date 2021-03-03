@@ -105,11 +105,11 @@ export const SalesmanHome = () => {
             <ColumnTable
               columns={user_purchase_columns}
               data={userPurchaseList}
-              // onRowClick={(row) => history.push(`/user/${row.user_no}`)}
+              // onRowClick={(row) => history.push(`/member/${row.member_pk}`)}
             />
           </Box>
 
-          {/* <Button onClick={() => history.push("/user")}>
+          {/* <Button onClick={() => history.push("/member")}>
             <Typography>더보기</Typography>
             <KeyboardArrowRight />
           </Button> */}

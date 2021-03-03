@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useHistory, useLocation } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { price } from "common";
 import { apiObject } from "api";
 import qs from "query-string";
@@ -75,15 +75,16 @@ const header_button_list = [
 export const ManageMemberList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
+  const { member } = useSelector((state) => state.reducer);
   const query = qs.parse(location.search);
 
   const [memberList, setMemberList] = useState();
 
   async function getMemberList() {
-    let data = await apiObject.getMemberList({
+    let data = await apiObject.getSalsemanClientList({
+      special_code: member.special_code,
       ...query,
     });
-
     setMemberList(data);
   }
 

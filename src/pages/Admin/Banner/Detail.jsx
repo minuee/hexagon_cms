@@ -357,7 +357,7 @@ const InlinkModal = ({ open, onClose, onSelect, inlinkType }) => {
     switch (inlinkType) {
       case "PRODUCT":
         setInlinkColumn(product_columns);
-        data = await apiObject.getItemList({ ...listContext });
+        data = await apiObject.getProductList({ ...listContext });
         break;
       case "CATEGORY":
         setInlinkColumn(category_columns);

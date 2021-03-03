@@ -491,7 +491,7 @@ export const apiObject = {
       return [];
     }
   },
-  getItemDetail: async ({ product_pk }) => {
+  getProductDetail: async ({ product_pk }) => {
     try {
       let data = await axios.get(`/cms/product/view/${product_pk}`, {});
       let ret = data.data.data.productDetail;
@@ -520,18 +520,26 @@ export const apiObject = {
       console.log({ e });
     }
   },
-  registItem: async (form) => {
+  registProduct: async (form) => {
     try {
-      let response = await axios.post("/cms/product/regist", {
-        ...form,
-      });
+      let response = await axios.post(
+        "/cms/product/regist",
+        {
+          ...form,
+        },
+        // {
+        //   headers: {
+        //     "Access-Control-Allow-Origin": "*",
+        //   },
+        // },
+      );
 
       return response;
     } catch (e) {
       console.log({ e });
     }
   },
-  modifyItem: async ({ form, product_pk }) => {
+  modifyProduct: async ({ form, product_pk }) => {
     try {
       let response = await axios.put(`/cms/product/modify/${product_pk}`, {
         ...form,

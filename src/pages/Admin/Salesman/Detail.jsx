@@ -253,7 +253,7 @@ export const SalesmanDetail = ({ location }) => {
               history.push(
                 query.tab === "incentive"
                   ? `/salesman/incentive/${member_pk}/${row.sales_month}`
-                  : `/user/${row.member_pk}`,
+                  : `/member/${row.member_pk}`,
               )
             }
           />

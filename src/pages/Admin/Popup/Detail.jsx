@@ -486,7 +486,7 @@ const ProductModal = ({ open, onClose, onSelect }) => {
   ];
 
   async function getProductList() {
-    let data = await apiObject.getItemList({ ...listContext });
+    let data = await apiObject.getProductList({ ...listContext });
     setProductList(data);
   }
 
