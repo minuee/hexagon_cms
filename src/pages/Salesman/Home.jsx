@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { apiObject } from "api";
 import dayjs from "dayjs";
 
 import { price } from "common";
@@ -41,59 +42,40 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const user_purchase_columns = [
-  { title: "번호", field: "user_no", width: 80 },
-  { title: "회원명", field: "user_name", width: 100 },
+  { title: "번호", field: "no", width: 80 },
+  { title: "회원명", field: "member_name", width: 100 },
   {
     title: "구매액",
-    render: ({ reward_amount }) => `${price(reward_amount)}원`,
+    render: ({ total_amount }) => `${price(total_amount)}원`,
     cellStyle: { textAlign: "right" },
-  },
-];
-const user_purchase_rows = [
-  {
-    user_no: 1,
-    user_name: "김갑순",
-    reward_amount: 527908720000,
-  },
-  {
-    user_no: 2,
-    user_name: "정자룡",
-    reward_amount: 278979843900,
-  },
-  {
-    user_no: 3,
-    user_name: "김세란",
-    reward_amount: 109823787490,
-  },
-  {
-    user_no: 4,
-    user_name: "곽태호",
-    reward_amount: 80982092000,
-  },
-  {
-    user_no: 5,
-    user_name: "황지령",
-    reward_amount: 70981274450,
   },
 ];
 
 export const SalesmanHome = () => {
   const classes = useStyles();
   const history = useHistory();
+  const { member } = useSelector((state) => state.reducer);
 
-  const [userPurchaseData, setUserPurchaseData] = useState();
+  const [dailySales, setDailySales] = useState("");
+  const [userPurchaseList, setUserPurchaseList] = useState();
+
+  async function getAnalisysData() {
+    let data = await apiObject.getSalesmanAnalisysData({
+      special_code: member.special_code,
+    });
+
+    setUserPurchaseList(data.rank_data);
+    setDailySales(data.today_sales?.daily_sales);
+  }
 
   useEffect(() => {
-    setUserPurchaseData(user_purchase_rows);
+    getAnalisysData();
   }, []);
 
   return (
     <Box>
       <Typography variant="h5" fontWeight={500}>
-        {"영업사원"}님, 환영합니다
-      </Typography>
-      <Typography variant="h6" fontWeight={300} textAlign="right">
-        {`[${"수요일"}]`}
+        {member.name}님, 환영합니다
       </Typography>
       <Typography variant="h6" fontWeight={300} textAlign="right">
         {dayjs().format("YYYY-MM-DD")}
@@ -107,7 +89,7 @@ export const SalesmanHome = () => {
 
         <Box my={2}>
           <Typography variant="h5" textAlign="right">
-            <span>{price(2122332)}</span> 원
+            <span>{price(dailySales)}</span> 원
           </Typography>
         </Box>
       </Box>
@@ -122,7 +104,7 @@ export const SalesmanHome = () => {
           <Box my={2}>
             <ColumnTable
               columns={user_purchase_columns}
-              data={userPurchaseData}
+              data={userPurchaseList}
               // onRowClick={(row) => history.push(`/user/${row.user_no}`)}
             />
           </Box>

@@ -142,6 +142,21 @@ export const apiObject = {
       return {};
     }
   },
+  getSalesmanAnalisysData: async ({ special_code }) => {
+    try {
+      let data = await axios.get(`/cms/salesman/home/analyst/${special_code}`);
+      let ret = data.data.data;
+
+      ret.rank_data.forEach((item, index) => {
+        item.no = index + 1;
+      });
+
+      return ret;
+    } catch (e) {
+      console.log({ e });
+      return {};
+    }
+  },
 
   // Member
   getMemberList: async ({ page = 1, paginate = 10, search_word, term_start, term_end, sort_item, sort_type }) => {

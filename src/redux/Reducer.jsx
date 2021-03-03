@@ -3,7 +3,6 @@ const INITIAL_STATE = {
   // userState: 'NOT_SIGN',
   userState: "SIGNED",
 
-  isAdmin: true,
   member: {},
 };
 
@@ -15,8 +14,6 @@ export default (state = INITIAL_STATE, { type, payload }) => {
       return { ...state, userState: "SIGNED" };
     case "SIGN_OUT":
       return { ...state, userState: "NOT_SIGN" };
-    case "SET_IS_ADMIN":
-      return { ...state, isAdmin: payload };
     case "SET_MEMBER":
       return { ...state, member: payload };
 

@@ -28,7 +28,7 @@ const Routes = () => {
   const dispatch = useDispatch();
 
   let token = localStorage.getItem("hexagon_cms_token");
-  let is_admin = !!localStorage.getItem("hexagon_is_admin");
+  let is_salesman = jwt.decode(token)?.is_salesman;
 
   useEffect(() => {
     if (!token) {
@@ -38,16 +38,9 @@ const Routes = () => {
     }
   }, [token]);
 
-  useEffect(() => {
-    dispatch({
-      type: "SET_IS_ADMIN",
-      payload: is_admin,
-    });
-  }, [is_admin]);
-
   return (
     <BrowserRouter>
-      {userState === "NOT_SIGN" ? <AuthRoutes /> : is_admin ? <AdminRoutes /> : <SalesmanRoutes />}
+      {userState === "NOT_SIGN" ? <AuthRoutes /> : is_salesman ? <SalesmanRoutes /> : <AdminRoutes />}
     </BrowserRouter>
   );
 };
@@ -118,8 +111,8 @@ const SalesmanRoutes = () => {
         <Route exact path="/member/:member_pk" component={ManageMemberDetail} />
         <Route path="/member" component={ManageMemberList} />
 
-        <Route exact path="/incentive/:incentive_pk/:purchase_no" component={UserPurchaseDetail} />
-        <Route exact path="/incentive/:incentive_pk" component={IncentiveDetail} />
+        <Route exact path="/incentive/:sales_month/:order_pk" component={UserPurchaseDetail} />
+        <Route exact path="/incentive/:sales_month" component={IncentiveDetail} />
         <Route path="/incentive" component={IncentiveList} />
 
         <Route path="/setting" component={Setting} />

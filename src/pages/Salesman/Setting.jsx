@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
 import { price, decrypt } from "common";
 import { apiObject } from "api";
@@ -66,46 +66,37 @@ export const Setting = ({ location }) => {
 
 const ModifyInfo = () => {
   const { register, reset, handleSubmit, errors } = useForm();
+  const { member } = useSelector((state) => state.reducer);
 
-  const [memberInfo, setMemberInfo] = useState();
-
-  async function getInfo() {
-    let member_pk = jwt.decode(localStorage.getItem("hexagon_cms_token")).member_pk;
-    let data = await apiObject.getMemberDetail({ member_pk });
-
-    console.log(data);
-    setMemberInfo(data);
-    reset({
-      email: data?.email,
-      phone: data?.phone,
-    });
-  }
   async function modifyInfo(form) {
     if (!window.confirm("입력한 내용으로 정보를 수정하시겠습니까?")) return;
 
     await apiObject.modifySalesman({
-      member_pk: memberInfo.member_pk,
-      name: memberInfo.name,
+      member_pk: member.member_pk,
+      name: member.name,
       is_retired: false,
       ...form,
     });
   }
 
   useEffect(() => {
-    getInfo();
-  }, []);
+    reset({
+      email: decrypt(member?.email),
+      phone: decrypt(member?.phone),
+    });
+  }, [member]);
 
   return (
     <Box>
       <RowTable width={"70%"}>
         <TableRow>
           <TableCell>이름</TableCell>
-          <TableCell>{memberInfo?.name}</TableCell>
+          <TableCell>{member?.name}</TableCell>
         </TableRow>
 
         <TableRow>
           <TableCell>아이디</TableCell>
-          <TableCell>{memberInfo?.user_id}</TableCell>
+          <TableCell>{member?.user_id}</TableCell>
         </TableRow>
 
         <TableRow>

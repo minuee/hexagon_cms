@@ -1,154 +1,79 @@
 import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useHistory, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useForm } from "react-hook-form";
+import { apiObject } from "api";
 import { price } from "common";
 import dayjs from "dayjs";
 
-import { Grid, Box, makeStyles, TextField, InputAdornment } from "@material-ui/core";
-import { DescriptionOutlined, Search } from "@material-ui/icons";
+import { Box, makeStyles } from "@material-ui/core";
+import { HelpOutlineOutlined, Search } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination } from "components";
+import { RowTable, ColumnTable, Pagination, Dropzone } from "components";
 
-const useStyles = makeStyles((theme) => ({
-  header_buttons: {
-    display: "inline-flex",
-    alignItems: "center",
+const useStyles = makeStyles((theme) => ({}));
 
-    "& > *": {
-      marginleft: theme.spacing(1),
-    },
-  },
-  table_footer: {
-    position: "relative",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-end",
-
-    "& >:first-child, >:last-child": {
-      background: "#fff",
-    },
-  },
-}));
-
-const notice_list_columns = [
-  { title: "번호", field: "no", width: 80 },
+const incentive_list_columns = [
+  { title: "날짜", render: ({ order_reg_dt }) => dayjs.unix(order_reg_dt).format("YYYY-MM-DD"), width: 160 },
+  { title: "주문자", field: "member_name", width: 160 },
+  { title: "주문번호", field: "order_no", width: 240 },
   {
-    title: "구매자이름",
-    field: "name",
-    width: 160,
-  },
-  {
-    title: "주문번호",
-    field: "special_code",
-    width: 160,
-  },
-  {
-    title: "구매일시",
-    render: ({ purchase_dt }) => dayjs.unix(purchase_dt).format("YYYY-MM-DD hh:mm"),
-  },
-  {
-    title: "구매액",
-    render: ({ purchase_amount }) => `${price(purchase_amount)}원`,
+    title: "총구매대행액",
+    render: ({ total_price }) => `${price(total_price)}원`,
     cellStyle: { textAlign: "right" },
   },
   {
-    title: "인센티브액",
-    render: ({ incentive_amount }) => `${price(incentive_amount)}원`,
+    field: "incentive_amount",
+    title: "인센티브대상금액",
+    render: ({ event_limit_price, total_price }) => (event_limit_price > 0 ? "0원" : `${price(total_price)}원`),
     cellStyle: { textAlign: "right" },
-  },
-];
-const notice_list_rows = [
-  {
-    no: 1,
-    purchase_no: 1,
-    special_code: "20200506-D5446",
-    name: "전상우",
-    purchase_dt: 1791812812,
-    purchase_amount: 4879200,
-    incentive_amount: 10200,
-  },
-  {
-    no: 2,
-    purchase_no: 2,
-    special_code: "20200506-D5446",
-    name: "이병헌",
-    purchase_dt: 1791000000,
-    purchase_amount: 1098200,
-    incentive_amount: 5790,
-  },
-  {
-    no: 3,
-    purchase_no: 3,
-    special_code: "20200506-D5446",
-    name: "임원희",
-    purchase_dt: 1790919800,
-    purchase_amount: 20198200,
-    incentive_amount: 89000,
   },
 ];
 
 export const IncentiveDetail = () => {
-  const classes = useStyles();
   const history = useHistory();
+  const { member } = useSelector((state) => state.reducer);
+  const { sales_month } = useParams();
 
-  const [noticeList, setNoticeList] = useState();
-  const [listContext, setListContext] = useState({
-    page: 1,
-    search_text: "",
-  });
+  const [incentiveData, setIncentiveData] = useState();
 
-  function handleContextChange(name, value) {
-    let tmp = {
-      ...listContext,
-      [name]: value,
-    };
-    if (name != "page") {
-      tmp.page = 1;
-    }
-
-    setListContext(tmp);
+  async function getIncentiveList() {
+    let data = await apiObject.getSalesmanMonthlyIncentiveList({ member_pk: member.member_pk, sales_month });
+    setIncentiveData(data);
   }
 
   useEffect(() => {
-    setNoticeList(notice_list_rows);
-  }, []);
+    getIncentiveList();
+  }, [sales_month]);
 
   return (
     <Box>
-      <Typography display="inline" variant="h5" fontWeight="500">
-        {2026}년 {10}월 인센티브 목록
-      </Typography>
+      <Box mb={2}>
+        <Typography variant="h5" fontWeight="500">
+          {sales_month.substring(0, 4)}년 {sales_month.substring(5)}월 인센티브 상세
+        </Typography>
 
-      <Box mt={2} mb={3}>
-        <ColumnTable
-          columns={notice_list_columns}
-          data={noticeList}
-          onRowClick={(row) => history.push(`/incentive/1/${row.purchase_no}`)}
-        />
+        <Box mt={2}>
+          <Typography>구매액: {price(incentiveData?.total_amount)}원</Typography>
+          <Typography>인센티브액: {price(incentiveData?.total_incentive)}원</Typography>
+        </Box>
       </Box>
 
-      <Grid container className={classes.table_footer}>
-        {/* <Button variant="contained" p={1}>
-          <DescriptionOutlined />
-          엑셀저장
-        </Button> */}
+      <ColumnTable
+        columns={incentive_list_columns}
+        data={incentiveData?.order_data}
+        onRowClick={(row) => history.push(`/incentive/${sales_month}/${row.order_pk}`)}
+      />
 
-        <Pagination page={listContext.page} setPage={handleContextChange} />
-
-        <TextField
-          name="search_text"
-          variant="outlined"
-          value={listContext.search_text}
-          onChange={(e) => handleContextChange("search_text", e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search />
-              </InputAdornment>
-            ),
-          }}
-        />
-      </Grid>
+      <Box py={6} display="flex" alignItems="center">
+        <HelpOutlineOutlined />
+        <Box mr={1} />
+        <Typography display="inline">
+          월간 누적금액이 2천 이상일 경우 그 금액의 1%, 3천 이상일 경우 1.5%로 인센티브액이 정산됩니다 (특가한정상품은
+          인센티브 대상에서 제외됩니다)
+        </Typography>
+        {/* <Pagination /> */}
+      </Box>
     </Box>
   );
 };

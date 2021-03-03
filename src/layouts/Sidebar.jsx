@@ -1,5 +1,6 @@
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
+import jwt from "jsonwebtoken";
 
 import { Box, makeStyles } from "@material-ui/core";
 import { KeyboardArrowRight } from "@material-ui/icons";
@@ -91,7 +92,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Sidebar = () => {
-  const isAdmin = !!localStorage.getItem("hexagon_is_admin");
+  const is_salesman = jwt.decode(localStorage.getItem("hexagon_cms_token"))?.is_salesman;
   const classes = useStyles();
   const location = useLocation();
 
@@ -104,7 +105,7 @@ const Sidebar = () => {
 
   return (
     <Box className={classes.container}>
-      {(isAdmin ? admin_page : salesman_page).map((nav) => {
+      {(is_salesman ? salesman_page : admin_page).map((nav) => {
         let isCur = nav.path.substring(1) === location.pathname.split("/")[1];
         return (
           <NavLink to={nav.path} activeClassName={classes.nav_selected} key={nav.label} isActive={checkIsActive}>

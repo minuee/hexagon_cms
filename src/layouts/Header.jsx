@@ -56,7 +56,6 @@ const Header = () => {
         type: "SIGN_OUT",
       });
       localStorage.removeItem("hexagon_cms_token");
-      localStorage.removeItem("hexagon_is_salesman");
     }
   }
 

@@ -39,7 +39,6 @@ export const SignIn = ({}) => {
     }
 
     localStorage.setItem("hexagon_cms_token", resp.token);
-    localStorage.setItem("hexagon_is_admin", !data.is_salesman + "");
 
     dispatch({
       type: "SIGN_IN",

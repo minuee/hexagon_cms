@@ -182,7 +182,7 @@ export const ManageMemberDetail = () => {
           <TableCell>{memberInfo?.user_id}</TableCell>
         </TableRow>
         <TableRow>
-          <TableCell>사업자등록증 첨부</TableCell>
+          <TableCell>사업자등록증</TableCell>
           <TableCell>
             <ImageBox src={getFullImgURL(memberInfo?.img_url)} width="180px" height="360px" />
           </TableCell>
