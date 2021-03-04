@@ -51,14 +51,11 @@ const banner_list_columns = [
   { title: "타입", field: "link_type_text", width: 120 },
   {
     title: "제목",
-    field: "title",
     render: ({ title }) => (title?.length > 20 ? title?.substring(0, 20) : title),
-    cellStyle: { textAlign: "left" },
+    cellStyle: { textAlign: "left", width: "calc(max(100vw, 1280px) - 874px)" },
   },
-
   {
     title: "등록일시",
-    field: "reg_dt",
     render: ({ reg_dt }) => dayjs.unix(reg_dt).format("YYYY-MM-DD hh:mm"),
     width: 240,
   },

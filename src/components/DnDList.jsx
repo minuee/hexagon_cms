@@ -46,7 +46,7 @@ export const DnDList = ({ data, columns, className, onModifyFinish = () => {}, o
                         {(provided) => (
                           <TableRow ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                             {columns.map((col, index2) => (
-                              <TableCell key={index2} style={col.cellStyle}>
+                              <TableCell key={index2} style={{ width: col.width, ...col.cellStyle }}>
                                 {col.render ? col.render(row) : row[col.field]}
                               </TableCell>
                             ))}

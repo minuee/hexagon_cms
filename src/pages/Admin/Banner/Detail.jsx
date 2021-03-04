@@ -21,21 +21,11 @@ import {
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, RowTable, Pagination, SearchBox, Dropzone, ImageBox } from "components";
 
-const useStyles = makeStyles((theme) => ({
-  logo_box: {
-    display: "inline-block",
-    width: "60px",
-    height: "60px",
-
-    "& img": {
-      objectFit: "contain",
-    },
-  },
-}));
+const useStyles = makeStyles((theme) => ({}));
 
 export const BannerDetail = ({ location }) => {
-  const { banner_pk } = useParams();
   const history = useHistory();
+  const { banner_pk } = useParams();
   const { control, register, reset, setValue, watch, handleSubmit, errors } = useForm();
 
   const [isInlinkModalOpen, setIsInlinkModalOpen] = useState(false);
