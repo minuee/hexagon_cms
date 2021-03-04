@@ -136,6 +136,7 @@ export const NoticeDetail = () => {
           <TableCell>이미지</TableCell>
           <TableCell>
             <Dropzone control={control} name="img_url" width="90px" ratio={1} />
+            <Typography>1:1비율의 이미지를 업로드하는 것이 권장됩니다</Typography>
           </TableCell>
         </TableRow>
         <TableRow>

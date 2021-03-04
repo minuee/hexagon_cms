@@ -239,6 +239,7 @@ export const CategoryDetail = ({ location }) => {
           <TableCell>로고 이미지</TableCell>
           <TableCell>
             <Dropzone control={control} name="category_logo" width="90px" />
+            <Typography>1:1비율의 이미지를 업로드하는 것이 권장됩니다</Typography>
           </TableCell>
         </TableRow>
       </RowTable>

@@ -229,7 +229,7 @@ export const BannerDetail = ({ location }) => {
           <TableCell>배너이미지</TableCell>
           <TableCell>
             <Dropzone control={control} name="banner_img" width="180px" ratio={0.75} />
-            <Typography>이미지 규격은 가로X세로(4:3) 배율로 업로드해주세요</Typography>
+            <Typography>가로X세로(4:3)비율의 이미지를 업로드하는 것이 권장됩니다</Typography>
           </TableCell>
         </TableRow>
         <TableRow>
