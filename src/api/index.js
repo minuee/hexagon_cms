@@ -1,7 +1,6 @@
 import axios from "axios";
 import { store } from "redux/index";
-import { encrypt, decrypt, getFullImgURL, getListIndex, price } from "common";
-import dayjs from "dayjs";
+import { encrypt, decrypt, getListIndex } from "common";
 import _ from "lodash";
 
 // let token = localStorage.hexagon_cms_token;
@@ -268,8 +267,6 @@ export const apiObject = {
       });
       let ret = data.data.data.orderList;
 
-      console.log(ret);
-
       ret.forEach((item, index) => {
         item.no = getListIndex(item.total, page, index);
       });
@@ -452,7 +449,7 @@ export const apiObject = {
       return "";
     }
   },
-  updateCategoryDetail: async ({
+  modifyCategory: async ({
     category_pk,
     category_name,
     category_logo,
@@ -929,11 +926,12 @@ export const apiObject = {
         img_url,
         send_push,
       });
+      return response;
     } catch (e) {
       console.log({ e });
     }
   },
-  updateNotice: async ({ notice_pk, title, content, start_dt, img_url, send_push }) => {
+  modifyNotice: async ({ notice_pk, title, content, start_dt, img_url, send_push }) => {
     try {
       let response = await axios.put(`/cms/notice/modify/${notice_pk}`, {
         title,
@@ -1119,9 +1117,6 @@ export const apiObject = {
               target_pk: ret.target_pk,
               name: ret.title,
             };
-            break;
-
-          default:
             break;
         }
       }

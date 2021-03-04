@@ -1,5 +1,5 @@
 import React from "react";
-import { makeStyles, Box, Table, TableBody, TableRow, TableCell } from "@material-ui/core";
+import { makeStyles, Box, Table, TableBody } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   table_wrapper: {

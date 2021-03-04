@@ -1,28 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
 import { apiObject } from "api";
-import { price, getRandomColor, getFullImgURL } from "common";
-import dayjs from "dayjs";
 import _ from "lodash";
 
-import {
-  Grid,
-  Box,
-  makeStyles,
-  TextField,
-  Select,
-  MenuItem,
-  InputAdornment,
-  TableRow,
-  TableCell,
-  Checkbox,
-  FormControlLabel,
-} from "@material-ui/core";
-import { DescriptionOutlined, Search } from "@material-ui/icons";
+import { Box, makeStyles, TextField, Select, MenuItem, TableRow, TableCell } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
-import { RowTable, ColumnTable, Pagination, Dropzone } from "components";
+import { RowTable, Dropzone } from "components";
 
 const useStyles = makeStyles((theme) => ({
   category_input: {
@@ -82,7 +67,7 @@ export const CategoryDetail = ({ location }) => {
     });
     history.push(`product/category`);
   }
-  async function updateCategory(form) {
+  async function modifyCategory(form) {
     if (!form.category_logo) {
       alert("카테고리 이미지를 추가해주세요");
       return;
@@ -103,7 +88,7 @@ export const CategoryDetail = ({ location }) => {
       form.category_name = d3_item.name;
     }
 
-    await apiObject.updateCategoryDetail({
+    await apiObject.modifyCategory({
       category_pk,
       ...form,
     });
@@ -264,7 +249,7 @@ export const CategoryDetail = ({ location }) => {
             등록
           </Button>
         ) : (
-          <Button color="primary" onClick={handleSubmit(updateCategory)}>
+          <Button color="primary" onClick={handleSubmit(modifyCategory)}>
             수정
           </Button>
         )}

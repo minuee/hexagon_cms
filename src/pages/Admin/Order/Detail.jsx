@@ -1,26 +1,11 @@
 import React, { useState, useEffect, Fragment } from "react";
-import { useHistory, useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useParams } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
+import { price } from "common";
 import { apiObject } from "api";
 import dayjs from "dayjs";
 
-import { price } from "common";
-
-import {
-  Box,
-  makeStyles,
-  TextField,
-  Select,
-  MenuItem,
-  Radio,
-  RadioGroup,
-  Avatar,
-  TableRow,
-  TableCell,
-  Checkbox,
-  FormControlLabel,
-} from "@material-ui/core";
+import { Box, makeStyles, Select, MenuItem, Avatar, TableRow, TableCell } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
 import { RowTable } from "components";
 
@@ -103,13 +88,12 @@ const order_status_list = [
 export const OrderDetail = () => {
   const classes = useStyles();
   const { order_pk } = useParams();
-  const { control, reset, setValue, handleSubmit } = useForm();
+  const { control, reset, handleSubmit } = useForm();
 
   const [orderDetail, setOrderDetail] = useState();
 
   async function getOrderDetail() {
     let data = await apiObject.getOrderDetail({ order_pk });
-    console.log(data);
 
     setOrderDetail(data);
     reset({

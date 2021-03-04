@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { apiObject } from "api";
 import { price } from "common";
 import dayjs from "dayjs";
 import qs from "query-string";
 
-import { Grid, Box, makeStyles, TextField, InputAdornment } from "@material-ui/core";
-import { DescriptionOutlined, ArrowDropDown, ArrowDropUp } from "@material-ui/icons";
-
+import { Grid, Box, makeStyles } from "@material-ui/core";
+import { ArrowDropDown, ArrowDropUp } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, Pagination, SearchBox, TermSearchBox, ExcelExportButton } from "components";
 

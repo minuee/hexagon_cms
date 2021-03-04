@@ -26,7 +26,6 @@ const useStyles = makeStyles({
 
 export const SignIn = ({}) => {
   const classes = useStyles();
-  const history = useHistory();
   const dispatch = useDispatch();
   const { register, errors, handleSubmit } = useForm();
 

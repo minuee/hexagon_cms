@@ -10,10 +10,6 @@
     "@material-ui/pickers": "3.2.10",
     "@material-ui/styles": "4.11.2",
     "@material-ui/system": "4.11.2",
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
-    "aws-amplify": "3.3.13",
     "axios": "0.21.1",
     "core-js": "3.8.3",
     "crypto-js": "4.0.0",
@@ -49,7 +45,24 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "eqeqeq": "off",
+      "no-unused-vars": "off",
+      "default-case": "off",
+      "no-empty-pattern": "off",
+      "no-useless-escape": "off",
+      "react-hooks/exhaustive-deps": "off",
+      "import/no-anonymous-default-export": "off"
+    }
+  },
+  "prettier": {
+    "tabWidth": 2,
+    "semi": true,
+    "singleQuote": false,
+    "trailingComma": "all",
+    "printWidth": 120,
+    "arrowParens": "always"
   },
   "browserslist": {
     "production": [

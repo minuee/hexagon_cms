@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { price } from "common";
+import { apiObject } from "api";
 import dayjs from "dayjs";
 
-import { price } from "common";
-
-import { Grid, Box, makeStyles } from "@material-ui/core";
+import { Box, makeStyles } from "@material-ui/core";
 import { KeyboardArrowRight } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
 import { ColumnTable } from "components";
-import { apiObject } from "api";
 
 const useStyles = makeStyles((theme) => ({
   sales_amount: {
@@ -48,39 +47,6 @@ const member_rank_columns = [
     title: "구매누적액",
     render: ({ total_amount }) => `${price(total_amount)}원`,
     cellStyle: { textAlign: "right" },
-  },
-];
-
-const salesman_incentive_columns = [
-  { field: "salesman_no", title: "번호", width: 80 },
-  { field: "salesman_name", title: "영업사원명" },
-  {
-    field: "incentive_amount",
-    title: "인센티브액",
-    render: ({ incentive_amount }) => `${price(incentive_amount)}원`,
-    cellStyle: { textAlign: "right" },
-  },
-];
-const salesman_incentive_rows = [
-  {
-    salesman_no: 1,
-    salesman_name: "전지현",
-    incentive_amount: 1111111111,
-  },
-  {
-    salesman_no: 2,
-    salesman_name: "이지현",
-    incentive_amount: 1111111111,
-  },
-  {
-    salesman_no: 3,
-    salesman_name: "박지현",
-    incentive_amount: 1111111111,
-  },
-  {
-    salesman_no: 4,
-    salesman_name: "김지현",
-    incentive_amount: 1111111111,
   },
 ];
 

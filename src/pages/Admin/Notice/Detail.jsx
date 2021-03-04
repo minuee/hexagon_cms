@@ -1,23 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
-import { price, getFullImgURL } from "common";
 import { apiObject } from "api";
 import dayjs from "dayjs";
 
-import {
-  Grid,
-  Box,
-  makeStyles,
-  TextField,
-  MenuItem,
-  InputAdornment,
-  TableRow,
-  TableCell,
-  Checkbox,
-  FormControlLabel,
-} from "@material-ui/core";
+import { Box, TextField, InputAdornment, TableRow, TableCell, Checkbox, FormControlLabel } from "@material-ui/core";
 import { EventNote } from "@material-ui/icons";
 import { DateTimePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
@@ -53,7 +40,7 @@ export const NoticeDetail = () => {
 
     history.push("/notice");
   }
-  async function updateNotice(form) {
+  async function modifyNotice(form) {
     if (!window.confirm("입력한 정보로 공지를 수정하시겠습니까?")) return;
 
     if (form.img_url) {
@@ -61,7 +48,7 @@ export const NoticeDetail = () => {
       form.img_url = paths?.[0];
     }
 
-    await apiObject.updateNotice({
+    await apiObject.modifyNotice({
       notice_pk,
       ...form,
       start_dt: form.start_dt?.unix(),
@@ -182,7 +169,7 @@ export const NoticeDetail = () => {
           </Button>
         ) : (
           <>
-            <Button color="primary" onClick={handleSubmit(updateNotice)}>
+            <Button color="primary" onClick={handleSubmit(modifyNotice)}>
               수정
             </Button>
             <Button mx={2} color="secondary" onClick={removeNotice}>

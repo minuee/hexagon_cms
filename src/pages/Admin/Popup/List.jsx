@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { apiObject } from "api";
-import { price, getFullImgURL } from "common";
+import { getFullImgURL } from "common";
 import dayjs from "dayjs";
 import qs from "query-string";
 
-import { Grid, Box, makeStyles, TextField, InputAdornment } from "@material-ui/core";
-import { DescriptionOutlined, Search } from "@material-ui/icons";
+import { Box, makeStyles } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, Pagination, ImageBox } from "components";
 
@@ -222,10 +220,10 @@ export const PopupList = ({ location }) => {
           </Box>
 
           <Box>
-            <Button color="primary" onClick={() => history.push(`/popup/add/${query.type || "notice"}`)}>
+            <Button color="primary" onClick={() => history.push(`/popup/${query.type || "notice"}/regist`)}>
               등록
             </Button>
-            <Button ml={1} color="secondary" onClick={removePopups}>
+            <Button ml={1} color="secondary" onClick={removePopups} disabled={!selectedPopup?.length}>
               삭제
             </Button>
           </Box>

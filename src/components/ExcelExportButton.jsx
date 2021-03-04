@@ -4,7 +4,7 @@ import _ from "lodash";
 
 import { Box } from "@material-ui/core";
 import { DescriptionOutlined } from "@material-ui/icons";
-import { Typography, Button } from "components/materialui";
+import { Button } from "components/materialui";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;

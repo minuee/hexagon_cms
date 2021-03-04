@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { Controller, useForm, useFieldArray } from "react-hook-form";
 import { price, getFullImgURL } from "common";
 import { apiObject } from "api";
@@ -8,7 +7,6 @@ import dayjs from "dayjs";
 import _ from "lodash";
 
 import {
-  Grid,
   Box,
   makeStyles,
   TextField,
@@ -17,20 +15,16 @@ import {
   InputAdornment,
   TableRow,
   TableCell,
-  Checkbox,
   FormControlLabel,
   RadioGroup,
   Radio,
   Dialog,
-  Tabs,
-  Tab,
   IconButton,
 } from "@material-ui/core";
-import { EventNote, Search, HighlightOff } from "@material-ui/icons";
-import { DatePicker, TimePicker, DateTimePicker } from "@material-ui/pickers";
+import { EventNote, HighlightOff } from "@material-ui/icons";
+import { DateTimePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
-import { Pagination, ColumnTable, RowTable, Dropzone, SearchBox } from "components";
-import { ImageBox } from "components/ImageBox";
+import { ColumnTable, RowTable, ImageBox } from "components";
 
 const useStyles = makeStyles((theme) => ({
   datetimepicker_wrapper: {
@@ -370,9 +364,6 @@ export const EventDetail = () => {
 };
 
 const ProductModal = ({ open, onClose, onSelect }) => {
-  const classes = useStyles();
-  const { control, register, watch } = useForm();
-
   // const [categoryList, setCategoryList] = useState([]);
   // const [productList, setProductList] = useState();
   // const [listContext, setListContext] = useState({

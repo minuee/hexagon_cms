@@ -1,29 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
 import { apiObject } from "api";
 import { price, getFullImgURL } from "common";
 import dayjs from "dayjs";
 
 import {
-  Grid,
   Box,
   makeStyles,
   TextField,
   Select,
   MenuItem,
-  InputAdornment,
   TableRow,
   TableCell,
-  Checkbox,
   FormControlLabel,
   RadioGroup,
   Radio,
   Dialog,
 } from "@material-ui/core";
-import { EventNote } from "@material-ui/icons";
-import { DateTimePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, RowTable, Pagination, SearchBox, Dropzone, ImageBox } from "components";
 
@@ -281,7 +275,6 @@ export const BannerDetail = ({ location }) => {
 };
 
 const InlinkModal = ({ open, onClose, onSelect, inlinkType }) => {
-  const classes = useStyles();
   const { control, watch, setValue } = useForm();
 
   const [categoryList, setCategoryList] = useState();

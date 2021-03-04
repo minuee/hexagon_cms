@@ -1,12 +1,12 @@
-import React, { useEffect } from "react";
-import { useFormContext, useFieldArray, Controller } from "react-hook-form";
-import { Box, makeStyles, Fade, Badge, Grid, InputLabel } from "@material-ui/core";
-import { Close, Add } from "@material-ui/icons";
+import React from "react";
+import { useFieldArray, Controller } from "react-hook-form";
 import { useDropzone } from "react-dropzone";
-import { RatioBox, ImageBox } from "components";
-import { Button, Typography } from "components/materialui";
-
 import { getFullImgURL } from "common";
+
+import { Box, makeStyles } from "@material-ui/core";
+import { Add } from "@material-ui/icons";
+import { Typography } from "components/materialui";
+import { RatioBox, ImageBox } from "components";
 
 const useStyles = makeStyles({
   container: {
@@ -85,7 +85,7 @@ export const Dropzone = ({ control, name, width, ratio = 1, maxFiles = 1, minFil
             <RatioBox
               width={width}
               ratio={ratio}
-              border="solid 1px #dddddd"
+              // border="solid 1px #dddddd"
               onClick={readOnly ? undefined : () => remove(index)}
             >
               <Controller

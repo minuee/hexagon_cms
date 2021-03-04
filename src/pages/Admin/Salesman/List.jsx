@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { price } from "common";
 import { apiObject } from "api";
-import dayjs from "dayjs";
 import qs from "query-string";
 
-import { Grid, Box, makeStyles, TextField, InputAdornment } from "@material-ui/core";
-import { DescriptionOutlined, ArrowDropDown, ArrowDropUp } from "@material-ui/icons";
+import { Grid, Box, makeStyles } from "@material-ui/core";
+import { ArrowDropDown, ArrowDropUp } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination, SearchBox, ExcelExportButton } from "components";
+import { ColumnTable, Pagination, ExcelExportButton } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header_buttons: {
@@ -101,8 +99,8 @@ export const SalesmanList = ({ location }) => {
 
   function handleQueryChange(q, v) {
     if (q == "sort_item") {
-      if (query[q] == v) {
-        query.sort_type = query?.sort_type === "DESC" ? "ASC" : "DESC";
+      if (v == (query[q] || "uname")) {
+        query.sort_type = query?.sort_type === "ASC" ? "DESC" : "ASC";
       } else {
         query.sort_type = "DESC";
       }
@@ -127,15 +125,16 @@ export const SalesmanList = ({ location }) => {
         </Typography>
 
         <Box className={classes.header_buttons}>
-          {header_button_list.map((item, index) => (
-            <Button variant="text" onClick={() => handleQueryChange("sort_item", item.value)} key={index}>
-              <Typography fontWeight={query.sort_item === item.value ? "700" : undefined}>{item.label}</Typography>
-              {query.sort_item === item.value && (
-                <>{query.sort_type === "DESC" ? <ArrowDropDown /> : <ArrowDropUp />}</>
-              )}
-            </Button>
-          ))}
-          <Button color="primary" ml={2} onClick={() => history.push("/salesman/add")}>
+          {header_button_list.map((item, index) => {
+            let is_cur = item.value === (query.sort_item || "uname");
+            return (
+              <Button variant="text" onClick={() => handleQueryChange("sort_item", item.value)} key={index}>
+                <Typography fontWeight={is_cur ? "700" : undefined}>{item.label}</Typography>
+                {is_cur && <>{query.sort_type === "ASC" ? <ArrowDropUp /> : <ArrowDropDown />}</>}
+              </Button>
+            );
+          })}
+          <Button color="primary" ml={2} onClick={() => history.push("/salesman/regist")}>
             영업사원등록
           </Button>
         </Box>

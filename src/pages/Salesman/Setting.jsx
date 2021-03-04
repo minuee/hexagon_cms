@@ -1,31 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { useHistory, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { Controller, useForm } from "react-hook-form";
-import { price, decrypt } from "common";
+import React, { useEffect } from "react";
+import { useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useForm } from "react-hook-form";
+import { decrypt } from "common";
 import { apiObject } from "api";
-import dayjs from "dayjs";
 import qs from "query-string";
 import jwt from "jsonwebtoken";
 
-import {
-  Grid,
-  Box,
-  makeStyles,
-  TextField,
-  MenuItem,
-  InputAdornment,
-  Checkbox,
-  FormControlLabel,
-  TableRow,
-  TableCell,
-  Tab,
-  Tabs,
-} from "@material-ui/core";
-import { EventNote } from "@material-ui/icons";
-import { DateTimePicker } from "@material-ui/pickers";
+import { Box, makeStyles, TextField, TableRow, TableCell, Tab, Tabs } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
-import { RowTable, Dropzone } from "components";
+import { RowTable } from "components";
 
 const useStyles = makeStyles((theme) => ({
   password_input: {
@@ -65,8 +49,8 @@ export const Setting = ({ location }) => {
 };
 
 const ModifyInfo = () => {
-  const { register, reset, handleSubmit, errors } = useForm();
   const { member } = useSelector((state) => state.reducer);
+  const { register, reset, handleSubmit, errors } = useForm();
 
   async function modifyInfo(form) {
     if (!window.confirm("입력한 내용으로 정보를 수정하시겠습니까?")) return;

@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useHistory, useParams, useLocation } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { Controller, useForm, useFieldArray } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { price, getFullImgURL } from "common";
 import { apiObject } from "api";
 import dayjs from "dayjs";
 
 import {
-  Grid,
   Box,
   makeStyles,
   TextField,
@@ -16,16 +14,12 @@ import {
   InputAdornment,
   TableRow,
   TableCell,
-  Checkbox,
   FormControlLabel,
   RadioGroup,
   Radio,
   Dialog,
-  Tabs,
-  Tab,
-  IconButton,
 } from "@material-ui/core";
-import { EventNote, Search, HighlightOff } from "@material-ui/icons";
+import { EventNote } from "@material-ui/icons";
 import { DateTimePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, RowTable, Pagination, SearchBox, Dropzone, ImageBox } from "components";
@@ -450,7 +444,6 @@ const EventModal = ({ open, onClose, onSelect }) => {
   );
 };
 const ProductModal = ({ open, onClose, onSelect }) => {
-  const classes = useStyles();
   const { control, watch, setValue } = useForm();
 
   const [categoryList, setCategoryList] = useState();

@@ -41,8 +41,6 @@ export const SignUp = ({}) => {
   const { register, control, errors, setValue, watch, handleSubmit } = useForm();
 
   async function handleSignUp(data) {
-    console.log(data);
-
     alert("회원가입 신청 완료!");
 
     history.push("/");

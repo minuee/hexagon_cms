@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { useForm, Controller } from "react-hook-form";
 import { price } from "common";
 import { apiObject } from "api";
@@ -8,24 +7,19 @@ import dayjs from "dayjs";
 import qs from "query-string";
 
 import {
-  Grid,
   Box,
   makeStyles,
   TextField,
-  MenuItem,
-  InputAdornment,
   TableRow,
   TableCell,
-  Checkbox,
   RadioGroup,
   Radio,
   FormControlLabel,
   Tabs,
   Tab,
 } from "@material-ui/core";
-import { DescriptionOutlined, Search } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { RowTable, ColumnTable, Pagination, Dropzone } from "components";
+import { RowTable, ColumnTable, Pagination } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header_box: {
@@ -75,7 +69,6 @@ const incentive_columns = [
 ];
 
 export const SalesmanDetail = ({ location }) => {
-  const classes = useStyles();
   const history = useHistory();
   const { member_pk } = useParams();
   const { control, register, reset, handleSubmit } = useForm();

@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { useForm, Controller } from "react-hook-form";
 import { price, getFullImgURL } from "common";
 import { apiObject } from "api";
-import dayjs from "dayjs";
 import qs from "query-string";
 
-import { Grid, Box, makeStyles, TextField, InputAdornment, Select, MenuItem, IconButton } from "@material-ui/core";
+import { Grid, Box, makeStyles, Select, MenuItem } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, Pagination, SearchBox, ImageBox, ExcelExportButton } from "components";
 
@@ -74,7 +72,7 @@ const excel_columns = [
   },
 ];
 
-export const ItemList = ({ location }) => {
+export const ProductList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
   const query = qs.parse(location.search);
@@ -217,7 +215,7 @@ export const ItemList = ({ location }) => {
           <Button color="primary" onClick={() => history.push("/product/item/add")}>
             등록
           </Button>
-          <Button color="secondary" ml={2} onClick={removeProduct}>
+          <Button color="secondary" ml={2} onClick={removeProduct} disabled={!selectedProducts?.length}>
             삭제
           </Button>
         </Box>

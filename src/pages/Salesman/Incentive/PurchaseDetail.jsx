@@ -1,27 +1,13 @@
 import React, { useState, useEffect, Fragment } from "react";
-import { useHistory, useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { useForm, Controller } from "react-hook-form";
+import { useParams } from "react-router-dom";
+import { useForm } from "react-hook-form";
 import { apiObject } from "api";
 import dayjs from "dayjs";
 
 import { price } from "common";
 
-import {
-  Box,
-  makeStyles,
-  TextField,
-  Select,
-  MenuItem,
-  Radio,
-  RadioGroup,
-  Avatar,
-  TableRow,
-  TableCell,
-  Checkbox,
-  FormControlLabel,
-} from "@material-ui/core";
-import { Typography, Button } from "components/materialui";
+import { Box, makeStyles, Avatar, TableRow, TableCell } from "@material-ui/core";
+import { Typography } from "components/materialui";
 import { RowTable } from "components";
 
 const useStyles = makeStyles((theme) => ({
@@ -103,13 +89,12 @@ const order_status_list = [
 export const UserPurchaseDetail = () => {
   const classes = useStyles();
   const { order_pk } = useParams();
-  const { control, reset, setValue, handleSubmit } = useForm();
+  const { reset } = useForm();
 
   const [orderDetail, setOrderDetail] = useState();
 
   async function getOrderDetail() {
     let data = await apiObject.getOrderDetail({ order_pk });
-    console.log(data);
 
     setOrderDetail(data);
     reset({

@@ -37,7 +37,11 @@ export function price(num) {
 }
 
 export function getFullImgURL(relative_path) {
-  return IMAGE_BASE_URL + relative_path;
+  if (!relative_path) {
+    return null;
+  } else {
+    return IMAGE_BASE_URL + relative_path;
+  }
 }
 
 export function getListIndex(total, page, idx) {

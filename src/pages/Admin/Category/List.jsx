@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { price, getFullImgURL } from "common";
-import dayjs from "dayjs";
+import { getFullImgURL } from "common";
+import { apiObject } from "api";
 import qs from "query-string";
 
-import { Grid, Box, makeStyles, TextField, InputAdornment, Select, MenuItem, IconButton } from "@material-ui/core";
-import { DescriptionOutlined, Search, EventNote } from "@material-ui/icons";
-
+import { Grid, Box, makeStyles, InputAdornment, Select, MenuItem } from "@material-ui/core";
+import { Search } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, SearchBox, ImageBox, ExcelExportButton } from "components";
-import { apiObject } from "api";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -161,7 +158,7 @@ export const CategoryList = ({ location }) => {
           <Button color="primary" onClick={() => history.push("/product/category/add")}>
             등록
           </Button>
-          <Button color="secondary" ml={2} onClick={removeCategories}>
+          <Button color="secondary" ml={2} onClick={removeCategories} disabled={!selectedCategorys?.length}>
             삭제
           </Button>
         </Box>

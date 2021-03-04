@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { apiObject } from "api";
 import dayjs from "dayjs";
 import qs from "query-string";
 
-import { Grid, Box, makeStyles, TextField, InputAdornment, IconButton } from "@material-ui/core";
-import { DescriptionOutlined, Search } from "@material-ui/icons";
+import { Grid, Box, makeStyles } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, SearchBox, DnDList } from "components";
 
@@ -94,7 +92,7 @@ export const BannerList = ({ location }) => {
     setIsModify(false);
   }
 
-  function handleAddBanner() {
+  function registBanner() {
     if (bannerList?.length >= 10) {
       window.alert("배너는 10개까지만 등록이 가능합니다");
     } else {
@@ -127,7 +125,7 @@ export const BannerList = ({ location }) => {
               <Button mr={2} onClick={() => setIsModify(true)}>
                 노출순서 수정
               </Button>
-              <Button color="primary" onClick={handleAddBanner}>
+              <Button color="primary" onClick={registBanner}>
                 등록
               </Button>
             </>

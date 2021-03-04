@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 import jwt from "jsonwebtoken";
@@ -11,7 +11,8 @@ import { AdminHome } from "./pages/Admin/Home";
 import { MemberList, MemberDetail } from "./pages/Admin/Member";
 import { SalesmanList, SalesmanDetail, SalesmanRegister, SalesmanIncentive } from "./pages/Admin/Salesman";
 import { OrderList, OrderDetail } from "./pages/Admin/Order";
-import { CategoryList, CategoryDetail, ItemList, ItemDetail } from "./pages/Admin/Product";
+import { ProductList, ProductDetail } from "./pages/Admin/Product";
+import { CategoryList, CategoryDetail } from "./pages/Admin/Category";
 import { EventList, EventDetail } from "./pages/Admin/Event";
 import { PopupList, PopupRegister, PopupDetail } from "./pages/Admin/Popup";
 import { NoticeList, NoticeDetail } from "./pages/Admin/Notice";
@@ -70,28 +71,28 @@ const AdminRoutes = () => {
 
         <Route exact path="/product/category/:category_pk" component={CategoryDetail} />
         <Route path="/product/category" component={CategoryList} />
-        <Route exact path="/product/item/:product_pk" component={ItemDetail} />
-        <Route path="/product/item" component={ItemList} />
+        <Route exact path="/product/item/:product_pk" component={ProductDetail} />
+        <Route path="/product/item" component={ProductList} />
         <Redirect from="/product" to="/product/category" />
 
         <Route path="/event/:event_pk" component={EventDetail} />
         <Route path="/event" component={EventList} />
 
-        <Route exact path="/popup/add/:popup_gubun" component={PopupRegister} />
+        <Route exact path="/popup/:popup_gubun/regist" component={PopupRegister} />
         <Route exact path="/popup/:popup_gubun/:popup_pk" component={PopupDetail} />
         <Route path="/popup" component={PopupList} />
 
         <Route exact path="/notice/:notice_pk" component={NoticeDetail} />
         <Route path="/notice" component={NoticeList} />
 
-        <Route path="/coupon/add" component={CouponRegister} />
+        <Route path="/coupon/regist" component={CouponRegister} />
         <Route path="/coupon/:coupon_pk" component={CouponDetail} />
         <Route path="/coupon" component={CouponList} />
 
         <Route path="/banner/:banner_pk" component={BannerDetail} />
         <Route path="/banner" component={BannerList} />
 
-        <Route exact path="/salesman/add" component={SalesmanRegister} />
+        <Route exact path="/salesman/regist" component={SalesmanRegister} />
         <Route exact path="/salesman/incentive/:member_pk/:sales_month" component={SalesmanIncentive} />
         <Route exact path="/salesman/:member_pk" component={SalesmanDetail} />
         <Route path="/salesman" component={SalesmanList} />

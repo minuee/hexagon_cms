@@ -1,26 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useHistory, useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { useForm, Controller } from "react-hook-form";
+import { useParams } from "react-router-dom";
+import { useForm } from "react-hook-form";
 import { price, getFullImgURL } from "common";
-import dayjs from "dayjs";
 import { apiObject } from "api";
+import dayjs from "dayjs";
 
-import {
-  Grid,
-  Box,
-  makeStyles,
-  TextField,
-  MenuItem,
-  InputAdornment,
-  TableRow,
-  TableCell,
-  RadioGroup,
-  Radio,
-  FormControlLabel,
-} from "@material-ui/core";
-import { DescriptionOutlined, Search } from "@material-ui/icons";
-import { Typography, Button } from "components/materialui";
+import { Box, makeStyles, TableRow, TableCell } from "@material-ui/core";
+import { Typography } from "components/materialui";
 import { RowTable, ColumnTable, Pagination, ImageBox } from "components";
 
 const useStyles = makeStyles((theme) => ({
@@ -105,7 +91,7 @@ const reward_history_column = [
 export const ManageMemberDetail = () => {
   const classes = useStyles();
   const { member_pk } = useParams();
-  const { control, reset, setValue, watch, handleSubmit } = useForm();
+  const { reset, setValue, watch } = useForm();
   const cur_grade = grade_benefits[watch("grade_code")];
 
   const [memberInfo, setMemberInfo] = useState();

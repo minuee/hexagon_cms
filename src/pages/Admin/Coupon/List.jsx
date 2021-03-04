@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { price } from "common";
 import { apiObject } from "api";
 import dayjs from "dayjs";
 import qs from "query-string";
 
-import { Grid, Box, makeStyles, TextField, InputAdornment, IconButton } from "@material-ui/core";
-import { DescriptionOutlined, Search, ArrowDropDown, ArrowDropUp } from "@material-ui/icons";
+import { Grid, Box, makeStyles } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, Pagination } from "components";
 
@@ -108,7 +106,7 @@ export const CouponList = ({ location }) => {
             );
           })}
 
-          <Button color="primary" ml={3} onClick={() => history.push(`/coupon/add`)}>
+          <Button color="primary" ml={3} onClick={() => history.push(`/coupon/regist`)}>
             등록
           </Button>
         </Box>

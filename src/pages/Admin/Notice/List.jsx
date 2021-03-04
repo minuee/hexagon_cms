@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { apiObject } from "api";
 import dayjs from "dayjs";
 import qs from "query-string";
 
-import { Grid, Box, makeStyles, TextField, InputAdornment, IconButton } from "@material-ui/core";
-import { DescriptionOutlined, Search } from "@material-ui/icons";
+import { Grid, Box, makeStyles } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, Pagination, SearchBox } from "components";
 
@@ -56,7 +54,6 @@ export const NoticeList = ({ location }) => {
   const query = qs.parse(location.search);
 
   const [noticeList, setNoticeList] = useState();
-  const [searchWord, setSearchWord] = useState("");
 
   async function getNoticeList() {
     let data = await apiObject.getNoticeList({ ...query });

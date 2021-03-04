@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
-import { price } from "common";
 import { apiObject } from "api";
-import dayjs from "dayjs";
 
 import {
-  Grid,
   Box,
   makeStyles,
   TextField,
@@ -16,14 +13,12 @@ import {
   InputAdornment,
   TableRow,
   TableCell,
-  Checkbox,
   FormControlLabel,
   RadioGroup,
   Radio,
 } from "@material-ui/core";
-import { DescriptionOutlined, Search } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { RowTable, ColumnTable, Pagination, Dropzone } from "components";
+import { RowTable, Dropzone } from "components";
 
 const useStyles = makeStyles((theme) => ({
   category_wrapper: {
@@ -55,9 +50,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const ItemDetail = () => {
+export const ProductDetail = () => {
   const classes = useStyles();
-  const history = useHistory();
   const { member } = useSelector((state) => state.reducer);
   const { product_pk } = useParams();
   const { control, reset, setValue, watch, handleSubmit } = useForm();

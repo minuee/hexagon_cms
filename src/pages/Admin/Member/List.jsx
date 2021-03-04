@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useHistory, useLocation } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { price } from "common";
 import { apiObject } from "api";
 import qs from "query-string";
 
 import { Grid, Box, makeStyles } from "@material-ui/core";
-import { DescriptionOutlined, ArrowDropDown, ArrowDropUp } from "@material-ui/icons";
+import { ArrowDropDown, ArrowDropUp } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, Pagination, SearchBox, ExcelExportButton } from "components";
 
@@ -52,12 +51,12 @@ const member_list_columns = [
 ];
 const header_button_list = [
   {
-    label: "이름순",
-    value: "uname",
-  },
-  {
     label: "가입일자순",
     value: "reg",
+  },
+  {
+    label: "이름순",
+    value: "uname",
   },
   {
     label: "번호순",
@@ -126,8 +125,8 @@ export const MemberList = ({ location }) => {
 
   function handleQueryChange(q, v) {
     if (q == "sort_item") {
-      if (query[q] == v) {
-        query.sort_type = query?.sort_type === "DESC" ? "ASC" : "DESC";
+      if (v == (query[q] || "reg")) {
+        query.sort_type = query?.sort_type === "ASC" ? "DESC" : "ASC";
       } else {
         query.sort_type = "DESC";
       }
@@ -152,16 +151,17 @@ export const MemberList = ({ location }) => {
         </Typography>
 
         <Box className={classes.header_buttons}>
-          {header_button_list.map((item, index) => (
-            <Button variant="text" onClick={() => handleQueryChange("sort_item", item.value)} key={index}>
-              <Typography fontWeight={query.sort_item === item.value ? "700" : undefined}>{item.label}</Typography>
-              {query.sort_item === item.value && (
-                <>{query.sort_type === "DESC" ? <ArrowDropDown /> : <ArrowDropUp />}</>
-              )}
-            </Button>
-          ))}
+          {header_button_list.map((item, index) => {
+            let is_cur = item.value === (query.sort_item || "reg");
+            return (
+              <Button variant="text" onClick={() => handleQueryChange("sort_item", item.value)} key={index}>
+                <Typography fontWeight={is_cur ? "700" : undefined}>{item.label}</Typography>
+                {is_cur && <>{query.sort_type === "ASC" ? <ArrowDropUp /> : <ArrowDropDown />}</>}
+              </Button>
+            );
+          })}
 
-          <Button color="primary" ml={3} onClick={approveSignIn}>
+          <Button color="primary" ml={3} onClick={approveSignIn} disabled={!selectedMembers?.length}>
             회원가입 승인
           </Button>
         </Box>

@@ -1,35 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { useHistory, useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { Controller, useForm, useFieldArray } from "react-hook-form";
-import dayjs from "dayjs";
-import { price, getRandomColor, getFullImgURL } from "common";
+import { price } from "common";
 import { apiObject } from "api";
+import dayjs from "dayjs";
 import _ from "lodash";
 
-import {
-  Grid,
-  Box,
-  makeStyles,
-  TextField,
-  Select,
-  MenuItem,
-  InputAdornment,
-  IconButton,
-  TableRow,
-  TableCell,
-  Checkbox,
-  FormControlLabel,
-  Dialog,
-} from "@material-ui/core";
-import { EventNote, Search, HighlightOff } from "@material-ui/icons";
+import { Box, TextField, Select, MenuItem, IconButton, TableRow, TableCell, Dialog } from "@material-ui/core";
+import { HighlightOff } from "@material-ui/icons";
 import { DatePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
-import { RowTable, ColumnTable, Pagination, Dropzone, SearchBox } from "components";
+import { RowTable, ColumnTable, Pagination, SearchBox } from "components";
 
 export const CouponRegister = () => {
   const history = useHistory();
-  const { control, register, watch, setValue, reset, handleSubmit, errors } = useForm();
+  const { control, register, handleSubmit, errors } = useForm();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "selected_user",

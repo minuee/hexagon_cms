@@ -1,40 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { Controller, useForm, useFieldArray } from "react-hook-form";
-import { price, getRandomColor, getFullImgURL } from "common";
+import { Controller, useForm } from "react-hook-form";
 import { apiObject } from "api";
 import dayjs from "dayjs";
-import _ from "lodash";
 
-import {
-  Grid,
-  Box,
-  makeStyles,
-  TextField,
-  Select,
-  MenuItem,
-  InputAdornment,
-  IconButton,
-  TableRow,
-  TableCell,
-  Checkbox,
-  FormControlLabel,
-} from "@material-ui/core";
-import { EventNote, Search, HighlightOff } from "@material-ui/icons";
+import { Box, TextField, Select, MenuItem, TableRow, TableCell } from "@material-ui/core";
 import { DatePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
 import { RowTable } from "components";
 
-const useStyles = makeStyles((theme) => ({
-  category_input: {
-    width: theme.spacing(20),
-    marginRight: theme.spacing(2),
-  },
-}));
-
 export const CouponDetail = () => {
-  const classes = useStyles();
   const history = useHistory();
   const { coupon_pk } = useParams();
   const { control, register, reset, handleSubmit, errors } = useForm();

@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
-import { makeStyles, Box, Table, TableBody, TableHead, TableRow, TableCell } from "@material-ui/core";
-import { DescriptionOutlined, Search } from "@material-ui/icons";
-import { Typography, Button } from "components/materialui";
+import { Box, Table, TableBody, TableHead, TableRow, TableCell } from "@material-ui/core";
+import { Button } from "components/materialui";
 
 export const DnDList = ({ data, columns, className, onModifyFinish = () => {}, onCancel }) => {
   const [list, setList] = useState(data);
