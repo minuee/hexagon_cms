@@ -248,7 +248,7 @@ export const PopupList = ({ location }) => {
       </Box>
 
       <Box position="relative" mt={6}>
-        <Pagination page={query.page} setPage={handleQueryChange} />
+        <Pagination page={query.page} setPage={handleQueryChange} count={Math.ceil(+popupList?.[0]?.total / 10)} />
       </Box>
     </Box>
   );

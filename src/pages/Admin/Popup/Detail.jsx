@@ -66,7 +66,7 @@ export const PopupDetail = () => {
     reset({
       ...data,
       start_dt: dayjs.unix(data?.start_dt),
-      end_dt: dayjs.unix(data?.end_dt),
+      end_dt: +data?.end_dt ? dayjs.unix(data?.end_dt) : null,
       popup_img: [],
     });
     setValue("popup_img", [{ file: null, path: data?.img_url }]);
@@ -98,6 +98,7 @@ export const PopupDetail = () => {
 
     form.img_url = paths?.[0];
     form.start_dt = form.start_dt?.unix();
+    form.end_dt = form.end_dt?.unix();
 
     switch (form.popup_gubun) {
       case "Notice":
