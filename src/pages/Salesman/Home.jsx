@@ -64,6 +64,8 @@ export const SalesmanHome = () => {
 
     setUserPurchaseList(data.rank_data);
     setDailySales(data.today_sales?.daily_sales);
+
+    console.log(data.today_sales?.daily_sales);
   }
 
   useEffect(() => {
@@ -87,7 +89,7 @@ export const SalesmanHome = () => {
 
         <Box my={2}>
           <Typography variant="h5" textAlign="right">
-            <span>{price(dailySales)}</span> 원
+            {price(dailySales || 0)} 원
           </Typography>
         </Box>
       </Box>

@@ -332,13 +332,13 @@ export const MemberDetail = () => {
               <Controller
                 render={({ onChange, ...props }) => (
                   <RadioGroup row {...props} onChange={(e) => !!e.target.value}>
-                    <FormControlLabel value={false} control={<Radio color="primary" />} label="사용중" />
-                    <FormControlLabel value={true} control={<Radio color="primary" />} label="사용중지" />
+                    <FormControlLabel value={true} control={<Radio color="primary" />} label="사용중" />
+                    <FormControlLabel value={false} control={<Radio color="primary" />} label="사용중지" />
                   </RadioGroup>
                 )}
-                name="is_retired"
+                name="use_yn"
                 control={control}
-                defaultValue={false}
+                defaultValue={true}
               />
             ) : (
               <Box display="flex" justifyContent="space-between" alignItems="center">

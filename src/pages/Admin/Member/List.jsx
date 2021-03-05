@@ -29,26 +29,6 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
-
-const member_list_columns = [
-  { title: "이름", field: "name" },
-  { title: "코드값", field: "special_code", width: 100 },
-  {
-    title: "구매총액",
-    render: ({ total_amount }) => `${price(total_amount) || 0}원`,
-    cellStyle: { textAlign: "right" },
-  },
-  {
-    title: "리워드잔액",
-    render: ({ reward_point }) => `${price(reward_point) || 0}원`,
-    cellStyle: { textAlign: "right" },
-  },
-  { title: "등급", field: "grade_name", width: 100 },
-  {
-    title: "비고",
-    render: ({ approval, agent_code }) => (approval ? `영업사원코드:  ${agent_code}` : "회원가입 미승인"),
-  },
-];
 const header_button_list = [
   {
     label: "가입일자순",
@@ -71,6 +51,28 @@ const header_button_list = [
     value: "reward",
   },
 ];
+
+const member_list_columns = [
+  { title: "이름", field: "name", width: 240 },
+  { title: "코드값", field: "special_code", width: 100 },
+  {
+    title: "구매총액",
+    render: ({ total_amount }) => `${price(total_amount) || 0}원`,
+    cellStyle: { textAlign: "right" },
+  },
+  {
+    title: "리워드잔액",
+    render: ({ reward_point }) => `${price(reward_point) || 0}원`,
+    cellStyle: { textAlign: "right" },
+  },
+  { title: "등급", field: "grade_name", width: 100 },
+  {
+    title: "비고",
+    render: ({ approval, agent_code }) => (approval ? agent_code && `영업사원코드: ${agent_code}` : "회원가입 미승인"),
+    width: 160,
+  },
+];
+
 const excel_columns = [
   { label: "이름", value: "name" },
   { label: "코드값", value: "special_code" },
@@ -88,7 +90,7 @@ const excel_columns = [
   {
     label: "비고",
     value: "approval",
-    render: ({ approval, agent_code }) => (approval ? `영업사원코드:  ${agent_code}` : "회원가입 미승인"),
+    render: ({ approval, agent_code }) => (approval ? agent_code && `영업사원코드: ${agent_code}` : "회원가입 미승인"),
   },
 ];
 

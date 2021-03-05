@@ -180,7 +180,9 @@ const MemberModal = ({ open, onClose, onSelect }) => {
     { title: "등급", field: "grade_name", width: 100 },
     {
       title: "비고",
-      render: ({ approval, agent_code }) => (approval ? `영업사원코드:  ${agent_code}` : "회원가입 미승인"),
+      render: ({ approval, agent_code }) =>
+        approval ? agent_code && `영업사원코드: ${agent_code}` : "회원가입 미승인",
+      width: 160,
     },
   ];
 

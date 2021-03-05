@@ -134,7 +134,7 @@ export const apiObject = {
       let data = await axios.get(`/cms/home/analyst/${member_pk}`);
       let ret = data.data.data;
 
-      ret.rank_data.forEach((item, index) => {
+      ret.rank_data?.forEach((item, index) => {
         item.no = index + 1;
       });
 
@@ -150,7 +150,7 @@ export const apiObject = {
       let data = await axios.get(`/cms/salesman/home/analyst/${special_code}`);
       let ret = data.data.data;
 
-      ret.rank_data.forEach((item, index) => {
+      ret.rank_data?.forEach((item, index) => {
         item.no = index + 1;
       });
 
