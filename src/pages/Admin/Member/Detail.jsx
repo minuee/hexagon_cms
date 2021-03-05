@@ -140,6 +140,8 @@ export const MemberDetail = () => {
     }
 
     let paths = await apiObject.uploadImageMultiple({ img_arr: form.lisence_img, page: "member" });
+    if (!paths.length) return;
+
     await apiObject.modifyMember({
       ...form,
       member_pk,

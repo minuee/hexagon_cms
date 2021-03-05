@@ -89,9 +89,11 @@ export const ProductDetail = () => {
     }
 
     let paths = await apiObject.uploadImageMultiple({ img_arr: form.thumb_img, page: "product" });
+    if (!paths.length) return;
     form.thumb_img = paths?.[0];
 
     paths = await apiObject.uploadImageMultiple({ img_arr: form.detail_img, page: "product" });
+    if (!paths.length) return;
     for (let i = 0; i < paths.length; i++) {
       form[`detail_img${i + 1}`] = paths[i];
     }
@@ -113,12 +115,12 @@ export const ProductDetail = () => {
       return;
     }
 
-    let paths;
-
-    paths = await apiObject.uploadImageMultiple({ img_arr: form.thumb_img, page: "product" });
+    let paths = await apiObject.uploadImageMultiple({ img_arr: form.thumb_img, page: "product" });
+    if (!paths.length) return;
     form.thumb_img = paths?.[0];
 
     paths = await apiObject.uploadImageMultiple({ img_arr: form.detail_img, page: "product" });
+    if (!paths.length) return;
     for (let i = 0; i < paths.length; i++) {
       form[`detail_img${i + 1}`] = paths[i];
     }

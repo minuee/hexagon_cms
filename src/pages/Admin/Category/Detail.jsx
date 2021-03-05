@@ -48,10 +48,8 @@ export const CategoryDetail = ({ location }) => {
       return;
     }
 
-    let paths = await apiObject.uploadImageMultiple({
-      img_arr: form.category_logo,
-      page: "product",
-    });
+    let paths = await apiObject.uploadImageMultiple({ img_arr: form.category_logo, page: "product" });
+    if (!paths.length) return;
     form.category_logo = paths?.[0];
 
     if (form.category_type !== "B") {
@@ -75,10 +73,8 @@ export const CategoryDetail = ({ location }) => {
       return;
     }
 
-    let paths = await apiObject.uploadImageMultiple({
-      img_arr: form.category_logo,
-      page: "product",
-    });
+    let paths = await apiObject.uploadImageMultiple({ img_arr: form.category_logo, page: "product" });
+    if (!paths.length) return;
     form.category_logo = paths?.[0];
 
     if (form.category_type !== "B") {

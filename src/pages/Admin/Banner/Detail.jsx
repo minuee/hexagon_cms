@@ -53,10 +53,8 @@ export const BannerDetail = ({ location }) => {
       return;
     }
 
-    let paths = await apiObject.uploadImageMultiple({
-      img_arr: form.banner_img,
-      page: "etc",
-    });
+    let paths = await apiObject.uploadImageMultiple({ img_arr: form.banner_img, page: "etc" });
+    if (!paths.length) return;
 
     await apiObject.registBanner({
       ...form,
@@ -75,10 +73,8 @@ export const BannerDetail = ({ location }) => {
       return;
     }
 
-    let paths = await apiObject.uploadImageMultiple({
-      img_arr: form.banner_img,
-      page: "etc",
-    });
+    let paths = await apiObject.uploadImageMultiple({ img_arr: form.banner_img, page: "etc" });
+    if (!paths.length) return;
 
     await apiObject.modifyBanner({
       banner_pk,

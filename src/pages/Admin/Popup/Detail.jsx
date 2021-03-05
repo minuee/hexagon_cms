@@ -95,6 +95,7 @@ export const PopupDetail = () => {
     }
 
     let paths = await apiObject.uploadImageMultiple({ img_arr: form.popup_img, page: "etc" });
+    if (!paths.length) return;
 
     form.img_url = paths?.[0];
     form.start_dt = form.start_dt?.unix();
@@ -347,9 +348,11 @@ export const PopupDetail = () => {
             <Button mr={2} color="primary" onClick={handleSubmit(modifyPopup)}>
               수정
             </Button>
-            <Button mr={2} style={{ background: "#333", color: "#fff" }} onClick={handleSubmit(haltPopup)}>
-              중지
-            </Button>
+            {dayjs() > watch("start_dt") && (
+              <Button mr={2} style={{ background: "#333", color: "#fff" }} onClick={handleSubmit(haltPopup)}>
+                중지
+              </Button>
+            )}
           </>
         )}
         <Button color="secondary" onClick={removePopup}>

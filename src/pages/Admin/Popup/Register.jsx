@@ -65,6 +65,7 @@ export const PopupRegister = () => {
     }
 
     let paths = await apiObject.uploadImageMultiple({ img_arr: form.popup_img, page: "etc" });
+    if (!paths.length) return;
 
     form.img_url = paths?.[0];
     form.start_dt = form.start_dt?.unix();
@@ -230,7 +231,7 @@ export const PopupRegister = () => {
       )}
 
       <Box mt={4} textAlign="center">
-        <Button mr={2} onClick={() => history.push("/notice")}>
+        <Button mr={2} onClick={() => history.push("/popup")}>
           목록
         </Button>
 

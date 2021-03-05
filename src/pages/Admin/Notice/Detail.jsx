@@ -30,6 +30,7 @@ export const NoticeDetail = () => {
 
     if (form.img_url) {
       let paths = await apiObject.uploadImageMultiple({ img_arr: form.img_url, page: "etc" });
+      if (!paths.length) return;
       form.img_url = paths?.[0];
     }
 
@@ -45,6 +46,7 @@ export const NoticeDetail = () => {
 
     if (form.img_url) {
       let paths = await apiObject.uploadImageMultiple({ img_arr: form.img_url, page: "etc" });
+      if (!paths.length) return;
       form.img_url = paths?.[0];
     }
 
