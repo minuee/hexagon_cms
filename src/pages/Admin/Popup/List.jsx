@@ -99,7 +99,7 @@ export const PopupList = ({ location }) => {
     { title: "제목", field: "title", cellStyle: { textAlign: "left" } },
     {
       title: "시작 시간",
-      render: ({ start_dt }) => `${dayjs.unix(start_dt).format("YYYY-MM-DD hh:mm")}부터 적용`,
+      render: ({ start_dt }) => `${dayjs.unix(start_dt).format("YYYY-MM-DD HH:mm")}부터 적용`,
       width: 240,
     },
   ];
@@ -120,8 +120,8 @@ export const PopupList = ({ location }) => {
     {
       title: "게시 시간",
       render: ({ start_dt, end_dt }) =>
-        `${dayjs.unix(start_dt).format("YYYY-MM-DD hh:mm")} ~
-      ${dayjs.unix(end_dt).format("YYYY-MM-DD hh:mm")}`,
+        `${dayjs.unix(start_dt).format("YYYY-MM-DD HH:mm")} ~
+      ${dayjs.unix(end_dt).format("YYYY-MM-DD HH:mm")}`,
       width: 400,
     },
   ];

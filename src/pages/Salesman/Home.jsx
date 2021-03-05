@@ -85,7 +85,7 @@ export const SalesmanHome = () => {
         <Typography variant="h6" fontWeight={700}>
           일일 구매액
         </Typography>
-        <Typography color="secondary">{dayjs().format("YYYY.MM.DD hh:mm")} 기준</Typography>
+        <Typography color="secondary">{dayjs().format("YYYY.MM.DD HH:mm")} 기준</Typography>
 
         <Box my={2}>
           <Typography variant="h5" textAlign="right">
@@ -99,7 +99,7 @@ export const SalesmanHome = () => {
           <Typography variant="h6" fontWeight={700}>
             회원 구매 통계
           </Typography>
-          <Typography color="secondary">{dayjs().format("YYYY.MM.DD hh:mm")} 기준</Typography>
+          <Typography color="secondary">{dayjs().format("YYYY.MM.DD HH:mm")} 기준</Typography>
 
           <Box my={2}>
             <ColumnTable

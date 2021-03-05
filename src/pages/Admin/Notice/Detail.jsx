@@ -183,7 +183,7 @@ export const NoticeDetail = () => {
                 Push 발송
               </Button>
               <p style={{ fontFamily: "Montserrat", fontWeight: "ital,wght@1,300" }}>
-                최근발송: {dayjs.unix(1889883723).format("YYYY-MM-DD hh:mm")}
+                최근발송: {dayjs.unix(1889883723).format("YYYY-MM-DD HH:mm")}
               </p>
             </Box> */}
           </>

@@ -79,7 +79,7 @@ export const AdminHome = () => {
         <Typography variant="h6" fontWeight={700}>
           일일 판매액
         </Typography>
-        <Typography color="secondary">{dayjs().format("YYYY.MM.DD hh:mm")} 기준</Typography>
+        <Typography color="secondary">{dayjs().format("YYYY.MM.DD HH:mm")} 기준</Typography>
 
         <Box my={2}>
           <Typography variant="h5" textAlign="right">
@@ -93,7 +93,7 @@ export const AdminHome = () => {
           <Typography variant="h6" fontWeight={700}>
             유저 구매누적액 현황
           </Typography>
-          <Typography color="secondary">{dayjs().format("YYYY.MM.DD hh:mm 기준 (순상품금액기준)")}</Typography>
+          <Typography color="secondary">{dayjs().format("YYYY.MM.DD HH:mm 기준 (순상품금액기준)")}</Typography>
 
           <Box my={2}>
             <ColumnTable
@@ -113,7 +113,7 @@ export const AdminHome = () => {
           <Typography variant="h6" fontWeight={700}>
             영업사원 인센티브 통계
           </Typography>
-          <Typography color="secondary">{dayjs().format("YYYY.MM.DD hh:mm")} 기준</Typography>
+          <Typography color="secondary">{dayjs().format("YYYY.MM.DD HH:mm")} 기준</Typography>
 
           <Box my={2}>
             <ColumnTable

@@ -56,7 +56,7 @@ const banner_list_columns = [
   },
   {
     title: "등록일시",
-    render: ({ reg_dt }) => dayjs.unix(reg_dt).format("YYYY-MM-DD hh:mm"),
+    render: ({ reg_dt }) => dayjs.unix(reg_dt).format("YYYY-MM-DD HH:mm"),
     width: 240,
   },
 ];
