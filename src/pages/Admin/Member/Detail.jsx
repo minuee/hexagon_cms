@@ -331,7 +331,7 @@ export const MemberDetail = () => {
             {memberInfo?.approval_dt ? (
               <Controller
                 render={({ onChange, ...props }) => (
-                  <RadioGroup row {...props} onChange={(e) => !!e.target.value}>
+                  <RadioGroup row {...props} onChange={(e) => onChange(e.target.value == "true")}>
                     <FormControlLabel value={true} control={<Radio color="primary" />} label="사용중" />
                     <FormControlLabel value={false} control={<Radio color="primary" />} label="사용중지" />
                   </RadioGroup>
@@ -351,10 +351,18 @@ export const MemberDetail = () => {
           </TableCell>
         </TableRow>
         {memberInfo?.approval_dt && (
-          <TableRow>
-            <TableCell>등급</TableCell>
-            <TableCell>{memberInfo?.grade_name}</TableCell>
-          </TableRow>
+          <>
+            <TableRow>
+              <TableCell>등급</TableCell>
+              <TableCell>{memberInfo?.grade_name}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>등급유지기간</TableCell>
+              <TableCell>
+                {memberInfo?.grade_start} ~ {memberInfo?.grade_end}
+              </TableCell>
+            </TableRow>
+          </>
         )}
       </RowTable>
 

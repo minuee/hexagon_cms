@@ -52,15 +52,15 @@ const useStyles = makeStyles((theme) => ({
 
 export const ProductDetail = () => {
   const classes = useStyles();
-  const { member } = useSelector((state) => state.reducer);
+  const history = useHistory();
   const { product_pk } = useParams();
+  const { member } = useSelector((state) => state.reducer);
   const { control, reset, setValue, watch, handleSubmit } = useForm();
 
   const [categoryList, setCategoryList] = useState();
 
   async function getCategoryList() {
     let data = await apiObject.getCategoryList({});
-
     setCategoryList(data);
   }
   async function getProductDetail() {
@@ -102,7 +102,7 @@ export const ProductDetail = () => {
       ...form,
       reg_member: member.member_pk,
     });
-    // history.push("/product/item");
+    history.push("/product/item");
   }
   async function modifyProduct(form) {
     if (!form.thumb_img) {
@@ -125,7 +125,7 @@ export const ProductDetail = () => {
       form[`detail_img${i + 1}`] = paths[i];
     }
 
-    await apiObject.modifyProduct({ form, product_pk });
+    await apiObject.modifyProduct({ ...form, product_pk });
   }
 
   useEffect(() => {

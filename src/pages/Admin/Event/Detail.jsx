@@ -136,7 +136,7 @@ export const EventDetail = () => {
     form.start_dt = form.start_dt.unix();
     form.end_dt = form.end_dt?.unix();
 
-    await apiObject.modifyEvent({ event_pk, ...form });
+    await apiObject.modifyEvent({ event_pk, ...form, is_halt: false });
     getEventDetail();
   }
   async function haltEvent(form) {
@@ -152,7 +152,8 @@ export const EventDetail = () => {
     form.start_dt = form.start_dt.unix();
     form.end_dt = dayjs().unix();
 
-    await apiObject.modifyEvent({ event_pk, ...form });
+    await apiObject.modifyEvent({ event_pk, ...form, is_halt: true });
+    getEventDetail();
   }
   async function removeEvent() {
     if (!window.confirm("현재 이벤트를 삭제하시겠습니까?")) return;

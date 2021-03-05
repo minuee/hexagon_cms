@@ -356,6 +356,7 @@ export const apiObject = {
       console.log({ e });
     }
   },
+
   // Category
   getCategoryList: async ({ search_word }) => {
     try {
@@ -547,19 +548,61 @@ export const apiObject = {
       console.log({ e });
     }
   },
-  registProduct: async (form) => {
+  registProduct: async ({
+    product_name,
+    category_pk,
+    material,
+    thumb_img,
+    detail_img1,
+    detail_img2,
+    detail_img3,
+    detail_img4,
+    each_price,
+    box_price,
+    box_unit,
+    carton_price,
+    carton_unit,
+    event_each_price,
+    event_box_price,
+    event_box_unit,
+    event_carton_price,
+    event_carton_unit,
+    display_seq,
+    can_point,
+    is_nonpoint,
+    event_each_stock,
+    event_box_stock,
+    event_carton_stock,
+    reg_member,
+  }) => {
     try {
-      let response = await axios.post(
-        "/cms/product/regist",
-        {
-          ...form,
-        },
-        // {
-        //   headers: {
-        //     "Access-Control-Allow-Origin": "*",
-        //   },
-        // },
-      );
+      let response = await axios.post("/cms/product/regist", {
+        product_name,
+        category_pk,
+        material,
+        thumb_img,
+        detail_img1,
+        detail_img2,
+        detail_img3,
+        detail_img4,
+        each_price,
+        box_price,
+        box_unit,
+        carton_price,
+        carton_unit,
+        event_each_price,
+        event_box_price,
+        event_box_unit,
+        event_carton_price,
+        event_carton_unit,
+        display_seq,
+        can_point,
+        is_nonpoint,
+        event_each_stock,
+        event_box_stock,
+        event_carton_stock,
+        reg_member,
+      });
 
       alert("상품 등록을 완료했습니다");
       return response;
@@ -568,10 +611,65 @@ export const apiObject = {
       console.log({ e });
     }
   },
-  modifyProduct: async ({ form, product_pk }) => {
+  modifyProduct: async ({
+    product_name,
+    category_pk,
+    material,
+    thumb_img,
+    detail_img1,
+    detail_img2,
+    detail_img3,
+    detail_img4,
+    detail_img5,
+    each_price,
+    box_price,
+    box_unit,
+    carton_price,
+    carton_unit,
+    event_each_price,
+    event_box_price,
+    event_box_unit,
+    event_carton_price,
+    event_carton_unit,
+    display_seq,
+    can_point,
+    is_nonpoint,
+    use_yn,
+    is_soldout,
+    event_each_stock,
+    event_box_stock,
+    event_carton_stock,
+    product_pk,
+  }) => {
     try {
       let response = await axios.put(`/cms/product/modify/${product_pk}`, {
-        ...form,
+        product_name,
+        category_pk,
+        material,
+        thumb_img,
+        detail_img1,
+        detail_img2,
+        detail_img3,
+        detail_img4,
+        detail_img5,
+        each_price,
+        box_price,
+        box_unit,
+        carton_price,
+        carton_unit,
+        event_each_price,
+        event_box_price,
+        event_box_unit,
+        event_carton_price,
+        event_carton_unit,
+        display_seq,
+        can_point,
+        is_nonpoint,
+        use_yn,
+        is_soldout,
+        event_each_stock,
+        event_box_stock,
+        event_carton_stock,
       });
 
       alert("상품 수정을 완료했습니다");
@@ -672,7 +770,7 @@ export const apiObject = {
       console.log({ e });
     }
   },
-  modifyEvent: async ({ event_pk, event_gubun, start_dt, end_dt, title, product }) => {
+  modifyEvent: async ({ event_pk, event_gubun, start_dt, end_dt, title, product, is_halt }) => {
     try {
       let response = await axios.put(`/cms/event/modify/${event_pk}`, {
         event_gubun,
@@ -682,7 +780,11 @@ export const apiObject = {
         product,
       });
 
-      alert("이벤트 수정을 완료했습니다");
+      if (is_halt) {
+        alert("이벤트를 중지했습니다");
+      } else {
+        alert("이벤트 수정을 완료했습니다");
+      }
       return response;
     } catch (e) {
       alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
@@ -1202,13 +1304,13 @@ export const apiObject = {
           case "PRODUCT":
             ret.target = {
               target_pk: ret.target_pk,
-              name: ret.productdetail.PRODUCT_NAME,
+              name: ret.productdetail.product_name,
             };
             break;
           case "CATEGORY":
             ret.target = {
               target_pk: ret.target_pk,
-              name: ret.categorydetail.CATEGORY_NAME,
+              name: ret.categorydetail.category_name,
             };
             break;
           case "EVENT":

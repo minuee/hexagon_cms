@@ -58,7 +58,7 @@ export const BannerDetail = ({ location }) => {
 
     await apiObject.registBanner({
       ...form,
-      target_pk: form.target.target_pk,
+      target_pk: form.target?.target_pk,
       img_url: paths?.[0],
     });
 
@@ -79,7 +79,7 @@ export const BannerDetail = ({ location }) => {
     await apiObject.modifyBanner({
       banner_pk,
       ...form,
-      target_pk: form.target.target_pk,
+      target_pk: form.target?.target_pk,
       img_url: paths?.[0],
     });
 
@@ -222,9 +222,7 @@ export const BannerDetail = ({ location }) => {
           <TableCell>노출순서</TableCell>
           <TableCell>
             <Controller
-              render={({ value }) => (
-                <Typography>{value || "자동으로 가장 낮은 순위가 배정됩니다. 앱에서 수정부탁드립니다."}</Typography>
-              )}
+              render={({ value }) => <Typography>{value || "자동으로 가장 낮은 순위가 배정됩니다"}</Typography>}
               control={control}
               name="display_seq"
               defaultValue=""

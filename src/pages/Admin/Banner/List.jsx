@@ -51,7 +51,7 @@ const banner_list_columns = [
   { title: "타입", field: "link_type_text", width: 120 },
   {
     title: "제목",
-    render: ({ title }) => (title?.length > 20 ? title?.substring(0, 20) : title),
+    render: ({ title }) => (title?.length > 30 ? `${title?.substring(0, 30)}...` : title),
     cellStyle: { textAlign: "left", width: "calc(max(100vw, 1280px) - 874px)" },
   },
   {
@@ -116,18 +116,16 @@ export const BannerList = ({ location }) => {
           배너 목록
         </Typography>
 
-        <Box>
-          {!isModify && (
-            <>
-              <Button mr={2} onClick={() => setIsModify(true)}>
-                노출순서 수정
-              </Button>
-              <Button color="primary" onClick={registBanner}>
-                등록
-              </Button>
-            </>
-          )}
-        </Box>
+        {!isModify && (
+          <Box>
+            <Button disabled={bannerList?.length <= 1} onClick={() => setIsModify(true)}>
+              노출순서 수정
+            </Button>
+            <Button ml={2} color="primary" onClick={registBanner}>
+              등록
+            </Button>
+          </Box>
+        )}
       </Grid>
 
       <Box mt={2} mb={3}>

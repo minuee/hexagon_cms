@@ -110,6 +110,8 @@ export const PopupDetail = () => {
         await apiObject.modifyEventPopup({ popup_pk, inlink_type: state?.inlink_type, ...form });
         break;
     }
+
+    getPopupDetail();
   }
   async function haltPopup() {
     if (!window.confirm("해당 팝업을 게시 중지시키시겠습니까?")) return;
@@ -170,27 +172,7 @@ export const PopupDetail = () => {
             <TableRow>
               <TableCell>이벤트 적용 대상 구분</TableCell>
               <TableCell>
-                <Controller
-                  as={
-                    <RadioGroup row>
-                      <FormControlLabel
-                        value="EVENT"
-                        control={<Radio color="primary" />}
-                        label="이벤트"
-                        disabled={isTerminated}
-                      />
-                      <FormControlLabel
-                        value="PRODUCT"
-                        control={<Radio color="primary" />}
-                        label="상품"
-                        disabled={isTerminated}
-                      />
-                    </RadioGroup>
-                  }
-                  name="inlink_type"
-                  control={control}
-                  defaultValue="EVENT"
-                />
+                <Typography>{state?.inlink_type === "EVENT" ? "이벤트" : "상품"}</Typography>
               </TableCell>
             </TableRow>
             <TableRow>
@@ -325,7 +307,7 @@ export const PopupDetail = () => {
         </TableRow>
       </RowTable>
 
-      {watch("inlink_type", "EVENT") === "EVENT" ? (
+      {state?.inlink_type === "EVENT" ? (
         <EventModal
           open={isEventModalOpen}
           onClose={() => setIsEventModalOpen(false)}
