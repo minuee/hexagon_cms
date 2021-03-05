@@ -72,6 +72,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return "";
     }
@@ -107,6 +108,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return [];
     }
@@ -121,6 +123,7 @@ export const apiObject = {
       axios.defaults.headers.common.Authorization = response.data.token;
       return response.data;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -137,6 +140,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return {};
     }
@@ -152,6 +156,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return {};
     }
@@ -180,6 +185,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return [];
     }
@@ -190,8 +196,10 @@ export const apiObject = {
         member_array,
       });
 
+      alert("회원가입 승인을 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -205,6 +213,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return {};
     }
@@ -222,6 +231,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return [];
     }
@@ -253,8 +263,10 @@ export const apiObject = {
         new_approval,
       });
 
+      alert("회원정보 수정을 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -273,6 +285,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return [];
     }
@@ -323,6 +336,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return {};
     }
@@ -335,8 +349,10 @@ export const apiObject = {
         newOrderStatus,
       });
 
+      alert("주문상태 수정을 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -350,6 +366,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return [];
     }
@@ -362,8 +379,10 @@ export const apiObject = {
         },
       });
 
+      alert("카테고리 삭제를 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return {};
     }
@@ -384,6 +403,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return {};
     }
@@ -421,6 +441,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return [];
     }
@@ -443,8 +464,10 @@ export const apiObject = {
         reg_member,
       });
 
+      alert("카테고리 등록을 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return "";
     }
@@ -467,8 +490,11 @@ export const apiObject = {
         category_yn,
         normalcategory_pk,
       });
+
+      alert("카테고리 수정을 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -484,6 +510,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return [];
     }
@@ -502,6 +529,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return {};
     }
@@ -512,8 +540,10 @@ export const apiObject = {
         data: { product_array },
       });
 
+      alert("상품 삭제를 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -531,8 +561,10 @@ export const apiObject = {
         // },
       );
 
+      alert("상품 등록을 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -541,8 +573,11 @@ export const apiObject = {
       let response = await axios.put(`/cms/product/modify/${product_pk}`, {
         ...form,
       });
+
+      alert("상품 수정을 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -574,6 +609,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return [];
     }
@@ -585,6 +621,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return {};
     }
@@ -613,6 +650,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return [];
     }
@@ -627,8 +665,10 @@ export const apiObject = {
         product,
       });
 
+      alert("이벤트 등록을 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -642,16 +682,21 @@ export const apiObject = {
         product,
       });
 
+      alert("이벤트 수정을 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
   removeEvent: async ({ event_pk }) => {
     try {
       let response = await axios.delete(`/cms/event/remove/${event_pk}`);
+
+      alert("이벤트 삭제를 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -669,6 +714,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return [];
     }
@@ -685,6 +731,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return [];
     }
@@ -701,6 +748,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return [];
     }
@@ -717,6 +765,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return [];
     }
@@ -728,6 +777,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return {};
     }
@@ -743,6 +793,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return {};
     }
@@ -759,8 +810,10 @@ export const apiObject = {
         send_push,
       });
 
+      alert("공지팝업 등록을 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -777,8 +830,10 @@ export const apiObject = {
         inlink_type,
       });
 
+      alert("이벤트팝업 등록을 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -794,8 +849,10 @@ export const apiObject = {
         send_push,
       });
 
+      alert("공지팝업 수정을 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -822,8 +879,10 @@ export const apiObject = {
         inlink_type,
       });
 
+      alert("이벤트팝업 수정을 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -832,8 +891,11 @@ export const apiObject = {
       let response = await axios.patch(`/cms/popup/stop/${popup_pk}`, {
         restart_dt,
       });
+
+      alert("공지팝업을 중지했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -842,24 +904,33 @@ export const apiObject = {
       let response = await axios.patch(`/cms/popevent/stop/${popup_pk}`, {
         restart_dt,
       });
+
+      alert("이벤트팝업을 중지했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
   removeNoticePopup: async ({ popup_pk }) => {
     try {
       let response = await axios.delete(`/cms/popup/remove/${popup_pk}`);
+
+      alert("공지팝업 삭제를 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
   removeEventPopup: async ({ popup_pk }) => {
     try {
       let response = await axios.delete(`/cms/popevent/remove/${popup_pk}`);
+
+      alert("이벤트팝업 삭제를 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -868,8 +939,11 @@ export const apiObject = {
       let response = await axios.put(`/cms/popup/removes`, {
         popup_array,
       });
+
+      alert("공지팝업 삭제를 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -878,8 +952,11 @@ export const apiObject = {
       let response = await axios.put(`/cms/popevent/removes`, {
         popup_array,
       });
+
+      alert("이벤트팝업 삭제를 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -902,6 +979,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return [];
     }
@@ -913,6 +991,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return {};
     }
@@ -926,8 +1005,11 @@ export const apiObject = {
         img_url,
         send_push,
       });
+
+      alert("공지 등록을 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -940,16 +1022,22 @@ export const apiObject = {
         img_url,
         send_push,
       });
+
+      alert("공지 수정을 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
   removeNotice: async ({ notice_pk }) => {
     try {
       let response = await axios.delete(`/cms/notice/remove/${notice_pk}`);
+
+      alert("공지 삭제를 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -972,6 +1060,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return [];
     }
@@ -993,6 +1082,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return [];
     }
@@ -1006,6 +1096,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return {};
     }
@@ -1021,8 +1112,10 @@ export const apiObject = {
         is_first,
       });
 
+      alert("쿠폰 등록을 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -1037,16 +1130,21 @@ export const apiObject = {
         is_first,
       });
 
+      alert("쿠폰 수정을 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
   removeCoupon: async ({ coupon_pk }) => {
     try {
       let response = await axios.delete(`/cms/coupon/remove/${coupon_pk}`);
+
+      alert("쿠폰 삭제를 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -1084,6 +1182,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return [];
     }
@@ -1123,6 +1222,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return {};
     }
@@ -1138,8 +1238,11 @@ export const apiObject = {
         title,
         content,
       });
+
+      alert("배너 등록을 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -1154,8 +1257,11 @@ export const apiObject = {
         title,
         content,
       });
+
+      alert("배너 수정을 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -1164,16 +1270,22 @@ export const apiObject = {
       let response = await axios.put(`/cms/banner/seqmodify`, {
         banner_array,
       });
+
+      alert("배너 노출순서 수정을 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
   removeBanner: async ({ banner_pk }) => {
     try {
       let response = await axios.delete(`/cms/banner/remove/${banner_pk}`);
+
+      alert("배너 삭제를 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -1201,6 +1313,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return [];
     }
@@ -1215,6 +1328,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return {};
     }
@@ -1237,6 +1351,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return [];
     }
@@ -1250,6 +1365,7 @@ export const apiObject = {
 
       return ret;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
       return [];
     }
@@ -1263,8 +1379,11 @@ export const apiObject = {
         is_retired,
         password: !!password ? password : undefined,
       });
+
+      alert("영업사원 정보 수정을 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -1277,8 +1396,11 @@ export const apiObject = {
         email: encrypt(email),
         phone: encrypt(phone),
       });
+
+      alert("영업사원 등록을 완료했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
@@ -1288,8 +1410,11 @@ export const apiObject = {
         nowPassword,
         newPassword,
       });
+
+      alert("비밀번호를 수정했습니다");
       return response;
     } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
     }
   },
