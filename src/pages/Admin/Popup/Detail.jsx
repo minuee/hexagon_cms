@@ -18,8 +18,9 @@ import {
   RadioGroup,
   Radio,
   Dialog,
+  IconButton,
 } from "@material-ui/core";
-import { EventNote } from "@material-ui/icons";
+import { EventNote, Close } from "@material-ui/icons";
 import { DateTimePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, RowTable, Pagination, SearchBox, Dropzone, ImageBox } from "components";
@@ -39,6 +40,13 @@ const useStyles = makeStyles((theme) => ({
     "& > *": {
       marginRight: theme.spacing(2),
     },
+  },
+
+  modal_close_icon: {
+    position: "absolute",
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500],
   },
 }));
 
@@ -324,12 +332,14 @@ export const PopupDetail = () => {
           open={isEventModalOpen}
           onClose={() => setIsEventModalOpen(false)}
           onSelect={(target) => setValue("selected_target", target)}
+          selected_item={watch("selected_target", null)}
         />
       ) : (
         <ProductModal
           open={isEventModalOpen}
           onClose={() => setIsEventModalOpen(false)}
           onSelect={(target) => setValue("selected_target", target)}
+          selected_item={watch("selected_target", null)}
         />
       )}
 
@@ -357,7 +367,10 @@ export const PopupDetail = () => {
   );
 };
 
-const EventModal = ({ open, onClose, onSelect }) => {
+const EventModal = ({ open, onClose, onSelect, selected_item }) => {
+  const classes = useStyles();
+
+  const [selectedItem, setSelectedItem] = useState();
   const [eventList, setEventList] = useState();
   const [listContext, setListContext] = useState();
 
@@ -394,12 +407,18 @@ const EventModal = ({ open, onClose, onSelect }) => {
     setEventList(data);
   }
 
+  function isCurItem(row) {
+    return row.event_pk == selectedItem?.target_pk;
+  }
   function handleOnSelect(target) {
-    onSelect({
+    let tmp = {
       ...target,
-      target_name: target.title,
-      target_pk: target.event_pk,
-    });
+      target_name: target.product_name,
+      target_pk: target.product_pk,
+    };
+
+    setSelectedItem(tmp);
+    onSelect(tmp);
     onClose();
   }
   function handleOnEnter() {
@@ -426,8 +445,16 @@ const EventModal = ({ open, onClose, onSelect }) => {
     }
   }, [listContext]);
 
+  useEffect(() => {
+    setSelectedItem(selected_item);
+  }, [selected_item]);
+
   return (
     <Dialog maxWidth="md" fullWidth open={open} onClose={onClose} onBackdropClick={onClose} onEnter={handleOnEnter}>
+      <IconButton className={classes.modal_close_icon} onClick={onClose}>
+        <Close fontSize="large" />
+      </IconButton>
+
       <Box p={3} maxHeight="800px" bgcolor="#fff">
         <Typography variant="h6" fontWeight="700">
           이벤트 검색
@@ -437,7 +464,16 @@ const EventModal = ({ open, onClose, onSelect }) => {
           <SearchBox defaultValue="" placeholder="이벤트검색" onSearch={handleContextChange} />
         </Box>
 
-        <ColumnTable columns={event_columns} data={eventList} onRowClick={(row) => handleOnSelect(row)} />
+        <ColumnTable
+          columns={event_columns}
+          data={eventList}
+          onRowClick={handleOnSelect}
+          options={{
+            rowStyle: (row) => ({
+              background: isCurItem(row) && "#bbb",
+            }),
+          }}
+        />
 
         <Box py={6} position="relative" display="flex" alignItems="center" justifyContent="flex-end">
           <Pagination
@@ -450,9 +486,11 @@ const EventModal = ({ open, onClose, onSelect }) => {
     </Dialog>
   );
 };
-const ProductModal = ({ open, onClose, onSelect }) => {
+const ProductModal = ({ open, onClose, onSelect, selected_item }) => {
+  const classes = useStyles();
   const { control, watch, setValue } = useForm();
 
+  const [selectedItem, setSelectedItem] = useState();
   const [categoryList, setCategoryList] = useState();
   const [productList, setProductList] = useState();
   const [listContext, setListContext] = useState({
@@ -499,15 +537,20 @@ const ProductModal = ({ open, onClose, onSelect }) => {
     setProductList(data);
   }
 
+  function isCurItem(row) {
+    return row.product_pk == selectedItem?.target_pk;
+  }
   function handleOnSelect(target) {
-    onSelect({
+    let tmp = {
       ...target,
       target_name: target.product_name,
       target_pk: target.product_pk,
-    });
+    };
+
+    setSelectedItem(tmp);
+    onSelect(tmp);
     onClose();
   }
-
   function handleContextChange(name, value) {
     let tmp = {
       ...listContext,
@@ -519,7 +562,6 @@ const ProductModal = ({ open, onClose, onSelect }) => {
 
     setListContext(tmp);
   }
-
   async function handleEnter() {
     let data = await apiObject.getCategoryList({});
     setCategoryList(data);
@@ -542,8 +584,16 @@ const ProductModal = ({ open, onClose, onSelect }) => {
     handleContextChange("category_pk", "");
   }, [watch("category_type", "")]);
 
+  useEffect(() => {
+    setSelectedItem(selected_item);
+  }, [selected_item]);
+
   return (
     <Dialog maxWidth="md" fullWidth open={open} onClose={onClose} onBackdropClick={onClose} onEnter={handleEnter}>
+      <IconButton className={classes.modal_close_icon} onClick={onClose}>
+        <Close fontSize="large" />
+      </IconButton>
+
       <Box p={3} height="800px" bgcolor="#fff">
         <Box mb={2} display="flex" justifyContent="space-between">
           <Typography variant="h6" fontWeight="700" display="inline">
@@ -607,7 +657,16 @@ const ProductModal = ({ open, onClose, onSelect }) => {
           <SearchBox placeholder="검색어를 입력해주세요" onSearch={handleContextChange} />
         </Box>
 
-        <ColumnTable columns={product_columns} data={productList} onRowClick={handleOnSelect} />
+        <ColumnTable
+          columns={product_columns}
+          data={productList}
+          onRowClick={handleOnSelect}
+          options={{
+            rowStyle: (row) => ({
+              background: isCurItem(row) && "#bbb",
+            }),
+          }}
+        />
 
         <Box py={6}>
           <Pagination

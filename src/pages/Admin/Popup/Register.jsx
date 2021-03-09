@@ -18,9 +18,10 @@ import {
   FormControlLabel,
   RadioGroup,
   Radio,
+  IconButton,
   Dialog,
 } from "@material-ui/core";
-import { EventNote } from "@material-ui/icons";
+import { EventNote, Close } from "@material-ui/icons";
 import { DateTimePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, RowTable, Pagination, SearchBox, Dropzone, ImageBox } from "components";
@@ -40,6 +41,13 @@ const useStyles = makeStyles((theme) => ({
     "& > *": {
       marginRight: theme.spacing(2),
     },
+  },
+
+  modal_close_icon: {
+    position: "absolute",
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500],
   },
 }));
 
@@ -259,6 +267,7 @@ export const PopupRegister = () => {
 };
 
 const EventModal = ({ open, onClose, onSelect }) => {
+  const classes = useStyles();
   const [eventList, setEventList] = useState();
   const [listContext, setListContext] = useState({
     page: 1,
@@ -330,6 +339,10 @@ const EventModal = ({ open, onClose, onSelect }) => {
 
   return (
     <Dialog maxWidth="md" fullWidth open={open} onClose={onClose} onBackdropClick={onClose} onEnter={handleOnEnter}>
+      <IconButton className={classes.modal_close_icon} onClick={onClose}>
+        <Close fontSize="large" />
+      </IconButton>
+
       <Box p={3} maxHeight="800px" bgcolor="#fff">
         <Typography variant="h6" fontWeight="700">
           이벤트 검색
@@ -353,6 +366,7 @@ const EventModal = ({ open, onClose, onSelect }) => {
   );
 };
 const ProductModal = ({ open, onClose, onSelect }) => {
+  const classes = useStyles();
   const { control, watch, setValue } = useForm();
 
   const [categoryList, setCategoryList] = useState();
@@ -447,6 +461,10 @@ const ProductModal = ({ open, onClose, onSelect }) => {
 
   return (
     <Dialog maxWidth="md" fullWidth open={open} onClose={onClose} onBackdropClick={onClose} onEnter={handleEnter}>
+      <IconButton className={classes.modal_close_icon} onClick={onClose}>
+        <Close fontSize="large" />
+      </IconButton>
+
       <Box p={3} height="800px" bgcolor="#fff">
         <Box mb={2} display="flex" justifyContent="space-between">
           <Typography variant="h6" fontWeight="700" display="inline">

@@ -21,7 +21,7 @@ import {
   Dialog,
   IconButton,
 } from "@material-ui/core";
-import { EventNote, HighlightOff } from "@material-ui/icons";
+import { EventNote, HighlightOff, Close } from "@material-ui/icons";
 import { DateTimePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, RowTable, ImageBox } from "components";
@@ -65,12 +65,19 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+
+  modal_close_icon: {
+    position: "absolute",
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500],
+  },
 }));
 
 export const EventDetail = () => {
-  const { event_pk } = useParams();
-  const history = useHistory();
   const classes = useStyles();
+  const history = useHistory();
+  const { event_pk } = useParams();
   const { control, register, reset, setValue, watch, handleSubmit } = useForm();
   const { fields, append, remove } = useFieldArray({
     name: "event_product",
@@ -371,6 +378,7 @@ const ProductModal = ({ open, onClose, onSelect }) => {
   //   page: 1,
   //   search_word: "",
   // });
+  const classes = useStyles();
 
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [productData, setProductData] = useState();
@@ -458,6 +466,10 @@ const ProductModal = ({ open, onClose, onSelect }) => {
 
   return (
     <Dialog maxWidth="md" fullWidth open={open} onClose={onClose} onBackdropClick={onClose} onEnter={handleEnter}>
+      <IconButton className={classes.modal_close_icon} onClick={onClose}>
+        <Close fontSize="large" />
+      </IconButton>
+
       <Box p={3} height="800px" bgcolor="#fff">
         <Box mb={2} display="flex" justifyContent="space-between">
           <Typography variant="h6" fontWeight="700" display="inline">

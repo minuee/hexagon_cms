@@ -35,10 +35,10 @@ export const ColumnTable = ({ columns, data = [], onRowClick = () => {}, selecti
           search: false,
           draggable: false,
           sorting: false,
-
           paging: false,
 
           selection: !!selection || false,
+          showSelectAllCheckbox: false,
 
           ...options,
         }}

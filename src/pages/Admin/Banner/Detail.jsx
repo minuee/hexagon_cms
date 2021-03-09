@@ -17,11 +17,20 @@ import {
   RadioGroup,
   Radio,
   Dialog,
+  IconButton,
 } from "@material-ui/core";
+import { Close } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, RowTable, Pagination, SearchBox, Dropzone, ImageBox } from "components";
 
-const useStyles = makeStyles((theme) => ({}));
+const useStyles = makeStyles((theme) => ({
+  modal_close_icon: {
+    position: "absolute",
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500],
+  },
+}));
 
 export const BannerDetail = ({ location }) => {
   const history = useHistory();
@@ -283,6 +292,7 @@ export const BannerDetail = ({ location }) => {
 };
 
 const InlinkModal = ({ open, onClose, onSelect, inlinkType, selected_item }) => {
+  const classes = useStyles();
   const { control, watch, setValue } = useForm();
 
   const [selectedItem, setSelectedItem] = useState();
@@ -326,6 +336,7 @@ const InlinkModal = ({ open, onClose, onSelect, inlinkType, selected_item }) => 
         </Button>
       ),
       width: 100,
+      disableClick: true,
     },
   ];
   const category_columns = [
@@ -476,6 +487,10 @@ const InlinkModal = ({ open, onClose, onSelect, inlinkType, selected_item }) => 
 
   return (
     <Dialog maxWidth="md" fullWidth open={open} onClose={onClose} onBackdropClick={onClose} onEnter={handleOnEnter}>
+      <IconButton className={classes.modal_close_icon} onClick={onClose}>
+        <Close fontSize="large" />
+      </IconButton>
+
       <Box p={3} height="800px" bgcolor="#fff">
         <Typography variant="h6" fontWeight="700">
           링크 {inlinkType === "PRODUCT" ? "상품" : inlinkType === "CATEGORY" ? "카테고리" : "이벤트"} 선택
@@ -573,13 +588,8 @@ const InlinkModal = ({ open, onClose, onSelect, inlinkType, selected_item }) => 
           data={inlinkList}
           onRowClick={handleOnSelect}
           options={{
-            selectionProps: (props) => ({
-              style: {
-                display: props.approval && "none",
-              },
-            }),
             rowStyle: (row) => ({
-              background: isCurItem(row) && "#eee",
+              background: isCurItem(row) && "#bbb",
             }),
           }}
         />

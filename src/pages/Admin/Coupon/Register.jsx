@@ -6,11 +6,30 @@ import { apiObject } from "api";
 import dayjs from "dayjs";
 import _ from "lodash";
 
-import { Box, TextField, Select, MenuItem, IconButton, TableRow, TableCell, Dialog } from "@material-ui/core";
-import { HighlightOff } from "@material-ui/icons";
+import {
+  makeStyles,
+  Box,
+  TextField,
+  Select,
+  MenuItem,
+  IconButton,
+  TableRow,
+  TableCell,
+  Dialog,
+} from "@material-ui/core";
+import { HighlightOff, Close } from "@material-ui/icons";
 import { DatePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
 import { RowTable, ColumnTable, Pagination, SearchBox } from "components";
+
+const useStyles = makeStyles((theme) => ({
+  modal_close_icon: {
+    position: "absolute",
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500],
+  },
+}));
 
 export const CouponRegister = () => {
   const history = useHistory();
@@ -45,8 +64,8 @@ export const CouponRegister = () => {
     history.push("/coupon");
   }
 
-  function handleAppendTarget(user_array) {
-    let tmp = _.differenceBy(user_array, fields, "member_pk");
+  function handleAppendTarget(member_array) {
+    let tmp = _.differenceBy(member_array, fields, "member_pk");
     append(tmp);
   }
 
@@ -156,6 +175,7 @@ export const CouponRegister = () => {
 };
 
 const MemberModal = ({ open, onClose, onSelect }) => {
+  const classes = useStyles();
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [memberList, setMemberList] = useState();
   const [listContext, setListContext] = useState({
@@ -211,8 +231,16 @@ const MemberModal = ({ open, onClose, onSelect }) => {
     getMemberList();
   }, [listContext.page, listContext.search_word]);
 
+  useEffect(() => {
+    console.log(selectedMembers);
+  }, [selectedMembers]);
+
   return (
     <Dialog maxWidth="md" fullWidth open={open} onClose={onClose} onBackdropClick={onClose} onEnter={handleOnEnter}>
+      <IconButton className={classes.modal_close_icon} onClick={onClose}>
+        <Close fontSize="large" />
+      </IconButton>
+
       <Box p={3} height="800px" bgcolor="#fff">
         <Typography variant="h6" fontWeight="700">
           쿠폰 대상자 검색
@@ -222,7 +250,21 @@ const MemberModal = ({ open, onClose, onSelect }) => {
           <SearchBox defaultValue="" placeholder="회원검색" onSearch={handleContextChange} />
         </Box>
 
-        <ColumnTable columns={member_columns} data={memberList} selection onSelectionChange={setSelectedMembers} />
+        <ColumnTable
+          columns={member_columns}
+          data={memberList}
+          selection
+          onSelectionChange={(data) => {
+            console.log(data);
+            // if(_.some(selectedMembers))
+            setSelectedMembers(_.unionBy(selectedMembers, data, "member_pk"));
+          }}
+          options={{
+            selectionProps: (row) => ({
+              checked: _.some(selectedMembers, ["member_pk", row.member_pk]),
+            }),
+          }}
+        />
 
         <Box py={4} position="relative" display="flex" alignItems="center" justifyContent="flex-end">
           <Pagination
