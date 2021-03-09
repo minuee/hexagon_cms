@@ -1339,6 +1339,7 @@ export const apiObject = {
             ret.target = {
               target_pk: ret.target_pk,
               name: ret.productdetail.product_name,
+              thumb_img: ret.productdetail.thumb_img,
             };
             break;
           case "CATEGORY":
@@ -1350,7 +1351,7 @@ export const apiObject = {
           case "EVENT":
             ret.target = {
               target_pk: ret.target_pk,
-              name: ret.title,
+              name: ret.eventdetail.title,
             };
             break;
         }

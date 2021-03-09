@@ -83,7 +83,17 @@ export const BannerDetail = ({ location }) => {
       img_url: paths?.[0],
     });
 
-    getBannerDetail();
+    if (location.state?.link_type != form.link_type || location.state?.inlink_type != form.inlink_type) {
+      history.replace({
+        pathname: window.location.pathname,
+        state: {
+          inlink_type: form.inlink_type,
+          link_type: form.link_type,
+        },
+      });
+    } else {
+      getBannerDetail();
+    }
   }
   async function removeBanner() {
     if (!window.confirm("현재 배너를 삭제하시겠습니까?")) return;
@@ -266,14 +276,16 @@ export const BannerDetail = ({ location }) => {
         onClose={() => setIsInlinkModalOpen(false)}
         onSelect={(target) => setValue("target", target)}
         inlinkType={watch("inlink_type", "PRODUCT")}
+        selected_item={watch("target", null)}
       />
     </Box>
   );
 };
 
-const InlinkModal = ({ open, onClose, onSelect, inlinkType }) => {
+const InlinkModal = ({ open, onClose, onSelect, inlinkType, selected_item }) => {
   const { control, watch, setValue } = useForm();
 
+  const [selectedItem, setSelectedItem] = useState();
   const [categoryList, setCategoryList] = useState();
   const [inlinkColumn, setInlinkColumn] = useState([]);
   const [inlinkList, setInlinkList] = useState();
@@ -387,6 +399,24 @@ const InlinkModal = ({ open, onClose, onSelect, inlinkType }) => {
       setCategoryList(data);
     }
   }
+
+  function isCurItem(row) {
+    let row_pk;
+
+    switch (inlinkType) {
+      case "PRODUCT":
+        row_pk = row.product_pk;
+        break;
+      case "CATEGORY":
+        row_pk = row.category_pk;
+        break;
+      case "EVENT":
+        row_pk = row.event_pk;
+        break;
+    }
+
+    return row_pk == selectedItem?.target_pk;
+  }
   function handleOnSelect(target) {
     switch (inlinkType) {
       case "PRODUCT":
@@ -407,6 +437,7 @@ const InlinkModal = ({ open, onClose, onSelect, inlinkType }) => {
         break;
     }
 
+    setSelectedItem(target);
     onSelect(target);
     onClose();
     setListContext({
@@ -438,6 +469,10 @@ const InlinkModal = ({ open, onClose, onSelect, inlinkType }) => {
     setValue("category_pk", "");
     handleContextChange("category_pk", "");
   }, [watch("category_type", "")]);
+
+  useEffect(() => {
+    setSelectedItem(selected_item);
+  }, [selected_item]);
 
   return (
     <Dialog maxWidth="md" fullWidth open={open} onClose={onClose} onBackdropClick={onClose} onEnter={handleOnEnter}>
@@ -533,7 +568,21 @@ const InlinkModal = ({ open, onClose, onSelect, inlinkType }) => {
           />
         </Box>
 
-        <ColumnTable columns={inlinkColumn} data={inlinkList} onRowClick={(row) => handleOnSelect(row)} />
+        <ColumnTable
+          columns={inlinkColumn}
+          data={inlinkList}
+          onRowClick={handleOnSelect}
+          options={{
+            selectionProps: (props) => ({
+              style: {
+                display: props.approval && "none",
+              },
+            }),
+            rowStyle: (row) => ({
+              background: isCurItem(row) && "#eee",
+            }),
+          }}
+        />
 
         <Box py={4} position="relative" display="flex" alignItems="center" justifyContent="flex-end">
           <Pagination
