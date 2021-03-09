@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     justifyContent: "space-between",
 
-    width: "25rem",
+    width: "30rem",
     height: "13rem",
     background: "#fff",
 
@@ -72,20 +72,22 @@ const grade_benefits = {
 
 const reward_history_column = [
   {
-    title: "번호",
-    field: "no",
-    width: 80,
+    title: "일자",
+    render: ({ reg_dt }) => dayjs.unix(reg_dt).format("YYYY-MM-DD HH:mm"),
+    width: 240,
   },
   {
-    title: "구매일자",
-    render: ({ purchase_dt }) => dayjs.unix(purchase_dt).format("YYYY.MM.DD"),
+    title: "내용",
+    render: ({ reward_gubun, order_pk, content }) =>
+      reward_gubun === "m" && order_pk > 0 ? "주문포인트 사용" : content,
+    width: 160,
   },
   {
-    title: "구매액",
-    render: ({ purchase_amount }) => `${price(purchase_amount)}원`,
+    title: "리워드액",
+    render: ({ reward_point, reward_gubun }) =>
+      price(reward_point) ? `${reward_gubun === "m" ? "-" : "+"}${price(reward_point)}원` : "-",
     cellStyle: { textAlign: "right" },
   },
-  { title: "주문상태", field: "delivery_state", width: 160 },
 ];
 
 export const ManageMemberDetail = () => {
@@ -132,9 +134,9 @@ export const ManageMemberDetail = () => {
                 {cur_grade?.grade_name || "-"}
               </Typography>
               <Typography>적립률 {cur_grade?.rate * 100 || "-"}% 적용</Typography>
-              {cur_grade?.coupon && <Typography>{cur_grade?.coupon}원 쿠폰 1회 제공</Typography>}
+              {cur_grade?.coupon && <Typography>{price(cur_grade?.coupon)}원 쿠폰 1회 제공</Typography>}
               <Typography>
-                {cur_grade?.delivery === 0 ? "배송비 무료" : `${cur_grade?.free_amount}이상 주문시 배송비 무료`}
+                {cur_grade?.delivery === 0 ? "배송비 무료" : `${price(cur_grade?.free_amount)}이상 주문시 배송비 무료`}
               </Typography>
             </Box>
           </Box>
@@ -218,12 +220,28 @@ export const ManageMemberDetail = () => {
         )}
         <TableRow>
           <TableCell>상태</TableCell>
-          <TableCell>{memberInfo?.is_retired ? "사용중" : "사용중지"}</TableCell>
+          <TableCell>
+            {memberInfo?.approval_dt ? (
+              <Typography>{memberInfo?.use_yn ? "사용중" : "사용중지"}</Typography>
+            ) : (
+              <Typography>회원가입 승인 대기</Typography>
+            )}
+          </TableCell>
         </TableRow>
-        <TableRow>
-          <TableCell>등급</TableCell>
-          <TableCell>{memberInfo?.grade_name}</TableCell>
-        </TableRow>
+        {memberInfo?.approval_dt && (
+          <>
+            <TableRow>
+              <TableCell>등급</TableCell>
+              <TableCell>{memberInfo?.grade_name}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>등급유지기간</TableCell>
+              <TableCell>
+                {memberInfo?.grade_start} ~ {memberInfo?.grade_end}
+              </TableCell>
+            </TableRow>
+          </>
+        )}
       </RowTable>
 
       <MemberRewardTable member_pk={member_pk} />

@@ -1472,14 +1472,23 @@ export const apiObject = {
   },
   getSalsemanClientList: async ({ special_code, page = 1, paginate = 10, search_word }) => {
     try {
-      let data = await axios.get(`/cms/salesman/charge/list/${special_code}`, {
+      // let data = await axios.get(`/cms/salesman/charge/list/${special_code}`, {
+      //   params: {
+      //     page,
+      //     paginate,
+      //     search_word,
+      //   },
+      // });
+      // let ret = data.data.data.salesmanList;
+      let data = await axios.get("/cms/member/list", {
         params: {
           page,
           paginate,
           search_word,
+          special_code,
         },
       });
-      let ret = data.data.data.salesmanList;
+      let ret = data.data.data.userList;
 
       ret.forEach((item) => {
         item.email = decrypt(item.email);

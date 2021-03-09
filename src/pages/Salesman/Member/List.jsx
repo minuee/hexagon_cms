@@ -31,7 +31,12 @@ const member_list_columns = [
     render: ({ total_amount }) => `${price(total_amount) || 0}원`,
     cellStyle: { textAlign: "right" },
   },
-  { title: "등급", field: "grade_name", width: 100 },
+  {
+    title: "리워드액",
+    render: ({ total_reward }) => `${price(total_reward) || 0}원`,
+    cellStyle: { textAlign: "right" },
+  },
+  { title: "등급", render: ({ approval, grade_name }) => (approval ? grade_name : "회원가입 승인대기"), width: 160 },
 ];
 
 export const ManageMemberList = ({ location }) => {
