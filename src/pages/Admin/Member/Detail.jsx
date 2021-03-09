@@ -208,19 +208,6 @@ export const MemberDetail = () => {
           <TableCell>{memberInfo?.name}</TableCell>
         </TableRow>
         <TableRow>
-          <TableCell>업종</TableCell>
-          <TableCell>
-            <TextField
-              size="small"
-              fullWidth
-              name="company_class"
-              placeholder="업종"
-              inputRef={register({ required: true })}
-              disabled={!memberInfo?.approval_dt}
-            />
-          </TableCell>
-        </TableRow>
-        <TableRow>
           <TableCell>업태</TableCell>
           <TableCell>
             <TextField
@@ -228,6 +215,19 @@ export const MemberDetail = () => {
               fullWidth
               name="company_type"
               placeholder="업태"
+              inputRef={register({ required: true })}
+              disabled={!memberInfo?.approval_dt}
+            />
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>업종</TableCell>
+          <TableCell>
+            <TextField
+              size="small"
+              fullWidth
+              name="company_class"
+              placeholder="업종"
               inputRef={register({ required: true })}
               disabled={!memberInfo?.approval_dt}
             />

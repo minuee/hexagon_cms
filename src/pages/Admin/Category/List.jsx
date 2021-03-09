@@ -7,7 +7,7 @@ import qs from "query-string";
 import { Grid, Box, makeStyles, InputAdornment, Select, MenuItem } from "@material-ui/core";
 import { Search } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, SearchBox, ImageBox, ExcelExportButton } from "components";
+import { ColumnTable, SearchBox, ImageBox, ExcelExportButton, DnDList } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -50,6 +50,19 @@ const useStyles = makeStyles((theme) => ({
       background: "#fff",
     },
   },
+
+  dnd_container: {
+    background: "#fff",
+
+    "& th": {
+      background: "#ddd",
+      fontWeight: "700",
+      textAlign: "center",
+    },
+    "& td": {
+      textAlign: "center",
+    },
+  },
 }));
 
 const excel_columns = [
@@ -75,6 +88,7 @@ export const CategoryList = ({ location }) => {
 
   const [categoryList, setCategoryList] = useState();
   const [selectedCategorys, setSelectedCategorys] = useState([]);
+  const [isModify, setIsModify] = useState(false);
 
   const category_list_columns = [
     {
@@ -113,6 +127,21 @@ export const CategoryList = ({ location }) => {
     await apiObject.removeCategories({ category_array });
     getCategoryList();
   }
+  async function modifyExposureSequence(data) {
+    if (!window.confirm("카테고리 노출순서를 수정하시겠습니까?")) return;
+
+    let category_array = [];
+    data.forEach((item, index) => {
+      category_array.push({
+        category_pk: item.category_pk,
+        category_seq: index + 1,
+      });
+    });
+
+    await apiObject.modifyCategorySequence({ category_type: query.category_type || "B", category_array });
+    getCategoryList();
+    setIsModify(false);
+  }
 
   function handleQueryChange(q, v) {
     query[q] = v;
@@ -135,69 +164,86 @@ export const CategoryList = ({ location }) => {
         </Button>
       </Box>
 
-      <Box className={classes.header}>
-        <Box>
-          <Select
-            displayEmpty
-            name="category_type"
-            margin="dense"
-            value={query.category_type || "B"}
-            onChange={(e) => handleQueryChange("category_type", e.target.value)}
-            startAdornment={
-              <InputAdornment position="start">
-                <Search />
-              </InputAdornment>
-            }
-          >
-            <MenuItem value={"B"}>브랜드</MenuItem>
-            <MenuItem value={"N"}>제품군</MenuItem>
-          </Select>
-        </Box>
+      {!isModify && (
+        <Box className={classes.header}>
+          <Box>
+            <Select
+              displayEmpty
+              name="category_type"
+              margin="dense"
+              value={query.category_type || "B"}
+              onChange={(e) => handleQueryChange("category_type", e.target.value)}
+              startAdornment={
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              }
+            >
+              <MenuItem value={"B"}>브랜드</MenuItem>
+              <MenuItem value={"N"}>제품군</MenuItem>
+            </Select>
+          </Box>
 
-        <Box>
-          <Button color="primary" onClick={() => history.push("/product/category/add")}>
-            등록
-          </Button>
-          <Button color="secondary" ml={2} onClick={removeCategories} disabled={!selectedCategorys?.length}>
-            삭제
-          </Button>
+          <Box>
+            <Button onClick={() => setIsModify(true)}>노출순서 수정</Button>
+            <Button color="primary" ml={2} onClick={() => history.push("/product/category/add")}>
+              등록
+            </Button>
+            <Button color="secondary" ml={2} onClick={removeCategories} disabled={!selectedCategorys?.length}>
+              삭제
+            </Button>
+          </Box>
         </Box>
-      </Box>
+      )}
 
       <Box mt={2} mb={3}>
-        <ColumnTable
-          columns={category_list_columns}
-          data={
-            (query.category_type || "B") === "B" ? categoryList?.categoryBrandList : categoryList?.categoryNormalList
-          }
-          onRowClick={(row) =>
-            history.push({
-              pathname: `/product/category/${row.category_pk}`,
-              state: {
-                category_type: query?.category_type || "B",
-              },
-            })
-          }
-          selection
-          onSelectionChange={setSelectedCategorys}
-        />
+        {isModify ? (
+          <DnDList
+            data={
+              (query.category_type || "B") === "B" ? categoryList?.categoryBrandList : categoryList?.categoryNormalList
+            }
+            columns={category_list_columns}
+            className={classes.dnd_container}
+            onModifyFinish={modifyExposureSequence}
+            onCancel={() => setIsModify(false)}
+          />
+        ) : (
+          <ColumnTable
+            columns={category_list_columns}
+            data={
+              (query.category_type || "B") === "B" ? categoryList?.categoryBrandList : categoryList?.categoryNormalList
+            }
+            onRowClick={(row) =>
+              history.push({
+                pathname: `/product/category/${row.category_pk}`,
+                state: {
+                  category_type: query?.category_type || "B",
+                },
+              })
+            }
+            selection
+            onSelectionChange={setSelectedCategorys}
+          />
+        )}
       </Box>
 
-      <Grid container className={classes.table_footer}>
-        <ExcelExportButton
-          data={
-            (query.category_type || "B") === "B" ? categoryList?.categoryBrandList : categoryList?.categoryNormalList
-          }
-          columns={excel_columns}
-          path="Category"
-        />
+      {!isModify && (
+        <Grid container className={classes.table_footer}>
+          <ExcelExportButton
+            data={
+              (query.category_type || "B") === "B" ? categoryList?.categoryBrandList : categoryList?.categoryNormalList
+            }
+            columns={excel_columns}
+            path="Category"
+          />
 
-        <Box className={classes.search_section}>
-          <Box display="inline-block" mx={1} />
+          <Box className={classes.search_section}>
+            <Box display="inline-block" mx={1} />
 
-          <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} />
-        </Box>
-      </Grid>
+            <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} />
+          </Box>
+        </Grid>
+      )}
     </Box>
   );
 };

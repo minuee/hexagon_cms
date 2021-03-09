@@ -166,23 +166,14 @@ const MemberModal = ({ open, onClose, onSelect }) => {
   const member_columns = [
     { title: "이름", field: "name" },
     { title: "코드값", field: "special_code", width: 100 },
-    { title: "휴대폰번호", field: "phone", width: 160 },
     {
-      title: "구매액",
-      render: ({ total_amount }) => `${price(total_amount) || 0}원`,
-      cellStyle: { textAlign: "right" },
-    },
-    {
-      title: "리워드액",
-      render: ({ reward_point }) => `${price(reward_point) || 0}원`,
-      cellStyle: { textAlign: "right" },
-    },
-    { title: "등급", field: "grade_name", width: 100 },
-    {
-      title: "비고",
-      render: ({ approval, agent_code }) =>
-        approval ? agent_code && `영업사원코드: ${agent_code}` : "회원가입 미승인",
-      width: 160,
+      title: "유저 정보",
+      render: ({ member_pk }) => (
+        <Button color="primary" onClick={() => window.open(`${window.location.origin}/member/${member_pk}`)}>
+          정보
+        </Button>
+      ),
+      width: 100,
     },
   ];
 

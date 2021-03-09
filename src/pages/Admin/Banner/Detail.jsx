@@ -153,7 +153,20 @@ export const BannerDetail = ({ location }) => {
               <TableCell>링크대상선택</TableCell>
               <TableCell>
                 <Controller
-                  render={({ value }) => <Typography>{value ? value.name : "링크 대상을 선택해주세요"}</Typography>}
+                  render={({ value }) => (
+                    <Box display="flex" alignItems="center">
+                      {watch("inlink_type", "PRODUCT") === "PRODUCT" && value && (
+                        <ImageBox
+                          width="100px"
+                          height="100px"
+                          mr={1}
+                          display="inline-block"
+                          src={getFullImgURL(value?.thumb_img)}
+                        />
+                      )}
+                      <Typography display="inline">{value?.name || "적용 대상을 선택해주세요"}</Typography>
+                    </Box>
+                  )}
                   control={control}
                   name="target"
                   defaultValue={null}
@@ -292,6 +305,15 @@ const InlinkModal = ({ open, onClose, onSelect, inlinkType }) => {
           {carton_price !== 0 && <p>{`카톤(${price(carton_price)})`}</p>}
         </>
       ),
+    },
+    {
+      title: "상품 정보",
+      render: ({ product_pk }) => (
+        <Button color="primary" onClick={() => window.open(`${window.location.origin}/product/item/${product_pk}`)}>
+          정보
+        </Button>
+      ),
+      width: 100,
     },
   ];
   const category_columns = [

@@ -90,6 +90,10 @@ export const PopupRegister = () => {
     reset({ popup_gubun: _.upperFirst(popup_gubun) });
   }, [popup_gubun]);
 
+  useEffect(() => {
+    setValue("selected_target", null);
+  }, [watch("inlink_type", "EVENT")]);
+
   return (
     <Box>
       <Box mb={1}>
@@ -133,7 +137,18 @@ export const PopupRegister = () => {
               <TableCell>
                 <Controller
                   render={({ value }) => (
-                    <Typography>{value?.target_name || "이벤트 적용 대상을 선택해주세요"}</Typography>
+                    <Box display="flex" alignItems="center">
+                      {watch("inlink_type", "EVENT") === "PRODUCT" && value && (
+                        <ImageBox
+                          width="100px"
+                          height="100px"
+                          mr={1}
+                          display="inline-block"
+                          src={getFullImgURL(value?.thumb_img)}
+                        />
+                      )}
+                      <Typography display="inline">{value?.target_name || "적용 대상을 선택해주세요"}</Typography>
+                    </Box>
                   )}
                   name="selected_target"
                   control={control}
@@ -265,6 +280,15 @@ const EventModal = ({ open, onClose, onSelect }) => {
       width: 120,
     },
     { title: "종료여부", render: ({ termination_yn }) => (termination_yn ? "Y" : "N"), width: 100 },
+    {
+      title: "이벤트 정보",
+      render: ({ event_pk }) => (
+        <Button color="primary" onClick={() => window.open(`${window.location.origin}/event/${event_pk}`)}>
+          정보
+        </Button>
+      ),
+      width: 100,
+    },
   ];
 
   async function getEventList() {
@@ -360,6 +384,16 @@ const ProductModal = ({ open, onClose, onSelect }) => {
           {carton_price !== 0 && <p>{`카톤(${price(carton_price)})`}</p>}
         </>
       ),
+    },
+    {
+      title: "상품 정보",
+      render: ({ product_pk }) => (
+        <Button color="primary" onClick={() => window.open(`${window.location.origin}/product/item/${product_pk}`)}>
+          정보
+        </Button>
+      ),
+      width: 100,
+      disableClick: true,
     },
   ];
 

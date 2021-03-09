@@ -4,8 +4,8 @@ import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { apiObject } from "api";
 
-import { makeStyles, Box, Container, TextField, InputAdornment, Checkbox, FormControlLabel } from "@material-ui/core";
-import { PersonOutline, LockOutlined } from "@material-ui/icons";
+import { makeStyles, Box, Container, TextField, InputAdornment, IconButton } from "@material-ui/core";
+import { PersonOutline, LockOutlined, HighlightOff } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
 import { ImageBox } from "components";
 
@@ -27,7 +27,7 @@ const useStyles = makeStyles({
 export const SignIn = ({}) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { register, errors, handleSubmit } = useForm();
+  const { register, setValue, errors, handleSubmit } = useForm();
 
   async function signIn(data) {
     let resp = await apiObject.signIn(data);
@@ -62,6 +62,11 @@ export const SignIn = ({}) => {
                 <PersonOutline />
               </InputAdornment>
             ),
+            endAdornment: (
+              <IconButton onClick={() => setValue("user_id", "")}>
+                <HighlightOff />
+              </IconButton>
+            ),
           }}
           error={!!errors?.user_id}
         />
@@ -78,6 +83,11 @@ export const SignIn = ({}) => {
               <InputAdornment position="start">
                 <LockOutlined />
               </InputAdornment>
+            ),
+            endAdornment: (
+              <IconButton onClick={() => setValue("password", "")}>
+                <HighlightOff />
+              </IconButton>
             ),
           }}
           onKeyDown={(e) => e.key === "Enter" && handleSubmit(signIn)()}

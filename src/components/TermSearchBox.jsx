@@ -75,6 +75,15 @@ export const TermSearchBox = ({ term_start, term_end, onTermSearch }) => {
       >
         검색
       </Button>
+      <Button
+        ml={1}
+        onClick={() => {
+          setStartTerm(null);
+          setEndTerm(null);
+        }}
+      >
+        초기화
+      </Button>
     </Box>
   );
 };

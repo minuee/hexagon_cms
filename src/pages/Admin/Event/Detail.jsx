@@ -396,6 +396,15 @@ const ProductModal = ({ open, onClose, onSelect }) => {
       ),
       width: 320,
     },
+    {
+      title: "상품 정보",
+      render: ({ product_pk }) => (
+        <Button color="primary" onClick={() => window.open(`${window.location.origin}/product/item/${product_pk}`)}>
+          정보
+        </Button>
+      ),
+      width: 100,
+    },
   ];
 
   async function getProductList() {

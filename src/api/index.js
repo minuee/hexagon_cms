@@ -499,6 +499,20 @@ export const apiObject = {
       console.log({ e });
     }
   },
+  modifyCategorySequence: async ({ category_type, category_array }) => {
+    try {
+      let response = await axios.put(`/cms/category/seqmodify`, {
+        category_type,
+        category_array,
+      });
+
+      alert("카테고리 노출순서 수정을 완료했습니다");
+      return response;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+    }
+  },
 
   // Product
   getProductList: async ({ category_pk, page, paginate = 10, search_word }) => {
@@ -679,6 +693,20 @@ export const apiObject = {
       console.log({ e });
     }
   },
+  modifyProductSequence: async ({ category_pk, product_array }) => {
+    try {
+      let response = await axios.put(`/cms/product/seqmodify`, {
+        category_pk,
+        product_array,
+      });
+
+      alert("상품 노출순서 수정을 완료했습니다");
+      return response;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+    }
+  },
 
   // Event
   getEventList: async ({ page = 1, paginate = 10, search_word, filter_item = "now" }) => {
@@ -724,9 +752,15 @@ export const apiObject = {
       return {};
     }
   },
-  getEventProductData: async () => {
+  getEventProductData: async ({ page = 1, paginate = 10, category_pk }) => {
     try {
-      let data = await axios.get("/cms/product/all");
+      let data = await axios.get("/cms/product/all", {
+        params: {
+          page,
+          paginate,
+          category_pk,
+        },
+      });
       let ret = {
         product_list: data.data.data.productList,
         category_list: [
