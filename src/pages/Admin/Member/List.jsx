@@ -62,7 +62,7 @@ const member_list_columns = [
   },
   {
     title: "리워드잔액",
-    render: ({ reward_point }) => `${price(reward_point) || 0}원`,
+    render: ({ remain_reward }) => `${price(remain_reward) || 0}원`,
     cellStyle: { textAlign: "right" },
   },
   { title: "등급", field: "grade_name", width: 100 },
@@ -79,12 +79,12 @@ const excel_columns = [
   {
     label: "구매총액",
     value: "total_amount",
-    render: ({ total_amount }) => `${price(total_amount) || 0}원`,
+    // render: ({ total_amount }) => `${price(total_amount) || 0}원`,
   },
   {
     label: "리워드잔액",
-    value: "reward_point",
-    render: ({ reward_point }) => `${price(reward_point) || 0}원`,
+    value: "remain_reward",
+    // render: ({ remain_reward }) => `${price(remain_reward) || 0}원`,
   },
   { label: "등급", value: "grade_name" },
   {

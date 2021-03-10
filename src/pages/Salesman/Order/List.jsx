@@ -66,7 +66,7 @@ const excel_columns = [
   {
     label: "구매액",
     value: "total_amount",
-    render: ({ total_amount }) => `${price(total_amount)}원`,
+    // render: ({ total_amount }) => `${price(total_amount)}원`,
   },
   { label: "주문상태", value: "order_status_name" },
 ];

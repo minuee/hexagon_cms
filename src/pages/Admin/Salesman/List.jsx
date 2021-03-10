@@ -71,12 +71,12 @@ const excel_columns = [
   {
     label: "구매대행액",
     value: "total_amount",
-    render: ({ total_amount }) => `${price(total_amount)}원`,
+    // render: ({ total_amount }) => `${price(total_amount)}원`,
   },
   {
     label: "인센티브액",
     value: "total_incentive",
-    render: ({ total_incentive }) => `${price(total_incentive)}원`,
+    // render: ({ total_incentive }) => `${price(total_incentive)}원`,
   },
   {
     label: "상태",

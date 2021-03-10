@@ -70,17 +70,17 @@ const excel_columns = [
   {
     label: "낱개당",
     value: "each_price",
-    render: ({ each_price }) => price(each_price),
+    // render: ({ each_price }) => price(each_price),
   },
   {
     label: "박스당",
     value: "box_price",
-    render: ({ box_price }) => price(box_price),
+    render: ({ box_price }) => (box_price > 0 ? box_price : "-"),
   },
   {
     label: "카톤당",
     value: "carton_price",
-    render: ({ carton_price }) => price(carton_price),
+    render: ({ carton_price }) => (carton_price > 0 ? carton_price : "-"),
   },
 ];
 
