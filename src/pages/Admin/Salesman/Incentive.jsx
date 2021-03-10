@@ -15,13 +15,14 @@ const incentive_list_columns = [
   { title: "주문번호", field: "order_no", width: 240 },
   {
     title: "총구매대행액",
-    render: ({ total_price }) => `${price(total_price)}원`,
+    render: ({ discount_price, total_price }) =>
+      discount_price > 0 ? `${price(discount_price)}원` : `${price(total_price)}원`,
     cellStyle: { textAlign: "right" },
   },
   {
-    field: "incentive_amount",
     title: "인센티브대상금액",
-    render: ({ event_limit_price, total_price }) => (event_limit_price > 0 ? "0원" : `${price(total_price)}원`),
+    render: ({ event_limit_price, discount_price, total_price }) =>
+      event_limit_price > 0 ? "0원" : discount_price > 0 ? `${price(discount_price)}원` : `${price(total_price)}원`,
     cellStyle: { textAlign: "right" },
   },
 ];

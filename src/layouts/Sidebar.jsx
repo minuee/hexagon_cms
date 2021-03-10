@@ -58,6 +58,10 @@ const salesman_page = [
     path: `/member`,
   },
   {
+    label: `회원주문내역`,
+    path: `/order`,
+  },
+  {
     label: `인센티브내역`,
     path: `/incentive`,
   },

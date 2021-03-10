@@ -272,10 +272,19 @@ export const apiObject = {
   },
 
   // Order
-  getOrderList: async ({ page = 1, paginate = 10, search_word, term_start, term_end, sort_item, sort_type }) => {
+  getOrderList: async ({
+    page = 1,
+    paginate = 10,
+    search_word,
+    term_start,
+    term_end,
+    sort_item,
+    sort_type,
+    special_code,
+  }) => {
     try {
       let data = await axios.get("/cms/order/list", {
-        params: { page, paginate, search_word, term_start, term_end, sort_item, sort_type },
+        params: { page, paginate, search_word, term_start, term_end, sort_item, sort_type, special_code },
       });
       let ret = data.data.data.orderList;
 

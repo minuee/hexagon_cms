@@ -21,6 +21,7 @@ import { HighlightOff, Close } from "@material-ui/icons";
 import { DatePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
 import { RowTable, ColumnTable, Pagination, SearchBox } from "components";
+import { TmpColumnTable } from "components/TmpColumnTable";
 
 const useStyles = makeStyles((theme) => ({
   modal_close_icon: {
@@ -231,10 +232,6 @@ const MemberModal = ({ open, onClose, onSelect }) => {
     getMemberList();
   }, [listContext.page, listContext.search_word]);
 
-  useEffect(() => {
-    console.log(selectedMembers);
-  }, [selectedMembers]);
-
   return (
     <Dialog maxWidth="md" fullWidth open={open} onClose={onClose} onBackdropClick={onClose} onEnter={handleOnEnter}>
       <IconButton className={classes.modal_close_icon} onClick={onClose}>
@@ -250,7 +247,9 @@ const MemberModal = ({ open, onClose, onSelect }) => {
           <SearchBox defaultValue="" placeholder="회원검색" onSearch={handleContextChange} />
         </Box>
 
-        <ColumnTable
+        <ColumnTable columns={member_columns} data={memberList} selection onSelectionChange={setSelectedMembers} />
+        {/* <TmpColumnTable columns={member_columns} data={memberList} showCheckbox selection_key="member_pk" /> */}
+        {/* <ColumnTable
           columns={member_columns}
           data={memberList}
           selection
@@ -264,7 +263,7 @@ const MemberModal = ({ open, onClose, onSelect }) => {
               checked: _.some(selectedMembers, ["member_pk", row.member_pk]),
             }),
           }}
-        />
+        /> */}
 
         <Box py={4} position="relative" display="flex" alignItems="center" justifyContent="flex-end">
           <Pagination

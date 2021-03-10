@@ -57,6 +57,8 @@ export const IncentiveList = ({ location }) => {
   const [incentiveList, setIncentiveList] = useState();
 
   async function getIncentiveList() {
+    if (!member.member_pk) return;
+
     let data = await apiObject.getSalesmanDetail({ member_pk: member.member_pk });
     setIncentiveList(data.incentive);
   }
@@ -72,7 +74,7 @@ export const IncentiveList = ({ location }) => {
 
   useEffect(() => {
     getIncentiveList();
-  }, []);
+  }, [member]);
 
   return (
     <Box>

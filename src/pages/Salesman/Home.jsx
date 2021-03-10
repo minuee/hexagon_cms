@@ -58,19 +58,19 @@ export const SalesmanHome = () => {
   const [userPurchaseList, setUserPurchaseList] = useState();
 
   async function getAnalisysData() {
+    if (!member.special_code) return;
+
     let data = await apiObject.getSalesmanAnalisysData({
       special_code: member.special_code,
     });
 
     setUserPurchaseList(data.rank_data);
     setDailySales(data.today_sales?.daily_sales);
-
-    console.log(data.today_sales?.daily_sales);
   }
 
   useEffect(() => {
     getAnalisysData();
-  }, []);
+  }, [member]);
 
   return (
     <Box>

@@ -21,6 +21,7 @@ import { BannerList, BannerDetail } from "./pages/Admin/Banner";
 
 import { SalesmanHome } from "./pages/Salesman/Home";
 import { ManageMemberList, ManageMemberDetail } from "./pages/Salesman/Member";
+import { MemberOrderList, MemberOrderDetail } from "./pages/Salesman/Order";
 import { IncentiveList, IncentiveDetail, UserPurchaseDetail } from "./pages/Salesman/Incentive";
 import { Setting } from "./pages/Salesman/Setting";
 
@@ -111,6 +112,9 @@ const SalesmanRoutes = () => {
 
         <Route exact path="/member/:member_pk" component={ManageMemberDetail} />
         <Route path="/member" component={ManageMemberList} />
+
+        <Route exact path="/order/:order_pk" component={MemberOrderDetail} />
+        <Route path="/order" component={MemberOrderList} />
 
         <Route exact path="/incentive/:sales_month/:order_pk" component={UserPurchaseDetail} />
         <Route exact path="/incentive/:sales_month" component={IncentiveDetail} />

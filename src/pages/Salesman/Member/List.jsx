@@ -48,6 +48,8 @@ export const ManageMemberList = ({ location }) => {
   const [memberList, setMemberList] = useState();
 
   async function getMemberList() {
+    if (!member.special_code) return;
+
     let data = await apiObject.getSalsemanClientList({
       special_code: member.special_code,
       ...query,
@@ -66,7 +68,7 @@ export const ManageMemberList = ({ location }) => {
 
   useEffect(() => {
     getMemberList();
-  }, [query.page, query.search_word, query.sort_item, query.sort_type]);
+  }, [member, query.page, query.search_word, query.sort_item, query.sort_type]);
 
   return (
     <Box>
