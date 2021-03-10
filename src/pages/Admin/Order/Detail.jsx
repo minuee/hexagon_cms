@@ -404,7 +404,7 @@ export const OrderDetail = () => {
         <TableRow>
           <TableCell>미출고시 조치방법</TableCell>
           <TableCell>
-            {orderDetail?.orderBase?.refund_type === "Product" ? "상품 입고시 배송" : "결제수단으로 환불"}
+            {orderDetail?.orderBase?.refund_type === "Product" ? "상품 입고시 배송" : "포인트로 환급"}
           </TableCell>
         </TableRow>
       </RowTable>

@@ -54,13 +54,13 @@ export const IncentiveList = ({ location }) => {
   const { member } = useSelector((state) => state.reducer);
   const query = qs.parse(location.search);
 
-  const [incentiveList, setIncentiveList] = useState();
+  const [incentiveData, setIncentiveData] = useState();
 
   async function getIncentiveList() {
     if (!member.member_pk) return;
 
     let data = await apiObject.getSalesmanDetail({ member_pk: member.member_pk });
-    setIncentiveList(data.incentive);
+    setIncentiveData(data);
   }
 
   function handleQueryChange(q, v) {
@@ -78,14 +78,18 @@ export const IncentiveList = ({ location }) => {
 
   return (
     <Box>
-      <Typography display="inline" variant="h5" fontWeight="500">
-        월별 인센티브 현황
-      </Typography>
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Typography display="inline" variant="h5" fontWeight="500">
+          월별 인센티브 현황
+        </Typography>
+
+        <Typography display="inline">누적 인센티브액: {price(incentiveData?.total_incentive)}원</Typography>
+      </Box>
 
       <Box mt={2} mb={3}>
         <ColumnTable
           columns={incentive_list_columns}
-          data={incentiveList}
+          data={incentiveData?.incentive}
           onRowClick={(row) => history.push(`/incentive/${row.sales_month}`)}
         />
       </Box>

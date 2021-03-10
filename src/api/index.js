@@ -236,6 +236,24 @@ export const apiObject = {
       return [];
     }
   },
+  getMemberOrderList: async ({ member_pk, page = 1, paginate = 10 }) => {
+    try {
+      let data = await axios.get(`/v1/order/list/${member_pk}`, {
+        params: { page, paginate },
+      });
+
+      let ret = data.data.data.orderList;
+      // ret.forEach((item) => {
+      //   item.reward_type = item.reward_type || "-";
+      // });
+
+      return ret;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+      return [];
+    }
+  },
   modifyMember: async ({
     member_pk,
     company_type,

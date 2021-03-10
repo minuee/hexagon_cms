@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { price, getFullImgURL } from "common";
 import { apiObject } from "api";
 import dayjs from "dayjs";
+import qs from "query-string";
 
-import { Box, makeStyles, TableRow, TableCell } from "@material-ui/core";
+import { Box, makeStyles, TableRow, TableCell, Tab, Tabs } from "@material-ui/core";
 import { Typography } from "components/materialui";
 import { RowTable, ColumnTable, Pagination, ImageBox } from "components";
+import { UpdateSharp } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   header_box: {
@@ -70,6 +72,23 @@ const grade_benefits = {
   },
 };
 
+const order_history_column = [
+  {
+    title: "주문일자",
+    render: ({ reg_dt }) => dayjs.unix(reg_dt).format("YYYY-MM-DD HH:mm"),
+    width: 240,
+  },
+  {
+    title: "구매액",
+    render: ({ total_amount }) => `${price(total_amount)}원`,
+    cellStyle: { textAlign: "right" },
+  },
+  {
+    title: "주문상태",
+    field: "order_status_name",
+    width: 160,
+  },
+];
 const reward_history_column = [
   {
     title: "일자",
@@ -77,16 +96,16 @@ const reward_history_column = [
     width: 240,
   },
   {
-    title: "내용",
-    render: ({ reward_gubun, order_pk, content }) =>
-      reward_gubun === "m" && order_pk > 0 ? "주문포인트 사용" : content,
-    width: 160,
-  },
-  {
     title: "리워드액",
     render: ({ reward_point, reward_gubun }) =>
       price(reward_point) ? `${reward_gubun === "m" ? "-" : "+"}${price(reward_point)}원` : "-",
     cellStyle: { textAlign: "right" },
+  },
+  {
+    title: "내용",
+    render: ({ reward_gubun, order_pk, content }) =>
+      reward_gubun === "m" && order_pk > 0 ? "주문포인트 사용" : content,
+    width: 160,
   },
 ];
 
@@ -244,35 +263,68 @@ export const ManageMemberDetail = () => {
         )}
       </RowTable>
 
-      <MemberRewardTable member_pk={member_pk} />
+      <SubTable mt={4} member_pk={member_pk} />
     </Box>
   );
 };
 
-const MemberRewardTable = ({ member_pk }) => {
-  const [rewardList, setRewardList] = useState();
-  const [rewardPage, setRewardPage] = useState();
+const SubTable = ({ member_pk, ...props }) => {
+  const history = useHistory();
+  const location = useLocation();
+  const query = qs.parse(location.search);
 
-  async function getMemberReward() {
-    let data = await apiObject.getMemberRewardList({ member_pk, page: rewardPage });
-    setRewardList(data);
+  const [subTableData, setSubTableData] = useState();
+
+  async function getSubTableData() {
+    if (!member_pk) return;
+
+    let data;
+
+    switch (query.tab || "order") {
+      case "order":
+        data = await apiObject.getMemberOrderList({ member_pk, ...query });
+        break;
+      case "reward":
+        data = await apiObject.getMemberRewardList({ member_pk, ...query });
+        break;
+    }
+
+    setSubTableData(data);
+  }
+
+  function handleQueryChange(update) {
+    if (!update.hasOwnProperty("page")) {
+      update.page = 1;
+    }
+
+    Object.assign(query, update);
+    history.push(`/member/${member_pk}/?` + qs.stringify(query));
   }
 
   useEffect(() => {
-    getMemberReward();
-  }, [member_pk, rewardPage]);
+    getSubTableData();
+  }, [member_pk, query.tab, query.page]);
 
   return (
-    <>
-      <Box my={2}>
-        <Typography fontWeight="500">리워드 히스토리</Typography>
-      </Box>
+    <Box {...props}>
+      <Tabs value={query?.tab || "order"} onChange={(e, v) => handleQueryChange({ tab: v })}>
+        <Tab value="order" label="주문내역" />
+        <Tab value="reward" label="리워드 히스토리" />
+      </Tabs>
 
-      <ColumnTable columns={reward_history_column} data={rewardList} />
+      <ColumnTable
+        columns={query.tab === "reward" ? reward_history_column : order_history_column}
+        data={subTableData}
+        onRowClick={(row) => (query.tab || "order") === "order" && history.push(`/order/${row.order_pk}`)}
+      />
 
       <Box position="relative" py={6}>
-        <Pagination page={rewardPage} setPage={setRewardPage} count={Math.ceil(+rewardList?.[0]?.total / 10)} />
+        <Pagination
+          page={query.page}
+          setPage={(q, v) => handleQueryChange({ page: v })}
+          count={Math.ceil(+subTableData?.[0]?.total / 10)}
+        />
       </Box>
-    </>
+    </Box>
   );
 };
