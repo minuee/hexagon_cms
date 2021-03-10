@@ -20,6 +20,7 @@ const useStyles = makeStyles((theme) => ({
   },
   table_footer: {
     position: "relative",
+    height: theme.spacing(5),
     display: "flex",
     alignItems: "center",
     justifyContent: "flex-end",
@@ -121,36 +122,7 @@ export const CouponList = ({ location }) => {
       </Box>
 
       <Grid container className={classes.table_footer}>
-        {/* <Button  p={1}>
-          <DescriptionOutlined />
-          엑셀저장
-        </Button> */}
-
-        <Pagination
-          page={query.page || 1}
-          setPage={handleQueryChange}
-          // count={10}
-          count={Math.ceil(+couponList?.[0]?.total / 10)}
-        />
-
-        {/* <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} /> */}
-
-        {/* <TextField
-          name="search_word"
-          variant="outlined"
-          value={searchWord}
-          onChange={(e) => setSearchWord(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleQueryChange("search_word", searchWord)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <IconButton onClick={() => handleQueryChange("search_word", searchWord)}>
-                  <Search />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        /> */}
+        <Pagination page={query.page} setPage={handleQueryChange} count={Math.ceil(+couponList?.[0]?.total / 10)} />
       </Grid>
     </Box>
   );

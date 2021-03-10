@@ -20,6 +20,7 @@ import {
   Radio,
   Dialog,
   IconButton,
+  Checkbox,
 } from "@material-ui/core";
 import { EventNote, HighlightOff, Close } from "@material-ui/icons";
 import { DateTimePicker } from "@material-ui/pickers";
@@ -79,7 +80,7 @@ export const EventDetail = () => {
   const history = useHistory();
   const { event_pk } = useParams();
   const { control, register, reset, setValue, watch, handleSubmit } = useForm();
-  const { fields, append, remove } = useFieldArray({
+  const { fields, remove } = useFieldArray({
     name: "event_product",
     control: control,
   });
@@ -169,13 +170,15 @@ export const EventDetail = () => {
     history.push("/event");
   }
 
-  function handleAppendProduct(selected_list) {
-    let tmp = _.differenceBy(selected_list, fields, "product_pk");
-    tmp.forEach((item) => {
-      item.amount = "";
+  function handleUpdateTarget(selected_list) {
+    let tmp = [];
+
+    selected_list.forEach((item) => {
+      let { id, ...others } = item;
+      tmp.push(others);
     });
 
-    append(tmp);
+    setValue("event_product", tmp);
   }
 
   useEffect(() => {
@@ -338,7 +341,12 @@ export const EventDetail = () => {
         </TableRow>
       </RowTable>
 
-      <ProductModal open={isModalOpen} onClose={() => setIsModalOpen(false)} onSelect={handleAppendProduct} />
+      <ProductModal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSelect={handleUpdateTarget}
+        selectedDefault={fields}
+      />
 
       <Box mt={4} textAlign="center">
         <Button mr={2} onClick={() => history.push("/event")}>
@@ -371,13 +379,7 @@ export const EventDetail = () => {
   );
 };
 
-const ProductModal = ({ open, onClose, onSelect }) => {
-  // const [categoryList, setCategoryList] = useState([]);
-  // const [productList, setProductList] = useState();
-  // const [listContext, setListContext] = useState({
-  //   page: 1,
-  //   search_word: "",
-  // });
+const ProductModal = ({ open, onClose, onSelect, selectedDefault }) => {
   const classes = useStyles();
 
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -386,6 +388,16 @@ const ProductModal = ({ open, onClose, onSelect }) => {
   const [curCategory, setCurCategory] = useState("");
 
   const product_columns = [
+    {
+      title: "",
+      render: (row) => (
+        <Checkbox
+          checked={_.some(selectedProducts, ["product_pk", row.product_pk])}
+          onClick={() => handleSelectRow(row)}
+        />
+      ),
+      width: 80,
+    },
     {
       title: "상품 이미지",
       render: ({ thumb_img }) => (
@@ -421,6 +433,20 @@ const ProductModal = ({ open, onClose, onSelect }) => {
     setProductList(data.product_list);
   }
 
+  function handleSelectRow(row) {
+    let tmp = [];
+    if (_.some(selectedProducts, ["product_pk", row.product_pk])) {
+      tmp = _.differenceBy(selectedProducts, [row], "product_pk");
+    } else {
+      tmp = [...selectedProducts, row];
+    }
+
+    setSelectedProducts(tmp);
+  }
+  function handleOnSelect() {
+    onSelect(selectedProducts);
+    onClose();
+  }
   function handleCategoryChange(category_pk) {
     setCurCategory(category_pk);
 
@@ -431,42 +457,29 @@ const ProductModal = ({ open, onClose, onSelect }) => {
       setProductList(tmp);
     }
   }
-  function handleOnSelect() {
-    onSelect(selectedProducts);
-    onClose();
-  }
-
-  // function handleContextChange(name, value) {
-  //   let tmp = {
-  //     ...listContext,
-  //     [name]: value,
-  //   };
-  //   if (name != "page") {
-  //     tmp.page = 1;
-  //   }
-
-  //   setListContext(tmp);
-  // }
-
   function handleEnter() {
     getProductList();
     setCurCategory("");
-    // setListContext({
-    //   page: 1,
-    //   search_word: "",
-    // });
+  }
+  function handleClose() {
+    onClose();
+    setSelectedProducts(selectedDefault || []);
   }
 
-  // useEffect(() => {
-  //   handleContextChange("category_pk", "");
-  // }, [watch("category_type")]);
-  // useEffect(() => {
-  //   getProductList();
-  // }, [listContext]);
+  useEffect(() => {
+    setSelectedProducts(selectedDefault || []);
+  }, [selectedDefault]);
 
   return (
-    <Dialog maxWidth="md" fullWidth open={open} onClose={onClose} onBackdropClick={onClose} onEnter={handleEnter}>
-      <IconButton className={classes.modal_close_icon} onClick={onClose}>
+    <Dialog
+      maxWidth="md"
+      fullWidth
+      open={open}
+      onClose={handleClose}
+      onBackdropClick={handleClose}
+      onEnter={handleEnter}
+    >
+      <IconButton className={classes.modal_close_icon} onClick={handleClose}>
         <Close fontSize="large" />
       </IconButton>
 
@@ -545,7 +558,7 @@ const ProductModal = ({ open, onClose, onSelect }) => {
           <SearchBox defaultValue={listContext?.search_word} onSearch={handleContextChange} />
         </Box> */}
 
-        <ColumnTable columns={product_columns} data={productList} selection onSelectionChange={setSelectedProducts} />
+        <ColumnTable columns={product_columns} data={productList} />
 
         {/* <Box py={4} position="relative" display="flex" alignItems="center" justifyContent="flex-end">
           <Pagination

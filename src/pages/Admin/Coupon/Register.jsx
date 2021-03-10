@@ -16,12 +16,12 @@ import {
   TableRow,
   TableCell,
   Dialog,
+  Checkbox,
 } from "@material-ui/core";
 import { HighlightOff, Close } from "@material-ui/icons";
 import { DatePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
 import { RowTable, ColumnTable, Pagination, SearchBox } from "components";
-import { TmpColumnTable } from "components/TmpColumnTable";
 
 const useStyles = makeStyles((theme) => ({
   modal_close_icon: {
@@ -34,8 +34,8 @@ const useStyles = makeStyles((theme) => ({
 
 export const CouponRegister = () => {
   const history = useHistory();
-  const { control, register, handleSubmit, errors } = useForm();
-  const { fields, append, remove } = useFieldArray({
+  const { control, register, setValue, handleSubmit, errors } = useForm();
+  const { fields, remove } = useFieldArray({
     control,
     name: "selected_user",
   });
@@ -65,9 +65,15 @@ export const CouponRegister = () => {
     history.push("/coupon");
   }
 
-  function handleAppendTarget(member_array) {
-    let tmp = _.differenceBy(member_array, fields, "member_pk");
-    append(tmp);
+  function handleUpdateTarget(member_array) {
+    let tmp = [];
+
+    member_array.forEach((item) => {
+      let { id, ...others } = item;
+      tmp.push(others);
+    });
+
+    setValue("selected_user", tmp);
   }
 
   return (
@@ -170,12 +176,17 @@ export const CouponRegister = () => {
         </Button>
       </Box>
 
-      <MemberModal open={isMemberModalOpen} onClose={() => setIsMemberModalOpen(false)} onSelect={handleAppendTarget} />
+      <MemberModal
+        open={isMemberModalOpen}
+        onClose={() => setIsMemberModalOpen(false)}
+        onSelect={handleUpdateTarget}
+        selectedDefault={fields}
+      />
     </Box>
   );
 };
 
-const MemberModal = ({ open, onClose, onSelect }) => {
+const MemberModal = ({ open, onClose, onSelect, selectedDefault }) => {
   const classes = useStyles();
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [memberList, setMemberList] = useState();
@@ -185,6 +196,16 @@ const MemberModal = ({ open, onClose, onSelect }) => {
   });
 
   const member_columns = [
+    {
+      title: "",
+      render: (row) => (
+        <Checkbox
+          checked={_.some(selectedMembers, ["member_pk", row.member_pk])}
+          onClick={() => handleSelectRow(row)}
+        />
+      ),
+      width: 80,
+    },
     { title: "이름", field: "name" },
     { title: "코드값", field: "special_code", width: 100 },
     {
@@ -201,10 +222,21 @@ const MemberModal = ({ open, onClose, onSelect }) => {
   async function getMemberList() {
     let data = await apiObject.getMemberList({
       ...listContext,
+      is_approval: true,
     });
     setMemberList(data);
   }
 
+  function handleSelectRow(row) {
+    let tmp = [];
+    if (_.some(selectedMembers, ["member_pk", row.member_pk])) {
+      tmp = _.differenceBy(selectedMembers, [row], "member_pk");
+    } else {
+      tmp = [...selectedMembers, row];
+    }
+
+    setSelectedMembers(tmp);
+  }
   function handleOnSelect() {
     onSelect(selectedMembers);
     onClose();
@@ -215,6 +247,10 @@ const MemberModal = ({ open, onClose, onSelect }) => {
       page: 1,
       search_word: "",
     });
+  }
+  function handleClose() {
+    onClose();
+    setSelectedMembers(selectedDefault || []);
   }
   function handleContextChange(name, value) {
     let tmp = {
@@ -232,9 +268,20 @@ const MemberModal = ({ open, onClose, onSelect }) => {
     getMemberList();
   }, [listContext.page, listContext.search_word]);
 
+  useEffect(() => {
+    setSelectedMembers(selectedDefault || []);
+  }, [selectedDefault]);
+
   return (
-    <Dialog maxWidth="md" fullWidth open={open} onClose={onClose} onBackdropClick={onClose} onEnter={handleOnEnter}>
-      <IconButton className={classes.modal_close_icon} onClick={onClose}>
+    <Dialog
+      maxWidth="md"
+      fullWidth
+      open={open}
+      onClose={handleClose}
+      onBackdropClick={handleClose}
+      onEnter={handleOnEnter}
+    >
+      <IconButton className={classes.modal_close_icon} onClick={handleClose}>
         <Close fontSize="large" />
       </IconButton>
 
@@ -243,27 +290,15 @@ const MemberModal = ({ open, onClose, onSelect }) => {
           쿠폰 대상자 검색
         </Typography>
 
-        <Box my={2}>
+        <Box my={2} display="flex" justifyContent="space-between" alignItems="flex-end">
           <SearchBox defaultValue="" placeholder="회원검색" onSearch={handleContextChange} />
+
+          <Button color="primary" onClick={handleOnSelect}>
+            선택
+          </Button>
         </Box>
 
-        <ColumnTable columns={member_columns} data={memberList} selection onSelectionChange={setSelectedMembers} />
-        {/* <TmpColumnTable columns={member_columns} data={memberList} showCheckbox selection_key="member_pk" /> */}
-        {/* <ColumnTable
-          columns={member_columns}
-          data={memberList}
-          selection
-          onSelectionChange={(data) => {
-            console.log(data);
-            // if(_.some(selectedMembers))
-            setSelectedMembers(_.unionBy(selectedMembers, data, "member_pk"));
-          }}
-          options={{
-            selectionProps: (row) => ({
-              checked: _.some(selectedMembers, ["member_pk", row.member_pk]),
-            }),
-          }}
-        /> */}
+        <ColumnTable columns={member_columns} data={memberList} />
 
         <Box py={4} position="relative" display="flex" alignItems="center" justifyContent="flex-end">
           <Pagination
@@ -271,9 +306,6 @@ const MemberModal = ({ open, onClose, onSelect }) => {
             setPage={handleContextChange}
             count={Math.ceil(memberList?.[0]?.total / 10)}
           />
-          <Button color="primary" onClick={handleOnSelect}>
-            선택
-          </Button>
         </Box>
       </Box>
     </Dialog>
