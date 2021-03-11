@@ -60,6 +60,16 @@ export const NoticeList = ({ location }) => {
 
     setNoticeList(data);
   }
+  async function sendNoticePush(notice) {
+    if (!window.confirm("선택한 공지에 대해 푸시알림을 발송하시겠습니까?")) return;
+
+    await apiObject.sendPushMessage({
+      title: notice.title,
+      comment: notice.content,
+      routeName: "NoticeDetailStack",
+      routeIdx: notice.notice_pk,
+    });
+  }
 
   function handleQueryChange(q, v) {
     if (q !== "page") {

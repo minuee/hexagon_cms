@@ -127,6 +127,22 @@ export const apiObject = {
       console.log({ e });
     }
   },
+  sendPushMessage: async ({ title, comment, routeName, routeIdx }) => {
+    try {
+      let response = await axios.post(`/cms/pushsend`, {
+        title,
+        comment,
+        routeName,
+        routeIdx,
+      });
+
+      alert("알림을 발송했습니다");
+      return response;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+    }
+  },
 
   // Home
   getAnalisysData: async ({ member_pk = 1 }) => {

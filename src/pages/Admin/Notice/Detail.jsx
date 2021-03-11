@@ -141,7 +141,7 @@ export const NoticeDetail = () => {
             <Typography>1:1비율의 이미지를 업로드하는 것이 권장됩니다</Typography>
           </TableCell>
         </TableRow>
-        <TableRow>
+        {/* <TableRow>
           <TableCell>Push 발송 여부</TableCell>
           <TableCell>
             <Controller
@@ -158,7 +158,7 @@ export const NoticeDetail = () => {
               defaultValue={false}
             />
           </TableCell>
-        </TableRow>
+        </TableRow> */}
       </RowTable>
 
       <Box mt={4} display="flex" justifyContent="center" alignItems="flex-start">
