@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { apiObject } from "api";
 import { price } from "common";
@@ -16,7 +16,7 @@ import {
   FormControlLabel,
 } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
-import { RowTable, ColumnTable, Pagination, Dropzone, ImageBox } from "components";
+import { RowTable, ColumnTable, Dropzone, ImageBox, Pagination } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header_box: {
@@ -96,14 +96,11 @@ const reward_history_column = [
 
 export const MemberDetail = () => {
   const classes = useStyles();
-  const history = useHistory();
   const { member_pk } = useParams();
   const { control, register, reset, setValue, watch, handleSubmit } = useForm();
   const cur_grade = grade_benefits[watch("grade_code")];
 
   const [memberInfo, setMemberInfo] = useState();
-  const [rewardList, setRewardList] = useState();
-  const [rewardPage, setRewardPage] = useState(1);
 
   async function getMemberDetail() {
     let data = await apiObject.getMemberDetail({ member_pk });
@@ -116,10 +113,6 @@ export const MemberDetail = () => {
       lisence_img: [],
     });
     setValue("lisence_img", [{ file: null, path: data.img_url }]);
-  }
-  async function getMemberReward() {
-    let data = await apiObject.getMemberRewardList({ member_pk, page: 1 });
-    setRewardList(data);
   }
 
   async function approveMember() {
@@ -152,7 +145,6 @@ export const MemberDetail = () => {
 
   useEffect(() => {
     getMemberDetail();
-    getMemberReward();
   }, [member_pk]);
 
   return (
@@ -374,14 +366,38 @@ export const MemberDetail = () => {
         )}
       </Box>
 
-      <Box my={2}>
-        <Typography fontWeight="500">리워드 히스토리</Typography>
+      <SubTable member_pk={member_pk} />
+    </Box>
+  );
+};
+
+const SubTable = ({ member_pk }) => {
+  const history = useHistory();
+
+  const [rewardList, setRewardList] = useState();
+  const [rewardPage, setRewardPage] = useState(1);
+
+  async function getRewardList() {
+    let data = await apiObject.getMemberRewardList({ member_pk, page: rewardPage });
+    setRewardList(data);
+  }
+
+  useEffect(() => {
+    getRewardList();
+  }, [member_pk, rewardPage]);
+
+  return (
+    <Box>
+      <Typography fontWeight="500">리워드 히스토리</Typography>
+
+      <Box mt={2}>
+        <ColumnTable
+          columns={reward_history_column}
+          data={rewardList}
+          onRowClick={(row) => row?.order_pk != 0 && history.push(`/order/${row.order_pk}`)}
+        />
       </Box>
-      <ColumnTable
-        columns={reward_history_column}
-        data={rewardList}
-        onRowClick={(row) => row?.order_pk != 0 && history.push(`/order/${row.order_pk}`)}
-      />
+
       <Box position="relative" py={6}>
         <Pagination page={rewardPage} setPage={setRewardPage} count={Math.ceil(+rewardList?.[0]?.total / 10)} />
       </Box>

@@ -12,7 +12,7 @@ const admin_page = [
     path: `/`,
   },
   {
-    label: `유저관리`,
+    label: `회원관리`,
     path: `/member`,
   },
   {

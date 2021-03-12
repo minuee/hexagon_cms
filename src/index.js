@@ -6,7 +6,9 @@ import "react-app-polyfill/stable";
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
-import "./styles/font/index.css";
+
+import "styles/font/index.css";
+import "styles/global.css";
 
 import { Provider } from "react-redux";
 import { store } from "./redux";

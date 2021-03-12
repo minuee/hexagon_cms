@@ -407,11 +407,11 @@ const ProductModal = ({ open, onClose, onSelect, selectedDefault }) => {
     },
     { title: "상품명", field: "product_name", cellStyle: { textAlign: "left" } },
     {
-      title: "가격",
+      title: "낱개당 이벤트가격",
       render: ({ each_price, event_each_price }) => (
         <Typography fontWeight="500">
-          낱개 &#40;<s style={{ fontSize: "14px", color: "#888" }}>{price(each_price)}</s> &gt;{" "}
-          {price(event_each_price)}&#41;원
+          <s style={{ fontSize: "14px", color: "#888" }}>{price(each_price)}</s>
+          &nbsp;{price(event_each_price)}
         </Typography>
       ),
       width: 320,

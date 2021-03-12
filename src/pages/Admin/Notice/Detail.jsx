@@ -1,10 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import { apiObject } from "api";
 import dayjs from "dayjs";
 
-import { Box, TextField, InputAdornment, TableRow, TableCell, Checkbox, FormControlLabel } from "@material-ui/core";
+import { Box, TextField, InputAdornment, TableRow, TableCell } from "@material-ui/core";
 import { EventNote } from "@material-ui/icons";
 import { DateTimePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
@@ -15,9 +15,13 @@ export const NoticeDetail = () => {
   const { notice_pk } = useParams();
   const { control, register, reset, setValue, handleSubmit, errors } = useForm();
 
-  async function getNoticeDetail() {
-    let data = await apiObject.getNoticeDetail({ notice_pk });
+  const [pushHistory, setPushHistory] = useState([]);
 
+  async function getNoticeDetail() {
+    let ret = await apiObject.getNoticeDetail({ notice_pk });
+    setPushHistory(ret?.pushLog);
+
+    let data = ret?.noticeDetail;
     reset({
       ...data,
       start_dt: dayjs.unix(data.start_dt),
@@ -160,16 +164,17 @@ export const NoticeDetail = () => {
             <Button mx={2} color="secondary" onClick={removeNotice}>
               삭제
             </Button>
-            {/* <Box display="inline-block">
-              <Button  color="secondary" onClick={handleSendNotice}>
-                Push 발송
-              </Button>
-              <p style={{ fontFamily: "Montserrat", fontWeight: "ital,wght@1,300" }}>
-                최근발송: {dayjs.unix(1889883723).format("YYYY-MM-DD HH:mm")}
-              </p>
-            </Box> */}
           </>
         )}
+      </Box>
+
+      <Box mt={-6}>
+        <Typography>푸시알림 발송내역</Typography>
+        {pushHistory?.map((item, index) => (
+          <Box color="#777" mt={1} key={index}>
+            {dayjs.unix(item.reg_dt).format(`- YYYY-MM-DD HH:mm`)}
+          </Box>
+        ))}
       </Box>
     </Box>
   );

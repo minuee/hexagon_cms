@@ -253,8 +253,8 @@ export const OrderDetail = () => {
               <TableCell colSpan={3} align="right">
                 {item.discount_price > 0 ? (
                   <Typography>
-                    <s style={{ fontSize: "14px", color: "#888" }}>{price(item.total_price)}원</s> &gt;{" "}
-                    {price(item.discount_price)}원
+                    <s style={{ fontSize: "14px", color: "#888" }}>{price(item.total_price)}원</s>
+                    &nbsp;{price(item.discount_price)}원
                   </Typography>
                 ) : (
                   `${price(item.total_price)}원`
@@ -285,8 +285,8 @@ export const OrderDetail = () => {
                   <TableCell align="right">
                     {unit.event_price > 0 ? (
                       <Typography display="inline">
-                        <s style={{ fontSize: "14px", color: "#888" }}>{price(unit.price)}원</s> &gt;{" "}
-                        {price(unit.event_price)}원
+                        <s style={{ fontSize: "14px", color: "#888" }}>{price(unit.price)}원</s>
+                        &nbsp;{price(unit.event_price)}원
                       </Typography>
                     ) : (
                       `${price(unit.price)}원`

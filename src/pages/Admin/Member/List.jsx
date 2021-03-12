@@ -65,7 +65,11 @@ const member_list_columns = [
     render: ({ remain_reward }) => `${price(remain_reward) || 0}원`,
     cellStyle: { textAlign: "right" },
   },
-  { title: "등급", field: "grade_name", width: 100 },
+  {
+    title: "등급",
+    render: ({ approval, grade_name }) => (approval ? grade_name : "-"),
+    width: 100,
+  },
   {
     title: "비고",
     render: ({ approval, agent_code }) => (approval ? agent_code && `영업사원코드: ${agent_code}` : "회원가입 미승인"),

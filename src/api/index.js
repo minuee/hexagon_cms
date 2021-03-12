@@ -1176,7 +1176,7 @@ export const apiObject = {
   getNoticeDetail: async ({ notice_pk }) => {
     try {
       let data = await axios.get(`/cms/notice/view/${notice_pk}`);
-      let ret = data.data.data.noticeDetail;
+      let ret = data.data.data;
 
       return ret;
     } catch (e) {
