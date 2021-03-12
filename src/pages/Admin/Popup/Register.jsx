@@ -234,7 +234,7 @@ export const PopupRegister = () => {
         <TableRow>
           <TableCell>이미지</TableCell>
           <TableCell>
-            <Dropzone control={control} name="popup_img" width="250px" ratio={1.8} />
+            <Dropzone control={control} name="popup_img" width="200px" ratio={1.8} zoomable />
           </TableCell>
         </TableRow>
       </RowTable>

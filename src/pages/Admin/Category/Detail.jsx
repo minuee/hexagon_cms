@@ -225,16 +225,10 @@ export const CategoryDetail = ({ location }) => {
           )}
         </TableRow>
 
-        {/* <TableRow>
-          <TableCell>노출순위 {`(관리자 앱에서만 수정가능.)`}</TableCell>
-          <TableCell>
-            <Typography>12</Typography>
-          </TableCell>
-        </TableRow> */}
         <TableRow>
           <TableCell>로고 이미지</TableCell>
           <TableCell>
-            <Dropzone control={control} name="category_logo" width="90px" />
+            <Dropzone mb={1} control={control} name="category_logo" width="180px" zoomable />
             <Typography>1:1비율의 이미지를 업로드하는 것이 권장됩니다</Typography>
           </TableCell>
         </TableRow>

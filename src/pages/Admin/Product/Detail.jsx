@@ -199,28 +199,6 @@ export const ProductDetail = () => {
                   defaultValue={""}
                 />
               )}
-              {/* <Controller
-                as={
-                  <Select margin="dense"  displayEmpty>
-                    <MenuItem value="">카테고리 선택</MenuItem>
-                    {watch("category_type", "B") === "B" &&
-                      categoryList?.categoryBrandList.map((item, index) => (
-                        <MenuItem value={item.category_pk} key={index}>
-                          {item.category_name}
-                        </MenuItem>
-                      ))}
-                    {watch("category_type", "B") === "N" &&
-                      categoryList?.categoryNormalList.map((item, index) => (
-                        <MenuItem value={item.category_pk} key={index}>
-                          {item.category_name}
-                        </MenuItem>
-                      ))}
-                  </Select>
-                }
-                name="category_pk"
-                control={control}
-                defaultValue={""}
-              /> */}
             </Box>
           </TableCell>
         </TableRow>
@@ -447,38 +425,6 @@ export const ProductDetail = () => {
           </TableCell>
         </TableRow>
 
-        {/* <TableRow>
-          <TableCell>제조사</TableCell>
-          <TableCell>
-            <Controller
-              as={
-                <TextField select >
-                  <MenuItem value={1}>일반</MenuItem>
-                  <MenuItem value={2}>브랜드</MenuItem>
-                </TextField>
-              }
-              name="category_type"
-              control={control}
-              defaultValue={1}
-            />
-            <Box display="inline-block" ml={2}>
-              <Controller
-                as={
-                  <TextField select >
-                    <MenuItem value={1}>아릭스</MenuItem>
-                    <MenuItem value={2}>드라이팍</MenuItem>
-                    <MenuItem value={3}>라코로나</MenuItem>
-                    <MenuItem value={4}>클로린직</MenuItem>
-                    <MenuItem value={5}>톤키타</MenuItem>
-                  </TextField>
-                }
-                name="category_name"
-                control={control}
-                defaultValue={1}
-              />
-            </Box>
-          </TableCell>
-        </TableRow> */}
         <TableRow>
           <TableCell>재질</TableCell>
           <TableCell>
@@ -494,35 +440,18 @@ export const ProductDetail = () => {
         <TableRow>
           <TableCell>상품 대표 이미지</TableCell>
           <TableCell>
-            <Dropzone control={control} name="thumb_img" width="90px" ratio={1} minFiles={1} />
+            <Dropzone control={control} name="thumb_img" width="180px" ratio={1} minFiles={1} zoomable />
           </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>상품 설명 이미지</TableCell>
           <TableCell>
-            <Dropzone control={control} name="detail_img" width="90px" ratio={1} maxFiles={4} />
+            <Dropzone mb={1} control={control} name="detail_img" width="120px" ratio={1} maxFiles={4} zoomable />
             <Typography color="textSecondary">
               상품에 대한 상세한 설명 또는 브랜드에 관한 소개를 4개까지 이미지로 업로드해주세요.
             </Typography>
           </TableCell>
         </TableRow>
-
-        {/* <TableRow>
-          <TableCell>영업사원 인센티브</TableCell>
-          <TableCell>
-            <Controller
-              as={<TextField size="small"  type="number" />}
-              InputProps={{
-                endAdornment: "%",
-              }}
-              placeholder="가격 입력"
-              name="salesman_incentive"
-              control={control}
-              rules={{ required: true }}
-              defaultValue=""
-            />
-          </TableCell>
-        </TableRow> */}
         <TableRow>
           <TableCell>품절 여부</TableCell>
           <TableCell>

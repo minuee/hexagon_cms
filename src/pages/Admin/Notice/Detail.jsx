@@ -137,28 +137,10 @@ export const NoticeDetail = () => {
         <TableRow>
           <TableCell>이미지</TableCell>
           <TableCell>
-            <Dropzone control={control} name="img_url" width="90px" ratio={1} />
+            <Dropzone mb={1} control={control} name="img_url" width="180px" ratio={1} zoomable />
             <Typography>1:1비율의 이미지를 업로드하는 것이 권장됩니다</Typography>
           </TableCell>
         </TableRow>
-        {/* <TableRow>
-          <TableCell>Push 발송 여부</TableCell>
-          <TableCell>
-            <Controller
-              render={({ value, onChange }) => (
-                <FormControlLabel
-                  control={<Checkbox color="primary" />}
-                  label={notice_pk === "add" && "체크시 푸시알림이 발송됩니다"}
-                  checked={value}
-                  onChange={(e) => onChange(e.target.checked)}
-                />
-              )}
-              name="send_push"
-              control={control}
-              defaultValue={false}
-            />
-          </TableCell>
-        </TableRow> */}
       </RowTable>
 
       <Box mt={4} display="flex" justifyContent="center" alignItems="flex-start">

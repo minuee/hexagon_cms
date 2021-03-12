@@ -1,33 +1,37 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useFieldArray, Controller } from "react-hook-form";
 import { useDropzone } from "react-dropzone";
 import { getFullImgURL } from "common";
 
-import { Box, makeStyles } from "@material-ui/core";
-import { Add } from "@material-ui/icons";
+import { Box, makeStyles, IconButton } from "@material-ui/core";
+import { Add, Close } from "@material-ui/icons";
 import { Typography } from "components/materialui";
 import { RatioBox, ImageBox } from "components";
 
-const useStyles = makeStyles({
-  container: {
-    marginTop: "1rem",
-    width: "auto",
-    "& > *": {
-      marginRight: "1rem",
-      marginBottom: "1rem",
-    },
-  },
+import { DetailImageModal } from "./DetailImageModal";
 
-  image: {
-    "& img": {
-      objectFit: "contain",
-      objectPosition: "center center",
-    },
+const useStyles = makeStyles((theme) => ({
+  clear_button: {
+    position: "absolute",
+    cursor: "pointer",
+    bottom: theme.spacing(-1),
+    right: theme.spacing(-1),
   },
-});
+}));
 
-export const Dropzone = ({ control, name, width, ratio = 1, maxFiles = 1, minFiles = 0, readOnly }) => {
+export const Dropzone = ({
+  control,
+  name,
+  width,
+  ratio = 1,
+  maxFiles = 1,
+  minFiles = 0,
+  readOnly,
+  zoomable,
+  ...props
+}) => {
   const classes = useStyles();
+  const [initialSlide, setInitialSlide] = useState(null);
   const { fields, append, remove } = useFieldArray({
     control: control,
     name: name,
@@ -64,7 +68,7 @@ export const Dropzone = ({ control, name, width, ratio = 1, maxFiles = 1, minFil
   });
 
   return (
-    <Box className={classes.container}>
+    <Box {...props}>
       {fields.length < maxFiles && (
         <RatioBox
           width={width}
@@ -81,28 +85,39 @@ export const Dropzone = ({ control, name, width, ratio = 1, maxFiles = 1, minFil
 
       {fields?.map((item, index) => {
         return (
-          <Box display="flex" alignItems="center" key={item.id}>
-            <RatioBox
-              width={width}
-              ratio={ratio}
-              // border="solid 1px #dddddd"
-              onClick={readOnly ? undefined : () => remove(index)}
-            >
+          <Box mt={1} display="flex" alignItems="center" key={item.id}>
+            <RatioBox position="relative" width={width} ratio={ratio} border="solid 1px #dddddd">
               <Controller
                 render={() => (
-                  <ImageBox src={(item.file ? item.path : getFullImgURL(item.path)) || "/image/default.jpg"} />
+                  <ImageBox
+                    src={(item.file ? item.path : getFullImgURL(item.path)) || "/image/default.jpg"}
+                    // type="cover"
+                    clickable={zoomable}
+                    onClick={() => setInitialSlide(index)}
+                  />
                 )}
                 name={`${name}.[${index}]`}
                 control={control}
                 defaultValue={item}
               />
+
+              {!readOnly && (
+                <IconButton className={classes.clear_button} onClick={() => remove(index)}>
+                  <Close />
+                </IconButton>
+              )}
             </RatioBox>
+
             <Box ml={2}>
               <Typography>{item.file?.name}</Typography>
             </Box>
           </Box>
         );
       })}
+
+      {zoomable && (
+        <DetailImageModal data={fields} initialSlide={initialSlide} handleClose={() => setInitialSlide(null)} />
+      )}
     </Box>
   );
 };

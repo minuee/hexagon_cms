@@ -253,7 +253,7 @@ export const MemberDetail = () => {
         <TableRow>
           <TableCell>사업자등록증 첨부</TableCell>
           <TableCell>
-            <Dropzone control={control} name="lisence_img" width="90px" readOnly={!memberInfo?.approval_dt} />
+            <Dropzone control={control} name="lisence_img" width="180px" readOnly={!memberInfo?.approval_dt} zoomable />
           </TableCell>
         </TableRow>
       </RowTable>
