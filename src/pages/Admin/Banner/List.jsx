@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { apiObject } from "api";
+import { useQuery } from "hooks";
 import dayjs from "dayjs";
-import qs from "query-string";
 
 import { Grid, Box, makeStyles } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
@@ -64,12 +64,12 @@ const banner_list_columns = [
 export const BannerList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
-  const query = qs.parse(location.search);
+  const { getDataFunction, SearchBox } = useQuery(location);
 
   const [bannerList, setBannerList] = useState();
   const [isModify, setIsModify] = useState(false);
 
-  async function getBannerList() {
+  async function getBannerList(query) {
     let data = await apiObject.getBannerList({ ...query });
     setBannerList(data);
   }
@@ -89,25 +89,17 @@ export const BannerList = ({ location }) => {
     setIsModify(false);
   }
 
-  function registBanner() {
+  function toBannerRegist() {
     if (bannerList?.length >= 10) {
       window.alert("배너는 10개까지만 등록이 가능합니다");
     } else {
       history.push("/banner/add");
     }
   }
-  function handleQueryChange(q, v) {
-    if (q !== "page") {
-      query.page = 1;
-    }
-
-    query[q] = v;
-    history.push("/banner?" + qs.stringify(query));
-  }
 
   useEffect(() => {
-    getBannerList();
-  }, [query.search_word]);
+    getDataFunction(getBannerList);
+  }, []);
 
   return (
     <Box>
@@ -121,7 +113,7 @@ export const BannerList = ({ location }) => {
             <Button disabled={bannerList?.length <= 1} onClick={() => setIsModify(true)}>
               노출순서 수정
             </Button>
-            <Button ml={2} color="primary" onClick={registBanner}>
+            <Button ml={2} color="primary" onClick={toBannerRegist}>
               등록
             </Button>
           </Box>
@@ -155,7 +147,7 @@ export const BannerList = ({ location }) => {
       </Box>
 
       <Grid container className={classes.table_footer}>
-        {!isModify && <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} />}
+        {!isModify && <SearchBox />}
       </Grid>
     </Box>
   );

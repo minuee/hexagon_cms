@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { apiObject } from "api";
+import { useQuery } from "hooks";
 import dayjs from "dayjs";
-import qs from "query-string";
 
 import { Grid, Box, makeStyles } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination, SearchBox } from "components";
+import { ColumnTable, Pagination } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header_buttons: {
@@ -58,27 +58,18 @@ const event_list_columns = [
 export const EventList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
-  const query = qs.parse(location.search);
+  const { getDataFunction, SearchBox, FilterBox } = useQuery(location);
 
   const [eventList, setEventList] = useState();
 
-  async function getEventList() {
+  async function getEventList(query) {
     let data = await apiObject.getEventList({ ...query });
     setEventList(data);
   }
 
-  function handleQueryChange(q, v) {
-    if (q !== "page") {
-      query.page = 1;
-    }
-
-    query[q] = v;
-    history.push("/event?" + qs.stringify(query));
-  }
-
   useEffect(() => {
-    getEventList();
-  }, [query.page, query.filter_item, query.search_word]);
+    getDataFunction(getEventList);
+  }, []);
 
   return (
     <Box>
@@ -88,15 +79,7 @@ export const EventList = ({ location }) => {
         </Typography>
 
         <Box className={classes.header_buttons}>
-          {header_button_list.map((item, index) => {
-            let is_cur = item.value === (query.filter_item || "now");
-
-            return (
-              <Button variant="text" onClick={() => handleQueryChange("filter_item", item.value)} key={index}>
-                <Typography fontWeight={is_cur ? "700" : undefined}>{item.label}</Typography>
-              </Button>
-            );
-          })}
+          <FilterBox type="filter" button_list={header_button_list} default_item="now" />
 
           <Button color="primary" ml={3} onClick={() => history.push(`/event/add`)}>
             이벤트 등록
@@ -113,14 +96,9 @@ export const EventList = ({ location }) => {
       </Box>
 
       <Grid container className={classes.table_footer}>
-        {/* <Button variant="contained" p={1}>
-          <DescriptionOutlined />
-          엑셀저장
-        </Button> */}
+        <Pagination total={eventList?.[0]?.total} />
 
-        <Pagination page={query.page || 1} setPage={handleQueryChange} count={Math.ceil(+eventList?.[0]?.total / 10)} />
-
-        <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} />
+        <SearchBox />
       </Grid>
     </Box>
   );

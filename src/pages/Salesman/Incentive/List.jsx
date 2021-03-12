@@ -3,7 +3,6 @@ import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { price } from "common";
 import { apiObject } from "api";
-import qs from "query-string";
 
 import { Box, makeStyles } from "@material-ui/core";
 import { Typography } from "components/materialui";
@@ -52,7 +51,6 @@ export const IncentiveList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
   const { member } = useSelector((state) => state.reducer);
-  const query = qs.parse(location.search);
 
   const [incentiveData, setIncentiveData] = useState();
 
@@ -61,15 +59,6 @@ export const IncentiveList = ({ location }) => {
 
     let data = await apiObject.getSalesmanDetail({ member_pk: member.member_pk });
     setIncentiveData(data);
-  }
-
-  function handleQueryChange(q, v) {
-    if (q !== "page") {
-      query.page = 1;
-    }
-
-    query[q] = v;
-    history.push("/incentive" + qs.stringify(query));
   }
 
   useEffect(() => {

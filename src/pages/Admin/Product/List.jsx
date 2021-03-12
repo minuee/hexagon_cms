@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { price, getFullImgURL } from "common";
 import { apiObject } from "api";
-import qs from "query-string";
+import { price, getFullImgURL } from "common";
+import { useQuery } from "hooks";
 
 import { Grid, Box, makeStyles, Select, MenuItem } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination, SearchBox, ImageBox, ExcelExportButton, DnDList } from "components";
+import { ColumnTable, ImageBox, ExcelExportButton, DnDList } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -87,7 +87,7 @@ const excel_columns = [
 export const ProductList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
-  const query = qs.parse(location.search);
+  const { query, updateQuery, getDataFunction, Pagination, SearchBox } = useQuery(location);
 
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [productList, setProductList] = useState();
@@ -117,7 +117,7 @@ export const ProductList = ({ location }) => {
     },
   ];
 
-  async function getProductList() {
+  async function getProductList(query) {
     let data = await apiObject.getProductList({
       ...query,
     });
@@ -154,21 +154,9 @@ export const ProductList = ({ location }) => {
     setIsModify(false);
   }
 
-  function handleQueryChange(update) {
-    if (!update.hasOwnProperty("page")) {
-      update.page = 1;
-    }
-
-    Object.assign(query, update);
-    history.push("/product/item?" + qs.stringify(query));
-  }
-
-  useEffect(() => {
-    getProductList();
-  }, [query.page, query.search_word, query.category_pk]);
-
   useEffect(() => {
     getCategoryList();
+    getDataFunction(getProductList);
   }, []);
 
   return (
@@ -191,7 +179,7 @@ export const ProductList = ({ location }) => {
               margin="dense"
               value={query.category_type || ""}
               onChange={(e) =>
-                handleQueryChange({
+                updateQuery({
                   category_type: e.target.value,
                   category_pk: "",
                 })
@@ -206,7 +194,7 @@ export const ProductList = ({ location }) => {
               displayEmpty
               margin="dense"
               value={query.category_pk || ""}
-              onChange={(e) => handleQueryChange({ category_pk: e.target.value })}
+              onChange={(e) => updateQuery({ category_pk: e.target.value })}
             >
               <MenuItem value="">카테고리 분류</MenuItem>
               {(query.category_type || "") === "B" &&
@@ -264,13 +252,9 @@ export const ProductList = ({ location }) => {
         <Grid container className={classes.table_footer}>
           <ExcelExportButton data={productList} columns={excel_columns} path="Product" />
 
-          <Pagination
-            page={query.page || 1}
-            setPage={(q, v) => handleQueryChange({ [q]: v })}
-            count={Math.ceil(productList?.[0]?.total / 10)}
-          />
+          <Pagination total={productList?.[0]?.total} />
 
-          <SearchBox defaultValue={query.search_word} onSearch={(q, v) => handleQueryChange({ [q]: v })} />
+          <SearchBox />
         </Grid>
       )}
     </Box>

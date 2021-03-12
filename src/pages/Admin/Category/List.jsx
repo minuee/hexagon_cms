@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { getFullImgURL } from "common";
 import { apiObject } from "api";
-import qs from "query-string";
+import { getFullImgURL } from "common";
+import { useQuery } from "hooks";
 
 import { Grid, Box, makeStyles, InputAdornment, Select, MenuItem } from "@material-ui/core";
 import { Search } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, SearchBox, ImageBox, ExcelExportButton, DnDList } from "components";
+import { ColumnTable, ImageBox, ExcelExportButton, DnDList } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -84,7 +84,7 @@ const excel_columns = [
 export const CategoryList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
-  const query = qs.parse(location.search);
+  const { query, updateQuery, getDataFunction, SearchBox } = useQuery(location);
 
   const [categoryList, setCategoryList] = useState();
   const [selectedCategorys, setSelectedCategorys] = useState([]);
@@ -110,7 +110,7 @@ export const CategoryList = ({ location }) => {
     // { field: "exposure_priority", title: "노출순위" },
   ];
 
-  async function getCategoryList() {
+  async function getCategoryList(query) {
     let data = await apiObject.getCategoryList({ ...query });
     setCategoryList(data);
   }
@@ -143,14 +143,9 @@ export const CategoryList = ({ location }) => {
     setIsModify(false);
   }
 
-  function handleQueryChange(q, v) {
-    query[q] = v;
-    history.push("/product/category?" + qs.stringify(query));
-  }
-
   useEffect(() => {
-    getCategoryList();
-  }, [query.search_word]);
+    getDataFunction(getCategoryList);
+  }, []);
 
   return (
     <Box>
@@ -172,7 +167,7 @@ export const CategoryList = ({ location }) => {
               name="category_type"
               margin="dense"
               value={query.category_type || "B"}
-              onChange={(e) => handleQueryChange("category_type", e.target.value)}
+              onChange={(e) => updateQuery({ category_type: e.target.value })}
               startAdornment={
                 <InputAdornment position="start">
                   <Search />
@@ -240,7 +235,7 @@ export const CategoryList = ({ location }) => {
           <Box className={classes.search_section}>
             <Box display="inline-block" mx={1} />
 
-            <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} />
+            <SearchBox />
           </Box>
         </Grid>
       )}

@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { price, getFullImgURL } from "common";
 import { apiObject } from "api";
+import { price, getFullImgURL } from "common";
+import { useQuery } from "hooks";
 import dayjs from "dayjs";
-import qs from "query-string";
 
 import { Box, makeStyles, TableRow, TableCell, Tab, Tabs } from "@material-ui/core";
 import { Typography } from "components/materialui";
-import { RowTable, ColumnTable, Pagination, ImageBox, Dropzone } from "components";
+import { RowTable, ColumnTable, ImageBox, Dropzone } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header_box: {
@@ -274,11 +274,11 @@ export const ManageMemberDetail = () => {
 const SubTable = ({ member_pk, ...props }) => {
   const history = useHistory();
   const location = useLocation();
-  const query = qs.parse(location.search);
+  const { query, updateQuery, getDataFunction, Pagination } = useQuery(location);
 
   const [subTableData, setSubTableData] = useState();
 
-  async function getSubTableData() {
+  async function getSubTableData(query) {
     if (!member_pk) return;
 
     let data;
@@ -295,22 +295,13 @@ const SubTable = ({ member_pk, ...props }) => {
     setSubTableData(data);
   }
 
-  function handleQueryChange(update) {
-    if (!update.hasOwnProperty("page")) {
-      update.page = 1;
-    }
-
-    Object.assign(query, update);
-    history.push(`/member/${member_pk}/?` + qs.stringify(query));
-  }
-
   useEffect(() => {
-    getSubTableData();
-  }, [member_pk, query.tab, query.page]);
+    getDataFunction(getSubTableData);
+  }, [member_pk]);
 
   return (
     <Box {...props}>
-      <Tabs value={query?.tab || "order"} onChange={(e, v) => handleQueryChange({ tab: v })}>
+      <Tabs value={query?.tab || "order"} onChange={(e, v) => updateQuery({ tab: v })}>
         <Tab value="order" label="주문내역" />
         <Tab value="reward" label="리워드 히스토리" />
       </Tabs>
@@ -324,11 +315,7 @@ const SubTable = ({ member_pk, ...props }) => {
       </Box>
 
       <Box position="relative" py={6}>
-        <Pagination
-          page={query.page}
-          setPage={(q, v) => handleQueryChange({ page: v })}
-          count={Math.ceil(+subTableData?.[0]?.total / 10)}
-        />
+        <Pagination total={subTableData?.[0]?.total} />
       </Box>
     </Box>
   );

@@ -3,6 +3,7 @@ import { useHistory, useLocation, useParams } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { apiObject } from "api";
 import { price } from "common";
+import { useQuery } from "hooks";
 import dayjs from "dayjs";
 
 import {
@@ -373,18 +374,19 @@ export const MemberDetail = () => {
 
 const SubTable = ({ member_pk }) => {
   const history = useHistory();
+  const location = useLocation();
+  const { getDataFunction, Pagination } = useQuery(location);
 
   const [rewardList, setRewardList] = useState();
-  const [rewardPage, setRewardPage] = useState(1);
 
-  async function getRewardList() {
-    let data = await apiObject.getMemberRewardList({ member_pk, page: rewardPage });
+  async function getRewardList(query) {
+    let data = await apiObject.getMemberRewardList({ ...query, member_pk });
     setRewardList(data);
   }
 
   useEffect(() => {
-    getRewardList();
-  }, [member_pk, rewardPage]);
+    getDataFunction(getRewardList);
+  }, [member_pk]);
 
   return (
     <Box>
@@ -399,7 +401,7 @@ const SubTable = ({ member_pk }) => {
       </Box>
 
       <Box position="relative" py={6}>
-        <Pagination page={rewardPage} setPage={setRewardPage} count={Math.ceil(+rewardList?.[0]?.total / 10)} />
+        <Pagination total={rewardList?.[0]?.total} />
       </Box>
     </Box>
   );

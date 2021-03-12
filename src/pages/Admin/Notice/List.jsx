@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { apiObject } from "api";
+import { useQuery } from "hooks";
 import dayjs from "dayjs";
-import qs from "query-string";
 
 import { Grid, Box, makeStyles } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination, SearchBox } from "components";
+import { ColumnTable } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header_buttons: {
@@ -51,13 +51,12 @@ const notice_list_columns = [
 export const NoticeList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
-  const query = qs.parse(location.search);
+  const { getDataFunction, Pagination, SearchBox } = useQuery(location);
 
   const [noticeList, setNoticeList] = useState();
 
-  async function getNoticeList() {
+  async function getNoticeList(query) {
     let data = await apiObject.getNoticeList({ ...query });
-
     setNoticeList(data);
   }
   async function sendNoticePush(notice) {
@@ -71,18 +70,33 @@ export const NoticeList = ({ location }) => {
     });
   }
 
-  function handleQueryChange(q, v) {
-    if (q !== "page") {
-      query.page = 1;
-    }
-
-    query[q] = v;
-    history.push("/notice?" + qs.stringify(query));
-  }
+  const notice_list_columns = [
+    { title: "번호", field: "no", width: 80 },
+    {
+      title: "제목",
+      render: ({ title }) => (title?.length > 20 ? title?.substring(0, 20) : title),
+      cellStyle: { textAlign: "left" },
+    },
+    {
+      title: "등록일시",
+      render: ({ reg_dt }) => dayjs.unix(reg_dt).format("YYYY-MM-DD HH:mm"),
+      width: 240,
+    },
+    {
+      title: "",
+      render: (row) => (
+        <Button color="primary" onClick={() => sendNoticePush(row)}>
+          공지발송
+        </Button>
+      ),
+      width: 120,
+      disableClick: true,
+    },
+  ];
 
   useEffect(() => {
-    getNoticeList();
-  }, [query.page, query.search_word]);
+    getDataFunction(getNoticeList);
+  }, []);
 
   return (
     <Box>
@@ -105,18 +119,9 @@ export const NoticeList = ({ location }) => {
       </Box>
 
       <Grid container className={classes.table_footer}>
-        {/* <Button  p={1}>
-          <DescriptionOutlined />
-          엑셀저장
-        </Button> */}
+        <Pagination total={noticeList?.[0]?.total} />
 
-        <Pagination
-          page={query.page || 1}
-          setPage={handleQueryChange}
-          count={Math.ceil(+noticeList?.[0]?.total / 10)}
-        />
-
-        <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} />
+        <SearchBox />
       </Grid>
     </Box>
   );

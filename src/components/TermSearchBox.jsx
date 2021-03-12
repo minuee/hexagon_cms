@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import dayjs from "dayjs";
 
 import { makeStyles, Box, InputAdornment } from "@material-ui/core";
@@ -21,21 +21,23 @@ const useStyles = makeStyles((theme) => ({
 export const TermSearchBox = ({ term_start, term_end, onTermSearch }) => {
   const classes = useStyles();
 
-  const [startTerm, setStartTerm] = useState(null);
-  const [endTerm, setEndTerm] = useState(null);
+  const [termStart, setTermStart] = useState(term_start ? dayjs.unix(term_start) : null);
+  const [termEnd, setTermEnd] = useState(term_end ? dayjs.unix(term_end) : null);
 
-  useEffect(() => {
-    if (term_start) setStartTerm(dayjs.unix(term_start));
-  }, [term_start]);
-  useEffect(() => {
-    if (term_end) setEndTerm(dayjs.unix(term_end));
-  }, [term_end]);
+  function handleTermSearch() {
+    if (term_start !== termStart?.unix() || term_end !== termEnd?.unix())
+      onTermSearch({
+        term_start: termStart?.unix(),
+        term_end: termEnd?.unix(),
+      });
+  }
 
   return (
     <Box className={classes.container}>
       <DatePicker
-        value={startTerm}
-        onChange={(d) => setStartTerm(d.startOf("day"))}
+        value={termStart}
+        maxDate={termEnd || dayjs.unix(9999999999)}
+        onChange={(d) => setTermStart(d.startOf("day"))}
         format="YYYY-MM-DD"
         size="small"
         InputProps={{
@@ -50,8 +52,9 @@ export const TermSearchBox = ({ term_start, term_end, onTermSearch }) => {
         -
       </Box>
       <DatePicker
-        value={endTerm}
-        onChange={(d) => setEndTerm(d.endOf("day"))}
+        value={termEnd}
+        minDate={termStart || dayjs.unix(0)}
+        onChange={(d) => setTermEnd(d.endOf("day"))}
         format="YYYY-MM-DD"
         size="small"
         InputProps={{
@@ -63,23 +66,14 @@ export const TermSearchBox = ({ term_start, term_end, onTermSearch }) => {
         }}
       />
 
-      <Button
-        ml={1}
-        color="primary"
-        onClick={() =>
-          onTermSearch("term", {
-            term_start: startTerm?.unix(),
-            term_end: endTerm?.unix(),
-          })
-        }
-      >
+      <Button ml={1} color="primary" onClick={handleTermSearch}>
         검색
       </Button>
       <Button
         ml={1}
         onClick={() => {
-          setStartTerm(null);
-          setEndTerm(null);
+          setTermStart(null);
+          setTermEnd(null);
         }}
       >
         초기화

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
-import { price } from "common";
 import { apiObject } from "api";
+import { price } from "common";
+import { useQuery } from "hooks";
 import dayjs from "dayjs";
-import qs from "query-string";
 
 import {
   Box,
@@ -19,30 +19,7 @@ import {
   Tab,
 } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
-import { RowTable, ColumnTable, Pagination } from "components";
-
-const useStyles = makeStyles((theme) => ({
-  header_box: {
-    display: "inline-flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-
-    width: "25rem",
-    height: "13rem",
-    background: "#fff",
-
-    border: "solid 1px #ddd",
-    borderRadius: "1rem",
-
-    marginRight: theme.spacing(4),
-    padding: theme.spacing(3),
-  },
-  rank_content: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-end",
-  },
-}));
+import { RowTable, ColumnTable } from "components";
 
 const member_columns = [
   { field: "name", title: "유저명" },
@@ -68,14 +45,11 @@ const incentive_columns = [
   },
 ];
 
-export const SalesmanDetail = ({ location }) => {
-  const history = useHistory();
+export const SalesmanDetail = () => {
   const { member_pk } = useParams();
   const { control, register, reset, handleSubmit } = useForm();
-  const query = qs.parse(location.search);
 
   const [salesmanInfo, setUserInfo] = useState();
-  const [subTableData, setSubTableData] = useState();
 
   async function getSalesmanDetail() {
     let data = await apiObject.getSalesmanDetail({ member_pk });
@@ -88,44 +62,10 @@ export const SalesmanDetail = ({ location }) => {
     if (!window.confirm("입력한 정보로 영업사원을 수정하시겠습니까?")) return;
     await apiObject.modifySalesman({ member_pk, ...form });
   }
-  async function getSubTableData() {
-    let data = [];
-
-    switch (query?.tab || "member") {
-      case "member":
-        if (salesmanInfo?.special_code) {
-          data = await apiObject.getSalsemanClientList({
-            special_code: salesmanInfo?.special_code,
-            ...query,
-          });
-        }
-        break;
-      case "incentive":
-        data = salesmanInfo?.incentive;
-        // setSubTableData(incentive_list);
-        // if (member_pk) {
-        //   data = await apiObject.getSalesmanIncentiveList({ member_pk });
-        // }
-        break;
-    }
-    setSubTableData(data);
-  }
-
-  function handleQueryChange(q, v) {
-    if (q !== "page") {
-      query["page"] = 1;
-    }
-
-    query[q] = v;
-    history.push(`/salesman/${member_pk}/?` + qs.stringify(query));
-  }
 
   useEffect(() => {
     getSalesmanDetail();
   }, [member_pk]);
-  useEffect(() => {
-    getSubTableData();
-  }, [salesmanInfo, query.page, query.tab]);
 
   return (
     <Box>
@@ -232,35 +172,64 @@ export const SalesmanDetail = ({ location }) => {
         )}
       </Box>
 
-      <Box>
-        <Tabs value={query?.tab || "member"} onChange={(e, v) => handleQueryChange("tab", v)}>
-          <Tab value="member" label="회원관리" />
-          <Tab value="incentive" label="인센티브월별현황" />
-        </Tabs>
+      <SubTable member_pk={member_pk} salesmanInfo={salesmanInfo} />
+    </Box>
+  );
+};
 
-        <Box my={2}>
-          <ColumnTable
-            columns={query.tab === "incentive" ? incentive_columns : member_columns}
-            data={subTableData}
-            onRowClick={(row) =>
-              history.push(
-                query.tab === "incentive"
-                  ? `/salesman/incentive/${member_pk}/${row.sales_month}`
-                  : `/member/${row.member_pk}`,
-              )
-            }
-          />
-        </Box>
+const SubTable = ({ member_pk, salesmanInfo }) => {
+  const history = useHistory();
+  const location = useLocation();
+  const { query, updateQuery, getDataFunction, Pagination } = useQuery(location);
 
-        <Box position="relative" py={6}>
-          {query.tab !== "incentive" && (
-            <Pagination
-              page={query.page}
-              setPage={handleQueryChange}
-              count={Math.ceil(+subTableData?.[0]?.total / 10)}
-            />
-          )}
-        </Box>
+  const [subTableData, setSubTableData] = useState();
+
+  async function getSubTableData(query) {
+    let data = [];
+
+    switch (query?.tab || "member") {
+      case "member":
+        if (salesmanInfo?.special_code) {
+          data = await apiObject.getSalsemanClientList({
+            special_code: salesmanInfo?.special_code,
+            ...query,
+          });
+        }
+        break;
+      case "incentive":
+        data = salesmanInfo?.incentive;
+        break;
+    }
+    setSubTableData(data);
+  }
+
+  useEffect(() => {
+    getDataFunction(getSubTableData);
+  }, [salesmanInfo]);
+
+  return (
+    <Box>
+      <Tabs value={query?.tab || "member"} onChange={(e, v) => updateQuery({ tab: v })}>
+        <Tab value="member" label="회원관리" />
+        <Tab value="incentive" label="인센티브월별현황" />
+      </Tabs>
+
+      <Box my={2}>
+        <ColumnTable
+          columns={query.tab === "incentive" ? incentive_columns : member_columns}
+          data={subTableData}
+          onRowClick={(row) =>
+            history.push(
+              query.tab === "incentive"
+                ? `/salesman/incentive/${member_pk}/${row.sales_month}`
+                : `/member/${row.member_pk}`,
+            )
+          }
+        />
+      </Box>
+
+      <Box position="relative" py={6}>
+        {query.tab !== "incentive" && <Pagination total={subTableData?.[0]?.total} />}
       </Box>
     </Box>
   );

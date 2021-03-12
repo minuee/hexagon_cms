@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { price } from "common";
 import { apiObject } from "api";
-import qs from "query-string";
+import { price } from "common";
+import { useQuery } from "hooks";
 
 import { Grid, Box, makeStyles } from "@material-ui/core";
-import { ArrowDropDown, ArrowDropUp } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination, SearchBox, ExcelExportButton } from "components";
+import { ColumnTable, ExcelExportButton } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header_buttons: {
@@ -29,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
+
 const header_button_list = [
   {
     label: "가입일자순",
@@ -51,7 +51,6 @@ const header_button_list = [
     value: "reward",
   },
 ];
-
 const member_list_columns = [
   { title: "이름", field: "name", width: 240 },
   { title: "코드값", field: "special_code", width: 100 },
@@ -76,7 +75,6 @@ const member_list_columns = [
     width: 160,
   },
 ];
-
 const excel_columns = [
   { label: "이름", value: "name" },
   { label: "코드값", value: "special_code" },
@@ -101,12 +99,12 @@ const excel_columns = [
 export const MemberList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
-  const query = qs.parse(location.search);
+  const { query, getDataFunction, Pagination, SearchBox, FilterBox } = useQuery(location);
 
   const [memberList, setMemberList] = useState();
   const [selectedMembers, setSelectedMembers] = useState([]);
 
-  async function getMemberList() {
+  async function getMemberList(query) {
     let data = await apiObject.getMemberList({
       ...query,
     });
@@ -129,25 +127,9 @@ export const MemberList = ({ location }) => {
     getMemberList();
   }
 
-  function handleQueryChange(q, v) {
-    if (q == "sort_item") {
-      if (v == (query[q] || "reg")) {
-        query.sort_type = query?.sort_type === "ASC" ? "DESC" : "ASC";
-      } else {
-        query.sort_type = "DESC";
-      }
-    }
-    if (q !== "page") {
-      query.page = 1;
-    }
-
-    query[q] = v;
-    history.push("/member?" + qs.stringify(query));
-  }
-
   useEffect(() => {
-    getMemberList();
-  }, [query.page, query.search_word, query.sort_item, query.sort_type]);
+    getDataFunction(getMemberList);
+  }, []);
 
   return (
     <Box>
@@ -157,15 +139,7 @@ export const MemberList = ({ location }) => {
         </Typography>
 
         <Box className={classes.header_buttons}>
-          {header_button_list.map((item, index) => {
-            let is_cur = item.value === (query.sort_item || "reg");
-            return (
-              <Button variant="text" onClick={() => handleQueryChange("sort_item", item.value)} key={index}>
-                <Typography fontWeight={is_cur ? "700" : undefined}>{item.label}</Typography>
-                {is_cur && <>{query.sort_type === "ASC" ? <ArrowDropUp /> : <ArrowDropDown />}</>}
-              </Button>
-            );
-          })}
+          <FilterBox type="sort" button_list={header_button_list} default_item="reg" />
 
           <Button color="primary" ml={3} onClick={approveSignIn} disabled={!selectedMembers?.length}>
             회원가입 승인
@@ -193,13 +167,9 @@ export const MemberList = ({ location }) => {
       <Grid container className={classes.table_footer}>
         <ExcelExportButton data={memberList} columns={excel_columns} path="Member" />
 
-        <Pagination
-          page={query.page || 1}
-          setPage={handleQueryChange}
-          count={Math.ceil(+memberList?.[0]?.total / 10)}
-        />
+        <Pagination total={memberList?.[0]?.total} />
 
-        <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} />
+        <SearchBox />
       </Grid>
     </Box>
   );

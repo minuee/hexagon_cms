@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { price } from "common";
 import { apiObject } from "api";
+import { price } from "common";
+import { useQuery } from "hooks";
 import dayjs from "dayjs";
-import qs from "query-string";
 
 import { Grid, Box, makeStyles } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination } from "components";
+import { ColumnTable } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header_buttons: {
@@ -61,11 +61,11 @@ const coupon_list_columns = [
 export const CouponList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
-  const query = qs.parse(location.search);
+  const { getDataFunction, Pagination, FilterBox } = useQuery(location);
 
   const [couponList, setCouponList] = useState();
 
-  async function getCouponList() {
+  async function getCouponList(query) {
     let data;
 
     if (query.filter_item === "old") {
@@ -77,18 +77,9 @@ export const CouponList = ({ location }) => {
     setCouponList(data);
   }
 
-  function handleQueryChange(q, v) {
-    if (q !== "page") {
-      query.page = 1;
-    }
-
-    query[q] = v;
-    history.push("/coupon?" + qs.stringify(query));
-  }
-
   useEffect(() => {
-    getCouponList();
-  }, [query.page, query.filter_item, query.search_word]);
+    getDataFunction(getCouponList);
+  }, []);
 
   return (
     <Box>
@@ -98,14 +89,7 @@ export const CouponList = ({ location }) => {
         </Typography>
 
         <Box className={classes.header_buttons}>
-          {header_button_list.map((item, index) => {
-            let is_cur_filter = item.value === (query.filter_item || "ing");
-            return (
-              <Button variant="text" onClick={() => handleQueryChange("filter_item", item.value)} key={index}>
-                <Typography fontWeight={is_cur_filter ? "700" : undefined}>{item.label}</Typography>
-              </Button>
-            );
-          })}
+          <FilterBox type="filter" button_list={header_button_list} default_item="ing" />
 
           <Button color="primary" ml={3} onClick={() => history.push(`/coupon/regist`)}>
             등록
@@ -122,7 +106,7 @@ export const CouponList = ({ location }) => {
       </Box>
 
       <Grid container className={classes.table_footer}>
-        <Pagination page={query.page} setPage={handleQueryChange} count={Math.ceil(+couponList?.[0]?.total / 10)} />
+        <Pagination total={couponList?.[0]?.total} />
       </Grid>
     </Box>
   );

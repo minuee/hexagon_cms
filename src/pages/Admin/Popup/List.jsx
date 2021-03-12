@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { apiObject } from "api";
 import { getFullImgURL } from "common";
+import { useQuery } from "hooks";
 import dayjs from "dayjs";
-import qs from "query-string";
 
 import { Box, makeStyles } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination, ImageBox } from "components";
+import { ColumnTable, ImageBox } from "components";
 
 const useStyles = makeStyles((theme) => ({
   table_header: {
@@ -72,7 +72,7 @@ const filter_buttons = [
 export const PopupList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
-  const query = qs.parse(location.search);
+  const { query, updateQuery, getDataFunction, Pagination, FilterBox } = useQuery(location);
 
   const [popupList, setPopupList] = useState();
   const [selectedPopup, setSelectedPopup] = useState([]);
@@ -126,17 +126,18 @@ export const PopupList = ({ location }) => {
     },
   ];
 
-  async function getPopupList() {
+  async function getPopupList(query) {
     let data;
+    console.log({ ...query });
 
     if (query.type === "event") {
-      if (query.filter === "stop") {
+      if (query.filter_item === "stop") {
         data = await apiObject.getPrevEventPopupList({ ...query });
       } else {
         data = await apiObject.getCurEventPopupList({ ...query });
       }
     } else {
-      if (query.filter === "stop") {
+      if (query.filter_item === "stop") {
         data = await apiObject.getPrevNoticePopupList({ ...query });
       } else {
         data = await apiObject.getCurNoticePopupList({ ...query });
@@ -162,25 +163,13 @@ export const PopupList = ({ location }) => {
         break;
     }
 
-    handleQueryChange("page", 1);
+    updateQuery({ page: 1 });
     getPopupList();
-  }
-
-  function handleQueryChange(q, v) {
-    if (q === "type") {
-      query.filter = "now";
-    }
-    if (q !== "page") {
-      query.page = 1;
-    }
-
-    query[q] = v;
-    history.push("/popup?" + qs.stringify(query));
   }
 
   useEffect(() => {
-    getPopupList();
-  }, [query.type, query.filter, query.page]);
+    getDataFunction(getPopupList);
+  }, []);
 
   return (
     <Box>
@@ -198,7 +187,12 @@ export const PopupList = ({ location }) => {
                   key={index}
                   mr={1}
                   color={is_cur_type ? "primary" : undefined}
-                  onClick={() => handleQueryChange("type", item.value)}
+                  onClick={() => {
+                    updateQuery({
+                      type: item.value,
+                      filter_item: "now",
+                    });
+                  }}
                 >
                   {item.label}
                 </Button>
@@ -209,14 +203,7 @@ export const PopupList = ({ location }) => {
 
         <Box>
           <Box display="inline-flex">
-            {filter_buttons.map((item, index) => {
-              let is_cur_filter = item.value === (query.filter || "now");
-              return (
-                <Button variant="text" onClick={() => handleQueryChange("filter", item.value)} key={index}>
-                  <Typography fontWeight={is_cur_filter ? "700" : undefined}>{item.label}</Typography>
-                </Button>
-              );
-            })}
+            <FilterBox type="filter" button_list={filter_buttons} default_item="now" />
           </Box>
 
           <Box>
@@ -232,7 +219,7 @@ export const PopupList = ({ location }) => {
 
       <Box my={2}>
         <ColumnTable
-          columns={query.filter === "stop" ? prev_popup_columns : cur_popup_columns}
+          columns={query.filter_item === "stop" ? prev_popup_columns : cur_popup_columns}
           data={popupList}
           onRowClick={(row) =>
             history.push({
@@ -248,7 +235,7 @@ export const PopupList = ({ location }) => {
       </Box>
 
       <Box position="relative" mt={6}>
-        <Pagination page={query.page} setPage={handleQueryChange} count={Math.ceil(+popupList?.[0]?.total / 10)} />
+        <Pagination total={popupList?.[0]?.total} />
       </Box>
     </Box>
   );

@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles, Box } from "@material-ui/core";
-import { Pagination } from "@material-ui/lab";
+import { Pagination as MuiPagination } from "@material-ui/lab";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -16,18 +16,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const MyPagination = ({ page = 1, setPage = () => {}, name = "page", count }) => {
+const Pagination = ({ page = 1, setPage = () => {}, total }) => {
   const classes = useStyles();
   return (
     <Box className={classes.container}>
-      <Pagination
+      <MuiPagination
         color="primary"
-        count={count}
+        count={Math.ceil(+total / 10)}
         page={parseInt(page)}
-        onChange={(e, v) => setPage(name, v)}
+        onChange={(e, v) => {
+          if (v !== page) {
+            setPage({ page: v });
+          }
+        }}
         shape="rounded"
       />
     </Box>
   );
 };
-export { MyPagination as Pagination };
+export { Pagination };

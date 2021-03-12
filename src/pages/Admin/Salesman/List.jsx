@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { price } from "common";
 import { apiObject } from "api";
-import qs from "query-string";
+import { price } from "common";
+import { useQuery } from "hooks";
 
 import { Grid, Box, makeStyles } from "@material-ui/core";
-import { ArrowDropDown, ArrowDropUp } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination, ExcelExportButton } from "components";
+import { ColumnTable, ExcelExportButton } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header_buttons: {
@@ -88,34 +87,18 @@ const excel_columns = [
 export const SalesmanList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
-  const query = qs.parse(location.search);
+  const { getDataFunction, Pagination, FilterBox } = useQuery(location);
 
   const [salesmanList, setSalesmanList] = useState();
 
-  async function getSalesmanList() {
+  async function getSalesmanList(query) {
     let data = await apiObject.getSalesmanList({ ...query });
     setSalesmanList(data);
   }
 
-  function handleQueryChange(q, v) {
-    if (q == "sort_item") {
-      if (v == (query[q] || "uname")) {
-        query.sort_type = query?.sort_type === "ASC" ? "DESC" : "ASC";
-      } else {
-        query.sort_type = "DESC";
-      }
-    }
-    if (q != "page") {
-      query.page = 1;
-    }
-
-    query[q] = v;
-    history.push("/salesman?" + qs.stringify(query));
-  }
-
   useEffect(() => {
-    getSalesmanList();
-  }, [query.page, query.search_word, query.sort_item, query.sort_type]);
+    getDataFunction(getSalesmanList);
+  }, []);
 
   return (
     <Box>
@@ -125,15 +108,8 @@ export const SalesmanList = ({ location }) => {
         </Typography>
 
         <Box className={classes.header_buttons}>
-          {header_button_list.map((item, index) => {
-            let is_cur = item.value === (query.sort_item || "uname");
-            return (
-              <Button variant="text" onClick={() => handleQueryChange("sort_item", item.value)} key={index}>
-                <Typography fontWeight={is_cur ? "700" : undefined}>{item.label}</Typography>
-                {is_cur && <>{query.sort_type === "ASC" ? <ArrowDropUp /> : <ArrowDropDown />}</>}
-              </Button>
-            );
-          })}
+          <FilterBox type="sort" button_list={header_button_list} default_item="uname" />
+
           <Button color="primary" ml={2} onClick={() => history.push("/salesman/regist")}>
             영업사원등록
           </Button>
@@ -151,9 +127,7 @@ export const SalesmanList = ({ location }) => {
       <Grid container className={classes.table_footer}>
         <ExcelExportButton data={salesmanList} columns={excel_columns} path="Salesman" />
 
-        <Pagination page={query.page} setPage={handleQueryChange} count={Math.ceil(+salesmanList?.[0]?.total / 10)} />
-
-        {/* <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} /> */}
+        <Pagination total={salesmanList?.[0]?.total} />
       </Grid>
     </Box>
   );

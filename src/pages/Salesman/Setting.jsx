@@ -2,9 +2,9 @@ import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
-import { decrypt } from "common";
 import { apiObject } from "api";
-import qs from "query-string";
+import { decrypt } from "common";
+import { useQuery } from "hooks";
 import jwt from "jsonwebtoken";
 
 import { Box, makeStyles, TextField, TableRow, TableCell, Tab, Tabs } from "@material-ui/core";
@@ -21,12 +21,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const Setting = ({ location }) => {
   const history = useHistory();
-  const query = qs.parse(location.search);
-
-  function handleTabChange(e, v) {
-    query.tab = v;
-    history.push("/setting?" + qs.stringify(query));
-  }
+  const { query, updateQuery } = useQuery(location);
 
   return (
     <Box>
@@ -37,7 +32,7 @@ export const Setting = ({ location }) => {
       </Box>
 
       <Box my={2}>
-        <Tabs value={query.tab || "info"} onChange={handleTabChange}>
+        <Tabs value={query.tab || "info"} onChange={(e, v) => updateQuery({ tab: v })}>
           <Tab value="info" label="정보 수정" />
           <Tab value="password" label="비밀번호 수정" />
         </Tabs>

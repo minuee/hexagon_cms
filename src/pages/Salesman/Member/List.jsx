@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { price } from "common";
 import { apiObject } from "api";
-import qs from "query-string";
+import { price } from "common";
+import { useQuery } from "hooks";
 
 import { Grid, Box, makeStyles } from "@material-ui/core";
 import { Typography } from "components/materialui";
-import { ColumnTable, Pagination, SearchBox } from "components";
+import { ColumnTable } from "components";
 
 const useStyles = makeStyles((theme) => ({
   table_footer: {
@@ -47,11 +47,11 @@ export const ManageMemberList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
   const { member } = useSelector((state) => state.reducer);
-  const query = qs.parse(location.search);
+  const { getDataFunction, Pagination, SearchBox } = useQuery(location);
 
   const [memberList, setMemberList] = useState();
 
-  async function getMemberList() {
+  async function getMemberList(query) {
     if (!member.special_code) return;
 
     let data = await apiObject.getSalsemanClientList({
@@ -61,18 +61,9 @@ export const ManageMemberList = ({ location }) => {
     setMemberList(data);
   }
 
-  function handleQueryChange(q, v) {
-    if (q !== "page") {
-      query.page = 1;
-    }
-
-    query[q] = v;
-    history.push("/member?" + qs.stringify(query));
-  }
-
   useEffect(() => {
-    getMemberList();
-  }, [member, query.page, query.search_word, query.sort_item, query.sort_type]);
+    getDataFunction(getMemberList);
+  }, [member]);
 
   return (
     <Box>
@@ -89,13 +80,8 @@ export const ManageMemberList = ({ location }) => {
       </Box>
 
       <Grid container className={classes.table_footer}>
-        <Pagination
-          page={query.page || 1}
-          setPage={handleQueryChange}
-          count={Math.ceil(+memberList?.[0]?.total / 10)}
-        />
-
-        <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} />
+        <Pagination total={memberList?.[0]?.total} />
+        <SearchBox />
       </Grid>
     </Box>
   );

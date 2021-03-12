@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { apiObject } from "api";
 import { price } from "common";
+import { useQuery } from "hooks";
 import dayjs from "dayjs";
-import qs from "query-string";
 
 import { Grid, Box, makeStyles } from "@material-ui/core";
-import { ArrowDropDown, ArrowDropUp } from "@material-ui/icons";
-import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination, SearchBox, TermSearchBox, ExcelExportButton } from "components";
+import { Typography } from "components/materialui";
+import { ColumnTable, ExcelExportButton } from "components";
 
 const useStyles = makeStyles((theme) => ({
   table_footer: {
@@ -73,38 +72,18 @@ const excel_columns = [
 export const OrderList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
-  const query = qs.parse(location.search);
+  const { getDataFunction, Pagination, SearchBox, FilterBox, TermSearchBox } = useQuery(location);
 
   const [orderList, setOrderList] = useState();
 
-  async function getOrderList() {
+  async function getOrderList(query) {
     let data = await apiObject.getOrderList({ ...query });
     setOrderList(data);
   }
 
-  function handleQueryChange(q, v) {
-    if (q == "sort_item") {
-      if (v === (query[q] || "reg_dt")) {
-        query.sort_type = query?.sort_type === "ASC" ? "DESC" : "ASC";
-      } else {
-        query.sort_type = "DESC";
-      }
-    }
-    if (q !== "page") {
-      query.page = 1;
-    }
-
-    if (q === "term") {
-      Object.assign(query, v);
-    } else {
-      query[q] = v;
-    }
-    history.push("/order?" + qs.stringify(query));
-  }
-
   useEffect(() => {
-    getOrderList();
-  }, [query.page, query.search_word, query.term_start, query.term_end, query.sort_item, query.sort_type]);
+    getDataFunction(getOrderList);
+  }, []);
 
   return (
     <Box>
@@ -114,19 +93,9 @@ export const OrderList = ({ location }) => {
         </Typography>
 
         <Box>
-          <Box display="inline-block" mr={3}>
-            {header_button_list.map((item, index) => {
-              let is_cur = item.value === (query.sort_item || "reg_dt");
-              return (
-                <Button variant="text" onClick={() => handleQueryChange("sort_item", item.value)} key={index}>
-                  <Typography fontWeight={is_cur ? "700" : undefined}>{item.label}</Typography>
-                  {is_cur && <>{query.sort_type === "ASC" ? <ArrowDropUp /> : <ArrowDropDown />}</>}
-                </Button>
-              );
-            })}
-          </Box>
+          <FilterBox mr={3} type="sort" button_list={header_button_list} default_item="reg_dt" />
 
-          <TermSearchBox term_start={query.term_start} term_end={query.term_end} onTermSearch={handleQueryChange} />
+          <TermSearchBox />
         </Box>
       </Grid>
 
@@ -141,9 +110,9 @@ export const OrderList = ({ location }) => {
       <Grid container className={classes.table_footer}>
         <ExcelExportButton data={orderList} columns={excel_columns} path="Order" />
 
-        <Pagination page={query.page} setPage={handleQueryChange} count={Math.ceil(+orderList?.[0]?.total / 10)} />
+        <Pagination total={orderList?.[0]?.total} />
 
-        <SearchBox defaultValue={query.search_word} onSearch={handleQueryChange} />
+        <SearchBox />
       </Grid>
     </Box>
   );
