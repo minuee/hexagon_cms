@@ -5,14 +5,14 @@ const useStyles = makeStyles({
   image: {
     cursor: ({ clickable }) => clickable && "pointer",
     backgroundSize: ({ type }) => type || "contain",
+    backgroundPosition: ({ position }) => position || "center",
+    backgroundImage: ({ src }) => `url(${src})`,
     backgroundRepeat: "no-repeat",
-    backgroundPosition: "center",
-    backgroundImage: (props) => `url(${props.src})`,
   },
 });
 
-export const ImageBox = ({ src, type, clickable, ...props }) => {
-  const classes = useStyles({ src, type, clickable });
+export const ImageBox = ({ src, type, position, clickable, ...props }) => {
+  const classes = useStyles({ src, type, position, clickable });
 
   return <Box className={classes.image} {...props} />;
 };

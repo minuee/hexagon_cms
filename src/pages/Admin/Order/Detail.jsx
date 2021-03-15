@@ -5,9 +5,9 @@ import { price } from "common";
 import { apiObject } from "api";
 import dayjs from "dayjs";
 
-import { Box, makeStyles, Select, MenuItem, Avatar, TableRow, TableCell } from "@material-ui/core";
+import { Box, makeStyles, Select, MenuItem, TableRow, TableCell } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
-import { RowTable } from "components";
+import { RowTable, ImageBox } from "components";
 
 const useStyles = makeStyles((theme) => ({
   product_divider: {
@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     background: "rgba(223, 223, 223, 0.2)",
   },
 
-  shipping_status: {
+  order_status: {
     display: "flex",
     justifyContent: "space-between",
 
@@ -32,15 +32,9 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: "5px",
         textAlign: "center",
       },
-
-      "& img": {
-        objectFit: "contain",
-        objectPosition: "center bottom",
-      },
     },
   },
-
-  shipping_indicator: {
+  order_indicator: {
     position: "absolute",
     left: theme.spacing(7),
     bottom: theme.spacing(2),
@@ -153,12 +147,12 @@ export const OrderDetail = () => {
       <Box mt={4} mb={6}>
         <Typography fontWeight="500">주문 상태</Typography>
         <Box px={6} position="relative">
-          <Box className={classes.shipping_status}>
+          <Box className={classes.order_status}>
             {order_status_list.slice(0, 3).map((item) => {
               let isPassed = item.no <= orderDetail?.orderBase.order_status_no;
               return (
                 <Box key={item.no}>
-                  <Avatar variant="square" src={`/image/order_state_${item.no}.png`} />
+                  <ImageBox src={`/image/order_state_${item.no}.png`} position="center bottom" />
                   <Box px={2} py={1} mt={2} bgcolor={isPassed ? "#003a7b" : "#fff"} color={isPassed ? "#fff" : "#000"}>
                     {item.label}
                   </Box>
@@ -167,7 +161,7 @@ export const OrderDetail = () => {
             })}
             {orderDetail?.orderBase.order_status_no === 4 && (
               <Box>
-                <Avatar variant="square" src={`/image/exchange_request.png`} />
+                <ImageBox src={`/image/exchange_request.png`} position="center bottom" />
                 <Box px={2} py={1} mt={2} bgcolor="#003a7b" color="#fff">
                   교환요청
                 </Box>
@@ -190,7 +184,7 @@ export const OrderDetail = () => {
               </Box>
             )}
           </Box>
-          <Box className={classes.shipping_indicator} />
+          <Box className={classes.order_indicator} />
         </Box>
       </Box>
 
