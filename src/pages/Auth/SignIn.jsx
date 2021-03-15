@@ -1,10 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
+import { encrypt, decrypt } from "common";
 import { apiObject } from "api";
+import Cookies from "js-cookie";
 
-import { makeStyles, Box, Container, TextField, InputAdornment, IconButton } from "@material-ui/core";
+import {
+  makeStyles,
+  Box,
+  Container,
+  TextField,
+  InputAdornment,
+  IconButton,
+  Checkbox,
+  FormControlLabel,
+} from "@material-ui/core";
 import { PersonOutline, LockOutlined, HighlightOff } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
 import { ImageBox } from "components";
@@ -27,10 +38,10 @@ const useStyles = makeStyles({
 export const SignIn = ({}) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { register, setValue, errors, handleSubmit } = useForm();
+  const { control, register, setValue, errors, handleSubmit } = useForm();
 
-  async function signIn(data) {
-    let resp = await apiObject.signIn(data);
+  async function signIn(form) {
+    let resp = await apiObject.signIn(form);
 
     if (resp.code === "1015") {
       alert("로그인 정보가 잘못되었습니다");
@@ -39,10 +50,23 @@ export const SignIn = ({}) => {
 
     localStorage.setItem("hexagon_cms_token", resp.token);
 
+    if (form.store_id_yn) {
+      Cookies.set("id", encrypt(form.user_id));
+    } else {
+      Cookies.remove("id");
+    }
+
     dispatch({
       type: "SIGN_IN",
     });
   }
+
+  useEffect(() => {
+    if (Cookies.get("id")) {
+      setValue("user_id", decrypt(Cookies.get("id")));
+      setValue("store_id_yn", true);
+    }
+  }, []);
 
   return (
     <Container maxWidth="md">
@@ -50,7 +74,7 @@ export const SignIn = ({}) => {
         <ImageBox src="/image/logo_color.png" width="20rem" height="7rem" mb={4} />
 
         <TextField
-          defaultValue="superbinder"
+          // defaultValue="superbinder"
           // defaultValue="123456789"
           className={classes.input}
           name="user_id"
@@ -100,12 +124,20 @@ export const SignIn = ({}) => {
           <Button  variant="text" onClick={() => history.push("/signup")}>회원가입</Button>
         </Box> */}
 
-        <Box mt={1} mb={4}>
-          {/* <FormControlLabel
-            control={<Checkbox inputRef={register} color="primary" />}
-            name="is_salesman"
-            label="영업사원으로 로그인하기"
-          /> */}
+        <Box mt={3} mb={2}>
+          <Controller
+            render={({ value, onChange }) => (
+              <FormControlLabel
+                control={<Checkbox color="primary" />}
+                onChange={(e) => onChange(e.target.checked)}
+                checked={value}
+                label="아이디 기억하기"
+              />
+            )}
+            control={control}
+            name="store_id_yn"
+            defaultValue={false}
+          />
         </Box>
 
         <Button variant="contained" color="primary" px={18} py={2} onClick={handleSubmit(signIn)}>
