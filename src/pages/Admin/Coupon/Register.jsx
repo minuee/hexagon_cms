@@ -4,7 +4,6 @@ import { Controller, useForm, useFieldArray } from "react-hook-form";
 import { price } from "common";
 import { apiObject } from "api";
 import dayjs from "dayjs";
-import _ from "lodash";
 
 import {
   makeStyles,
@@ -200,7 +199,7 @@ const MemberModal = ({ open, onClose, onSelect, selectedDefault }) => {
       title: "",
       render: (row) => (
         <Checkbox
-          checked={_.some(selectedMembers, ["member_pk", row.member_pk])}
+          checked={selectedMembers.some((item) => item.member_pk === row.member_pk)}
           onClick={() => handleSelectRow(row)}
         />
       ),
@@ -229,8 +228,8 @@ const MemberModal = ({ open, onClose, onSelect, selectedDefault }) => {
 
   function handleSelectRow(row) {
     let tmp = [];
-    if (_.some(selectedMembers, ["member_pk", row.member_pk])) {
-      tmp = _.differenceBy(selectedMembers, [row], "member_pk");
+    if (selectedMembers.some((item) => item.member_pk === row.member_pk)) {
+      tmp = selectedMembers.filter((item) => item.member_pk !== row.member_pk);
     } else {
       tmp = [...selectedMembers, row];
     }

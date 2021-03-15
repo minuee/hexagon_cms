@@ -3,7 +3,6 @@ import { useHistory, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
 import { apiObject } from "api";
-import _ from "lodash";
 
 import { Box, makeStyles, TextField, Select, MenuItem, TableRow, TableCell } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
@@ -52,8 +51,8 @@ export const CategoryDetail = ({ location }) => {
     if (!paths.length) return;
     form.category_logo = paths?.[0];
 
-    if (form.category_type !== "B") {
-      let d3_item = _.find(normalCategoryList.d3[form.d2], (item) => item.code === form.d3);
+    if (form.category_type === "N") {
+      let d3_item = normalCategoryList.d3[form.d2].find((item) => item.code === form.d3);
 
       form.normalcategory_pk = d3_item.normalcategory_pk;
       form.category_name = d3_item.name;
@@ -77,8 +76,8 @@ export const CategoryDetail = ({ location }) => {
     if (!paths.length) return;
     form.category_logo = paths?.[0];
 
-    if (form.category_type !== "B") {
-      let d3_item = _.find(normalCategoryList.d3[form.d2], (item) => item.code === form.d3);
+    if (form.category_type === "N") {
+      let d3_item = normalCategoryList.d3[form.d2].find((item) => item.code === form.d3);
 
       form.normalcategory_pk = d3_item.normalcategory_pk;
       form.category_name = d3_item.name;

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import ReactExport from "react-data-export";
-import _ from "lodash";
 
 import { Box } from "@material-ui/core";
 import { DescriptionOutlined } from "@material-ui/icons";
@@ -16,16 +15,19 @@ export const ExcelExportButton = ({ data, columns, path, ...props }) => {
   useEffect(() => {
     function manipulateData() {
       if (!data || !columns) return;
-      let manipulated = _.cloneDeep(data);
 
-      manipulated?.forEach((item) => {
+      let data_arr = [];
+
+      data.forEach((item) => {
+        let tmp = { ...item };
         columns?.forEach((col) => {
           if (col.render) {
-            item[col.value] = col.render(item);
+            tmp[col.value] = col.render(item);
           }
         });
+        data_arr.push(tmp);
       });
-      setExportData(manipulated);
+      setExportData(data_arr);
     }
     manipulateData();
   }, [data, columns]);

@@ -4,7 +4,6 @@ import { Controller, useForm, useFieldArray } from "react-hook-form";
 import { price, getFullImgURL } from "common";
 import { apiObject } from "api";
 import dayjs from "dayjs";
-import _ from "lodash";
 
 import {
   Box,
@@ -392,7 +391,7 @@ const ProductModal = ({ open, onClose, onSelect, selectedDefault }) => {
       title: "",
       render: (row) => (
         <Checkbox
-          checked={_.some(selectedProducts, ["product_pk", row.product_pk])}
+          checked={selectedProducts.some((item) => item.product_pk === row.product_pk)}
           onClick={() => handleSelectRow(row)}
         />
       ),
@@ -435,8 +434,8 @@ const ProductModal = ({ open, onClose, onSelect, selectedDefault }) => {
 
   function handleSelectRow(row) {
     let tmp = [];
-    if (_.some(selectedProducts, ["product_pk", row.product_pk])) {
-      tmp = _.differenceBy(selectedProducts, [row], "product_pk");
+    if (selectedProducts.some((item) => item.product_pk === row.product_pk)) {
+      tmp = selectedProducts.filter((item) => item.product_pk !== row.product_pk);
     } else {
       tmp = [...selectedProducts, row];
     }

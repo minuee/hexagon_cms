@@ -4,7 +4,6 @@ import { Controller, useForm } from "react-hook-form";
 import { price, getFullImgURL } from "common";
 import { apiObject } from "api";
 import dayjs from "dayjs";
-import _ from "lodash";
 
 import {
   Box,
@@ -95,7 +94,7 @@ export const PopupRegister = () => {
   }
 
   useEffect(() => {
-    reset({ popup_gubun: _.upperFirst(popup_gubun) });
+    reset({ popup_gubun: `${popup_gubun.charAt(0).toUpperCase()}${popup_gubun.slice(1)}` });
   }, [popup_gubun]);
 
   useEffect(() => {

@@ -1,7 +1,6 @@
 import axios from "axios";
 import { store } from "redux/index";
 import { encrypt, decrypt, getListIndex } from "common";
-import _ from "lodash";
 
 // let token = localStorage.hexagon_cms_token;
 axios.defaults.headers.common.Authorization = localStorage.hexagon_cms_token;
@@ -478,14 +477,14 @@ export const apiObject = {
           ret.d1.push(item);
         } else if (item.depth === 2) {
           // d2
-          if (_.has(ret.d2, item.group_code)) {
+          if (ret.d2[item.group_code]) {
             ret.d2[item.group_code].push(item);
           } else {
             ret.d2[item.group_code] = [item];
           }
         } else {
           // d3
-          if (_.has(ret.d3, item.group_code)) {
+          if (ret.d3[item.group_code]) {
             ret.d3[item.group_code].push(item);
           } else {
             ret.d3[item.group_code] = [item];
@@ -824,13 +823,19 @@ export const apiObject = {
         ],
       };
 
+      let category_set = new Set();
+
       ret.product_list.forEach((item) => {
-        if (_.last(ret.category_list).category_pk != item.category_pk) {
-          ret.category_list.push({
+        category_set.add(
+          JSON.stringify({
             label: item.category_name,
             category_pk: item.category_pk,
-          });
-        }
+          }),
+        );
+      });
+
+      category_set.forEach((item) => {
+        ret.category_list.push(JSON.parse(item));
       });
 
       return ret;
