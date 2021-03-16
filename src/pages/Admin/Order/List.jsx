@@ -53,19 +53,10 @@ const header_button_list = [
   },
 ];
 const excel_columns = [
-  { label: "번호", value: "no" },
   { label: "구매번호", value: "order_no" },
-  {
-    label: "구매일자",
-    value: "reg_dt",
-    render: ({ reg_dt }) => dayjs.unix(reg_dt).format("YYYY-MM-DD"),
-  },
+  { label: "구매일자", value: "reg_dt", render: ({ reg_dt }) => dayjs.unix(reg_dt).format("YYYY-MM-DD") },
   { label: "회원명", value: "member_name" },
-  {
-    label: "구매액",
-    value: "total_amount",
-    // render: ({ total_amount }) => `${price(total_amount)}원`,
-  },
+  { label: "총구매액", value: "total_amount" },
   { label: "주문상태", value: "order_status_name" },
 ];
 
@@ -108,7 +99,8 @@ export const OrderList = ({ location }) => {
       </Box>
 
       <Grid container className={classes.table_footer}>
-        <ExcelExportButton data={orderList} columns={excel_columns} path="Order" />
+        {/* <ExcelExportButton data={orderList} columns={excel_columns} path="Order" /> */}
+        <ExcelExportButton columns={excel_columns} path="Order" />
 
         <Pagination total={orderList?.[0]?.total} />
 

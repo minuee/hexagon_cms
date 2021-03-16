@@ -3,6 +3,7 @@ import { useHistory } from "react-router-dom";
 import { apiObject } from "api";
 import { price } from "common";
 import { useQuery } from "hooks";
+import dayjs from "dayjs";
 
 import { Grid, Box, makeStyles } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
@@ -65,23 +66,14 @@ const header_button_list = [
 ];
 const excel_columns = [
   { label: "이름", value: "name" },
+  { label: "아이디", value: "user_id" },
+  { label: "회원가입일", value: "reg_dt", render: ({ reg_dt }) => dayjs.unix(reg_dt).format("YYYY-MM-DD") },
   { label: "코드값", value: "special_code" },
+  { label: "이메일", value: "email" },
   { label: "휴대폰번호", value: "phone" },
-  {
-    label: "구매대행액",
-    value: "total_amount",
-    // render: ({ total_amount }) => `${price(total_amount)}원`,
-  },
-  {
-    label: "인센티브액",
-    value: "total_incentive",
-    // render: ({ total_incentive }) => `${price(total_incentive)}원`,
-  },
-  {
-    label: "상태",
-    value: "use_yn",
-    render: ({ use_yn }) => (use_yn ? "이용중" : "퇴사"),
-  },
+  { label: "구매대행액", value: "total_amount" },
+  { label: "인센티브액", value: "total_incentive" },
+  { label: "상태", value: "use_yn", render: ({ use_yn }) => (use_yn ? "이용중" : "퇴사") },
 ];
 
 export const SalesmanList = ({ location }) => {
@@ -125,7 +117,8 @@ export const SalesmanList = ({ location }) => {
       </Box>
 
       <Grid container className={classes.table_footer}>
-        <ExcelExportButton data={salesmanList} columns={excel_columns} path="Salesman" />
+        {/* <ExcelExportButton data={salesmanList} columns={excel_columns} path="Salesman" /> */}
+        <ExcelExportButton columns={excel_columns} path="Salesman" />
 
         <Pagination total={salesmanList?.[0]?.total} />
       </Grid>

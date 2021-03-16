@@ -72,12 +72,16 @@ const excel_columns = [
     render: ({ category_type }) => (category_type === "B" ? "브랜드" : "제품군"),
   },
   {
-    label: "카테고리명 (상품 수)",
+    label: "카테고리명",
     value: "category_name",
     render: (props) =>
       props.category_type === "N"
-        ? `${props.depth1name} > ${props.depth2name} > ${props.depth3name}  (${props.product_count})`
-        : `${props.category_name} (${props.product_count})`,
+        ? `${props.depth1name} > ${props.depth2name} > ${props.depth3name}`
+        : `${props.category_name}`,
+  },
+  {
+    label: "상품 수",
+    value: "product_count",
   },
 ];
 
@@ -224,13 +228,7 @@ export const CategoryList = ({ location }) => {
 
       {!isModify && (
         <Grid container className={classes.table_footer}>
-          <ExcelExportButton
-            data={
-              (query.category_type || "B") === "B" ? categoryList?.categoryBrandList : categoryList?.categoryNormalList
-            }
-            columns={excel_columns}
-            path="Category"
-          />
+          <ExcelExportButton columns={excel_columns} path="Category" />
 
           <Box className={classes.search_section}>
             <Box display="inline-block" mx={1} />

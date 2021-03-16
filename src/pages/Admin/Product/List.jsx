@@ -64,24 +64,28 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const excel_columns = [
-  { label: "카테고리구분", value: "category_type", render: ({ category_yn }) => (category_yn ? "브랜드" : "제품군") },
+  {
+    label: "카테고리구분",
+    value: "category_type",
+    render: ({ category_type }) => (category_type === "B" ? "브랜드" : "제품군"),
+  },
   { label: "카테고리명", value: "category_name" },
   { label: "상품명", value: "product_name" },
+  { label: "낱개가격", value: "each_price" },
+  { label: "박스가격", value: "box_price", render: ({ box_price }) => (box_price > 0 ? box_price : "-") },
+  { label: "카톤가격", value: "carton_price", render: ({ carton_price }) => (carton_price > 0 ? carton_price : "-") },
+  { label: "이벤트 낱개가격", value: "event_each_price" },
   {
-    label: "낱개당",
-    value: "each_price",
-    // render: ({ each_price }) => price(each_price),
+    label: "이벤트 박스가격",
+    value: "event_box_price",
+    render: ({ event_box_price }) => (event_box_price > 0 ? event_box_price : "-"),
   },
   {
-    label: "박스당",
-    value: "box_price",
-    render: ({ box_price }) => (box_price > 0 ? box_price : "-"),
+    label: "이벤트 카톤가격",
+    value: "event_carton_price",
+    render: ({ event_carton_price }) => (event_carton_price > 0 ? event_carton_price : "-"),
   },
-  {
-    label: "카톤당",
-    value: "carton_price",
-    render: ({ carton_price }) => (carton_price > 0 ? carton_price : "-"),
-  },
+  { label: "동일 카테고리상 노출순서", value: "display_seq" },
 ];
 
 export const ProductList = ({ location }) => {
@@ -102,7 +106,7 @@ export const ProductList = ({ location }) => {
       ),
       width: 180,
     },
-    { title: "카테고리구분", render: ({ category_yn }) => (category_yn ? "브랜드" : "제품군"), width: 120 },
+    { title: "카테고리구분", render: ({ category_type }) => (category_type === "B" ? "브랜드" : "제품군"), width: 120 },
     { title: "카테고리명", field: "category_name", width: 160 },
     { title: "상품명", field: "product_name", cellStyle: { textAlign: "left" } },
     {
@@ -250,7 +254,8 @@ export const ProductList = ({ location }) => {
 
       {!isModify && (
         <Grid container className={classes.table_footer}>
-          <ExcelExportButton data={productList} columns={excel_columns} path="Product" />
+          {/* <ExcelExportButton data={productList} columns={excel_columns} path="Product" /> */}
+          <ExcelExportButton columns={excel_columns} path="Product" />
 
           <Pagination total={productList?.[0]?.total} />
 

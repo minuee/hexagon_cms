@@ -3,6 +3,7 @@ import { useHistory } from "react-router-dom";
 import { apiObject } from "api";
 import { price } from "common";
 import { useQuery } from "hooks";
+import dayjs from "dayjs";
 
 import { Grid, Box, makeStyles } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
@@ -38,10 +39,6 @@ const header_button_list = [
     label: "이름순",
     value: "uname",
   },
-  // {
-  //   label: "번호순",
-  //   value: "no",
-  // },
   {
     label: "구매액순",
     value: "order",
@@ -78,17 +75,14 @@ const member_list_columns = [
 const excel_columns = [
   { label: "이름", value: "name" },
   { label: "코드값", value: "special_code" },
-  {
-    label: "구매총액",
-    value: "total_amount",
-    // render: ({ total_amount }) => `${price(total_amount) || 0}원`,
-  },
-  {
-    label: "리워드잔액",
-    value: "remain_reward",
-    // render: ({ remain_reward }) => `${price(remain_reward) || 0}원`,
-  },
+  { label: "이메일", value: "email" },
+  { label: "휴대폰번호", value: "phone" },
+  { label: "가입일자", value: "reg_dt", render: ({ reg_dt }) => dayjs.unix(reg_dt).format("YYYY-MM-DD") },
+  { label: "구매총액", value: "total_amount" },
+  { label: "리워드총액", value: "total_reward" },
+  { label: "리워드잔액", value: "remain_reward" },
   { label: "등급", value: "grade_name" },
+  { label: "사용여부", value: "use_yn", render: ({ use_yn }) => (use_yn ? "사용중" : "미사용") },
   {
     label: "비고",
     value: "approval",
@@ -131,6 +125,12 @@ export const MemberList = ({ location }) => {
     getDataFunction(getMemberList);
   }, []);
 
+  ////
+
+  async function handleExportExcel() {
+    let data = await apiObject.getExcelLink({ list_type: "U", ...query });
+  }
+
   return (
     <Box>
       <Grid container justify="space-between" alignItems="center">
@@ -165,7 +165,8 @@ export const MemberList = ({ location }) => {
       </Box>
 
       <Grid container className={classes.table_footer}>
-        <ExcelExportButton data={memberList} columns={excel_columns} path="Member" />
+        {/* <ExcelExportButton data={memberList} columns={excel_columns} path="Member" /> */}
+        <ExcelExportButton columns={excel_columns} path="Member" />
 
         <Pagination total={memberList?.[0]?.total} />
 
