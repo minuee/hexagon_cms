@@ -641,6 +641,7 @@ export const apiObject = {
     event_box_stock,
     event_carton_stock,
     reg_member,
+    use_yn,
   }) => {
     try {
       let response = await axios.post("/cms/product/regist", {
@@ -669,6 +670,7 @@ export const apiObject = {
         event_box_stock,
         event_carton_stock,
         reg_member,
+        use_yn,
       });
 
       alert("상품 등록을 완료했습니다");
@@ -701,11 +703,11 @@ export const apiObject = {
     display_seq,
     can_point,
     is_nonpoint,
-    use_yn,
     is_soldout,
     event_each_stock,
     event_box_stock,
     event_carton_stock,
+    use_yn,
     product_pk,
   }) => {
     try {
@@ -732,11 +734,11 @@ export const apiObject = {
         display_seq,
         can_point,
         is_nonpoint,
-        use_yn,
         is_soldout,
         event_each_stock,
         event_box_stock,
         event_carton_stock,
+        use_yn,
       });
 
       alert("상품 수정을 완료했습니다");

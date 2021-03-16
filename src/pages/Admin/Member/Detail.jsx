@@ -129,7 +129,7 @@ export const MemberDetail = () => {
       alert("사업자등록증 이미지를 첨부해주세요");
       return;
     }
-    if (!window.confirm("해당 유저의 정보를 수정하시겠습니까?")) {
+    if (!window.confirm("해당 회원의 정보를 수정하시겠습니까?")) {
       return;
     }
 
@@ -151,7 +151,7 @@ export const MemberDetail = () => {
   return (
     <Box>
       <Typography variant="h5" fontWeight="500">
-        유저 정보 및 리워드 상세
+        회원 정보 및 리워드 상세
       </Typography>
 
       {memberInfo?.approval_dt && (
@@ -300,7 +300,7 @@ export const MemberDetail = () => {
 
       <Box mt={4} mb={1}>
         <Typography variant="h5" fontWeight="500">
-          유저 정보
+          회원 정보
         </Typography>
       </Box>
       <RowTable width={"70%"}>

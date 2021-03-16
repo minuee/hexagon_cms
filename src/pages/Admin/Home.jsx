@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
 
 const member_rank_columns = [
   { title: "번호", field: "no", width: 80 },
-  { title: "유저명", field: "member_name", width: 160 },
+  { title: "회원명", field: "member_name", width: 160 },
   {
     title: "구매누적액",
     render: ({ total_amount }) => `${price(total_amount)}원`,
@@ -91,7 +91,7 @@ export const AdminHome = () => {
       <Box display="flex">
         <Box className={classes.column_table} mr={6}>
           <Typography variant="h6" fontWeight={700}>
-            유저 구매누적액 현황
+            회원 구매누적액 현황
           </Typography>
           <Typography color="secondary">{dayjs().format("YYYY.MM.DD HH:mm 기준 (순상품금액기준)")}</Typography>
 

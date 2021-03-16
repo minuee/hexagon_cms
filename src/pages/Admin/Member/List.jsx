@@ -112,7 +112,7 @@ export const MemberList = ({ location }) => {
     setMemberList(data);
   }
   async function approveSignIn() {
-    if (!window.confirm("선택한 유저들을 회원가입 승인하시겠습니까?")) return;
+    if (!window.confirm("선택한 회원들을 회원가입 승인하시겠습니까?")) return;
 
     let member_array = [];
     selectedMembers.forEach((item) => {
@@ -135,7 +135,7 @@ export const MemberList = ({ location }) => {
     <Box>
       <Grid container justify="space-between" alignItems="center">
         <Typography display="inline" variant="h5" fontWeight="500">
-          유저목록
+          회원목록
         </Typography>
 
         <Box className={classes.header_buttons}>

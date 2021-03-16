@@ -441,6 +441,7 @@ export const ProductDetail = () => {
           <TableCell>상품 대표 이미지</TableCell>
           <TableCell>
             <Dropzone control={control} name="thumb_img" width="180px" ratio={1} minFiles={1} zoomable />
+            <Typography>이미지는 가로x세로 1:1 최소720px이상을 권장드립니다.</Typography>
           </TableCell>
         </TableRow>
         <TableRow>
@@ -481,6 +482,23 @@ export const ProductDetail = () => {
                 </RadioGroup>
               )}
               name="is_nonpoint"
+              control={control}
+              defaultValue={false}
+            />
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>상품노출</TableCell>
+          <TableCell>
+            <Controller
+              render={({ onChange, ...props }) => (
+                <RadioGroup {...props} onChange={(e) => onChange(JSON.parse(e.target.value))} row>
+                  <FormControlLabel value={true} control={<Radio color="primary" />} label="노출" />
+                  <Box display="inline" ml={2} />
+                  <FormControlLabel value={false} control={<Radio color="primary" />} label="미노출" />
+                </RadioGroup>
+              )}
+              name="use_yn"
               control={control}
               defaultValue={false}
             />

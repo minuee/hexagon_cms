@@ -208,7 +208,7 @@ const MemberModal = ({ open, onClose, onSelect, selectedDefault }) => {
     { title: "이름", field: "name" },
     { title: "코드값", field: "special_code", width: 100 },
     {
-      title: "유저 정보",
+      title: "회원 정보",
       render: ({ member_pk }) => (
         <Button color="primary" onClick={() => window.open(`${window.location.origin}/member/${member_pk}`)}>
           정보

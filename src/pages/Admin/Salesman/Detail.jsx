@@ -22,7 +22,7 @@ import { Typography, Button } from "components/materialui";
 import { RowTable, ColumnTable } from "components";
 
 const member_columns = [
-  { field: "name", title: "유저명" },
+  { field: "name", title: "회원명" },
   { field: "grade_name", title: "등급", width: 240 },
 ];
 const incentive_columns = [

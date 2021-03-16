@@ -31,7 +31,7 @@ const order_list_columns = [
     render: ({ reg_dt }) => dayjs.unix(reg_dt).format("YYYY-MM-DD"),
     width: 160,
   },
-  { title: "유저명", field: "member_name", width: 160 },
+  { title: "회원명", field: "member_name", width: 160 },
   {
     title: "구매액",
     render: ({ total_amount }) => `${price(total_amount)}원`,
@@ -61,7 +61,7 @@ const excel_columns = [
     value: "reg_dt",
     render: ({ reg_dt }) => dayjs.unix(reg_dt).format("YYYY-MM-DD"),
   },
-  { label: "유저명", value: "member_name" },
+  { label: "회원명", value: "member_name" },
   {
     label: "구매액",
     value: "total_amount",

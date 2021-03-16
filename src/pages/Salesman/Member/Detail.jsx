@@ -222,7 +222,7 @@ export const ManageMemberDetail = () => {
 
       <Box mt={4} mb={1}>
         <Typography variant="h5" fontWeight="500">
-          유저 정보
+          회원 정보
         </Typography>
       </Box>
       <RowTable width={"70%"}>

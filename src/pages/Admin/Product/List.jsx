@@ -103,7 +103,7 @@ export const ProductList = ({ location }) => {
       width: 180,
     },
     { title: "카테고리구분", render: ({ category_yn }) => (category_yn ? "브랜드" : "제품군"), width: 120 },
-    { title: "카테고리명", field: "category_name" },
+    { title: "카테고리명", field: "category_name", width: 160 },
     { title: "상품명", field: "product_name", cellStyle: { textAlign: "left" } },
     {
       title: "가격",

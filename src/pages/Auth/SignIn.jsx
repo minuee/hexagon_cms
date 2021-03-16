@@ -33,6 +33,8 @@ const useStyles = makeStyles({
     width: "22rem",
     marginTop: "0.5rem",
   },
+
+  option_checkbox: {},
 });
 
 export const SignIn = ({}) => {
@@ -94,6 +96,22 @@ export const SignIn = ({}) => {
           }}
           error={!!errors?.user_id}
         />
+        <Box pl={1} width="22rem">
+          <Controller
+            render={({ value, onChange }) => (
+              <FormControlLabel
+                className={classes.option_checkbox}
+                control={<Checkbox color="primary" size="small" />}
+                onChange={(e) => onChange(e.target.checked)}
+                checked={value}
+                label={<Typography variant="subtitle2">아이디 기억하기</Typography>}
+              />
+            )}
+            control={control}
+            name="store_id_yn"
+            defaultValue={false}
+          />
+        </Box>
         <TextField
           defaultValue="hexagon12!@"
           // defaultValue="lenapark47##"
@@ -124,21 +142,7 @@ export const SignIn = ({}) => {
           <Button  variant="text" onClick={() => history.push("/signup")}>회원가입</Button>
         </Box> */}
 
-        <Box mt={3} mb={2}>
-          <Controller
-            render={({ value, onChange }) => (
-              <FormControlLabel
-                control={<Checkbox color="primary" />}
-                onChange={(e) => onChange(e.target.checked)}
-                checked={value}
-                label="아이디 기억하기"
-              />
-            )}
-            control={control}
-            name="store_id_yn"
-            defaultValue={false}
-          />
-        </Box>
+        <Box mt={3} mb={2}></Box>
 
         <Button variant="contained" color="primary" px={18} py={2} onClick={handleSubmit(signIn)}>
           <Typography variant="h6" fontWeight={"700"}>
