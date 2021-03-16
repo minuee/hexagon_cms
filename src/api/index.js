@@ -126,13 +126,14 @@ export const apiObject = {
       console.log({ e });
     }
   },
-  sendPushMessage: async ({ title, comment, routeName, routeIdx }) => {
+  sendPushMessage: async ({ title, comment, routeName, routeIdx, img_url }) => {
     try {
       let response = await axios.post(`/cms/pushsend`, {
         title,
         comment,
         routeName,
         routeIdx,
+        img_url
       });
 
       alert("알림을 발송했습니다");
