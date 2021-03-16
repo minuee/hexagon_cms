@@ -588,6 +588,8 @@ export const apiObject = {
       let data = await axios.get(`/cms/product/view/${product_pk}`, {});
       let ret = data.data.data.productDetail;
 
+      console.log(data);
+
       ret.thumb_img = [{ file: null, path: ret.thumb_img }];
       ret.detail_img = [];
       for (let i = 1; i <= 4; i++) {

@@ -9,6 +9,7 @@ import { Typography } from "components/materialui";
 import { RatioBox, ImageBox } from "components";
 
 import { DetailImageModal } from "./DetailImageModal";
+import { ImageCropModal } from "./ImageCropModal";
 
 const useStyles = makeStyles((theme) => ({
   clear_button: {
@@ -28,10 +29,12 @@ export const Dropzone = ({
   minFiles = 0,
   readOnly,
   zoomable,
+  croppable,
   ...props
 }) => {
   const classes = useStyles();
   const [initialSlide, setInitialSlide] = useState(null);
+  const [crop, setCrop] = useState(null);
   const { fields, append, remove } = useFieldArray({
     control: control,
     name: name,
@@ -43,7 +46,12 @@ export const Dropzone = ({
     let tmp = [];
     for (let i = 0; i < count; i++) {
       let path = await getFilePath(files[i]);
-      tmp.push({ file: files[i], path });
+
+      if (croppable) {
+        setCrop({ src: path, name: files[i].name });
+      } else {
+        tmp.push({ file: files[i], path });
+      }
     }
 
     append(tmp);
@@ -118,6 +126,8 @@ export const Dropzone = ({
       {zoomable && (
         <DetailImageModal data={fields} initialSlide={initialSlide} handleClose={() => setInitialSlide(null)} />
       )}
+
+      {croppable && <ImageCropModal target={crop} ratio={ratio} setImage={append} onClose={() => setCrop(null)} />}
     </Box>
   );
 };

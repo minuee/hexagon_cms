@@ -5,7 +5,7 @@ const useStyles = makeStyles({
   ratio_box: {
     position: "relative",
     width: (props) => props.width,
-    paddingTop: (props) => `calc(${props.width} * ${props.ratio})`,
+    paddingTop: (props) => `calc(${props.width} / ${props.ratio})`,
 
     "& img, > div": {
       position: "absolute",

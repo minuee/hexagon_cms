@@ -440,7 +440,7 @@ export const ProductDetail = () => {
         <TableRow>
           <TableCell>상품 대표 이미지</TableCell>
           <TableCell>
-            <Dropzone control={control} name="thumb_img" width="180px" ratio={1} minFiles={1} zoomable />
+            <Dropzone control={control} name="thumb_img" width="180px" ratio={1} minFiles={1} croppable />
             <Typography>이미지는 가로x세로 1:1 최소720px이상을 권장드립니다.</Typography>
           </TableCell>
         </TableRow>

@@ -246,7 +246,7 @@ export const BannerDetail = ({ location }) => {
         <TableRow>
           <TableCell>배너이미지</TableCell>
           <TableCell>
-            <Dropzone mb={1} control={control} name="banner_img" width="180px" ratio={0.75} zoomable />
+            <Dropzone mb={1} control={control} name="banner_img" width="180px" ratio={1.33} zoomable croppable />
             <Typography>가로X세로(4:3)비율의 이미지를 업로드하는 것이 권장됩니다</Typography>
           </TableCell>
         </TableRow>
