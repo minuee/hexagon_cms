@@ -127,7 +127,7 @@ export const Dropzone = ({
         <DetailImageModal data={fields} initialSlide={initialSlide} handleClose={() => setInitialSlide(null)} />
       )}
 
-      {croppable && <ImageCropModal target={crop} ratio={ratio} setImage={append} onClose={() => setCrop(null)} />}
+      {croppable && <ImageCropModal target={crop} ratio={ratio} minWidth={croppable?.minWidth} setImage={append} onClose={() => setCrop(null)} />}
     </Box>
   );
 };

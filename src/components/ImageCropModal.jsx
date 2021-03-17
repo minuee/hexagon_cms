@@ -1,31 +1,59 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 
-import { Box, Dialog, IconButton } from "@material-ui/core";
+import { makeStyles, Box, Dialog, IconButton } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
 import { Button } from "components/materialui";
 
-export const ImageCropModal = ({ target, ratio, setImage, onClose }) => {
-  const [crop, setCrop] = useState({ aspect: ratio });
+const useStyles = makeStyles((theme) => ({
+  target_image: {
+    "& > :first-child": {
+      display: "flex",
+      alignItems: "center",
+      width: 800,
+      height: 800,
+      background: "#000",
+    },
+    "& img": {
+      width: "100%",
+      userDrag: "none",
+      userSelect: "none",
+      MozUserSelect: "none",
+      WebkitUserDrag: "none",
+      WebkitUserSelect: "none",
+      MsUserSelect: "none",
+    },
+  },
+}));
+
+export const ImageCropModal = ({ target, ratio, minWidth, setImage, onClose }) => {
+  const classes = useStyles();
+  const [crop, setCrop] = useState({
+    unit: "px",
+    width: minWidth,
+    height: minWidth / ratio,
+    aspect: ratio,
+  });
 
   function getCroppedImg(crop) {
     const img = document.createElement("img");
     img.src = target.src;
 
     const canvas = document.createElement("canvas");
-    const scaleX = img.naturalWidth / img.width;
-    const scaleY = img.naturalHeight / img.height;
+    const scale = img.naturalWidth / 800;
     canvas.width = crop.width;
     canvas.height = crop.height;
     const ctx = canvas.getContext("2d");
 
+    let dy = Math.max(0, 800 - img.naturalHeight / scale) / 2;
+
     ctx.drawImage(
       img,
-      crop.x * scaleX,
-      crop.y * scaleY,
-      crop.width * scaleX,
-      crop.height * scaleY,
+      crop.x * scale,
+      (crop.y - dy) * scale,
+      crop.width * scale,
+      crop.height * scale,
       0,
       0,
       crop.width,
@@ -57,7 +85,6 @@ export const ImageCropModal = ({ target, ratio, setImage, onClose }) => {
   async function handleCropComplete() {
     let cropped_file = await getCroppedImg(crop);
     let path = await getFilePath(cropped_file);
-
     setImage({ file: cropped_file, path });
     handleClose();
   }
@@ -75,12 +102,21 @@ export const ImageCropModal = ({ target, ratio, setImage, onClose }) => {
         </IconButton>
       </Box>
 
-      <Box p={2} display="flex" flexDirection="column" alignItems="center">
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="800px">
-          <ReactCrop src={target?.src} crop={crop} onChange={setCrop} />
-        </Box>
+      <Box p={2} display="flex" flexDirection="column" alignItems="center" id="jjj">
+        <ReactCrop
+          className={classes.target_image}
+          src={target?.src}
+          crop={crop}
+          onChange={setCrop}
+          minWidth={minWidth}
+        />
 
-        <Button mt={2} color="primary" onClick={handleCropComplete}>
+        <Button
+          mt={2}
+          color="primary"
+          onClick={handleCropComplete}
+          disabled={crop.width < minWidth || crop.height < minWidth / ratio}
+        >
           이미지 생성
         </Button>
       </Box>

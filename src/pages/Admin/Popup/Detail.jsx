@@ -322,7 +322,15 @@ export const PopupDetail = () => {
         <TableRow>
           <TableCell>이미지</TableCell>
           <TableCell>
-            <Dropzone control={control} name="popup_img" width="250px" ratio={0.55} readOnly={isTerminated} zoomable />
+            <Dropzone
+              control={control}
+              name="popup_img"
+              width="250px"
+              ratio={0.625}
+              readOnly={isTerminated}
+              zoomable
+              croppable={{ minWidth: 300 }}
+            />
           </TableCell>
         </TableRow>
       </RowTable>
