@@ -1533,22 +1533,16 @@ export const apiObject = {
       return {};
     }
   },
-  getSalsemanClientList: async ({ special_code, page = 1, paginate = 10, search_word }) => {
+  getSalsemanClientList: async ({ special_code, page = 1, paginate = 10, search_word, sort_item, sort_type }) => {
     try {
-      // let data = await axios.get(`/cms/salesman/charge/list/${special_code}`, {
-      //   params: {
-      //     page,
-      //     paginate,
-      //     search_word,
-      //   },
-      // });
-      // let ret = data.data.data.salesmanList;
       let data = await axios.get("/cms/member/list", {
         params: {
           page,
           paginate,
           search_word,
           special_code,
+          sort_item,
+          sort_type,
         },
       });
       let ret = data.data.data.userList;

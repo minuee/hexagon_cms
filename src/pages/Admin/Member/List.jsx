@@ -38,10 +38,10 @@ const header_button_list = [
     label: "이름순",
     value: "uname",
   },
-  {
-    label: "번호순",
-    value: "no",
-  },
+  // {
+  //   label: "번호순",
+  //   value: "no",
+  // },
   {
     label: "구매액순",
     value: "order",

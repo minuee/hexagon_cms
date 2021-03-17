@@ -22,6 +22,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const header_button_list = [
+  {
+    label: "가입일자순",
+    value: "reg",
+  },
+  {
+    label: "이름순",
+    value: "uname",
+  },
+  {
+    label: "구매액순",
+    value: "order",
+  },
+  {
+    label: "리워드액순",
+    value: "reward",
+  },
+];
 const member_list_columns = [
   { title: "이름", field: "name", width: 160 },
   { title: "코드값", field: "special_code", width: 100 },
@@ -47,7 +65,7 @@ export const ManageMemberList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
   const { member } = useSelector((state) => state.reducer);
-  const { getDataFunction, Pagination, SearchBox } = useQuery(location);
+  const { getDataFunction, Pagination, FilterBox, SearchBox } = useQuery(location);
 
   const [memberList, setMemberList] = useState();
 
@@ -67,9 +85,13 @@ export const ManageMemberList = ({ location }) => {
 
   return (
     <Box>
-      <Typography variant="h5" fontWeight="500">
-        회원 목록
-      </Typography>
+      <Box display="flex" justifyContent="space-between">
+        <Typography display="inline" variant="h5" fontWeight="500">
+          회원 목록
+        </Typography>
+
+        <FilterBox type="sort" button_list={header_button_list} default_item="reg" />
+      </Box>
 
       <Box mt={2} mb={3}>
         <ColumnTable
