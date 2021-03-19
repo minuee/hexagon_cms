@@ -889,7 +889,7 @@ export const apiObject = {
       console.log({ e });
     }
   },
-  modifyEvent: async ({ event_pk, event_gubun, start_dt, end_dt, title, product, is_halt }) => {
+  modifyEvent: async ({ event_pk, event_gubun, start_dt, end_dt, title, product }) => {
     try {
       let response = await axios.put(`/cms/event/modify/${event_pk}`, {
         event_gubun,
@@ -899,11 +899,17 @@ export const apiObject = {
         product,
       });
 
-      if (is_halt) {
-        alert("이벤트를 중지했습니다");
-      } else {
-        alert("이벤트 수정을 완료했습니다");
-      }
+      alert("이벤트 수정을 완료했습니다");
+      return response;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+    }
+  },
+  haltEvent: async ({ event_pk }) => {
+    try {
+      let response = await axios.patch(`/cms/event/stop/${event_pk}`);
+      alert("이벤트를 중지했습니다");
       return response;
     } catch (e) {
       alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");

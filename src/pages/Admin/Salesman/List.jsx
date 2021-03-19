@@ -60,7 +60,7 @@ const header_button_list = [
     value: "order",
   },
   {
-    label: "인센티브액순",
+    label: "인센티브액순",
     value: "incentive",
   },
 ];

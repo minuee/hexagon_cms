@@ -146,20 +146,10 @@ export const EventDetail = () => {
     await apiObject.modifyEvent({ event_pk, ...form, is_halt: false });
     getEventDetail();
   }
-  async function haltEvent(form) {
+  async function haltEvent() {
     if (!window.confirm("선택한 이벤트를 중지시키시겠습니까?")) return;
 
-    form.product = [];
-    form.event_product.forEach((item) => {
-      form.product.push({
-        product_pk: item.product_pk,
-      });
-    });
-
-    form.start_dt = form.start_dt.unix();
-    form.end_dt = dayjs().unix();
-
-    await apiObject.modifyEvent({ event_pk, ...form, is_halt: true });
+    await apiObject.haltEvent({ event_pk });
     getEventDetail();
   }
   async function removeEvent() {
@@ -363,7 +353,7 @@ export const EventDetail = () => {
                 <Button mr={2} color="primary" onClick={handleSubmit(modifyEvent)}>
                   수정
                 </Button>
-                <Button mr={2} style={{ background: "#333", color: "#fff" }} onClick={handleSubmit(haltEvent)}>
+                <Button mr={2} style={{ background: "#333", color: "#fff" }} onClick={haltEvent}>
                   중지
                 </Button>
               </>
