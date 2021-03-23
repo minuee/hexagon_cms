@@ -4,6 +4,7 @@ import { encrypt, decrypt, getListIndex } from "common";
 
 // let token = localStorage.hexagon_cms_token;
 axios.defaults.headers.common.Authorization = localStorage.hexagon_cms_token;
+// axios.defaults.headers.common["Cache-control"] = "no-cache";
 // axios.defaults.headers.common["Access-Control-Allow-Origin"] = "*";
 
 //  const instance = axios.create({
