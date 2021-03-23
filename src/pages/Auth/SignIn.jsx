@@ -53,7 +53,7 @@ export const SignIn = ({}) => {
     localStorage.setItem("hexagon_cms_token", resp.token);
 
     if (form.store_id_yn) {
-      Cookies.set("id", encrypt(form.user_id));
+      Cookies.set("id", encrypt(form.user_id), { expires: 36500 });
     } else {
       Cookies.remove("id");
     }

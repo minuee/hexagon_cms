@@ -168,10 +168,8 @@ export const MemberOrderDetail = () => {
             <TableRow>
               <TableCell>상품명</TableCell>
               <TableCell>
-                {item.product_name}
-                <Typography display="inline" variant="subtitle1">
-                  {item.event_limit_price > 0 && " (한정판매 대상상품)"}
-                </Typography>
+                <Typography>{item.product_name}</Typography>
+                <Typography variant="subtitle1">{item.event_limit_price > 0 && "한정판매 대상상품"}</Typography>
               </TableCell>
               <TableCell>합계 금액</TableCell>
               <TableCell colSpan={3} align="right">

@@ -54,7 +54,9 @@ export const IncentiveDetail = () => {
         </Typography>
 
         <Box mt={2}>
-          <Typography>구매액: {price(incentiveData?.total_amount)}원</Typography>
+          <Typography display="inline">
+            구매액: {price(incentiveData?.total_amount)}원, 포인트구매액: {price(incentiveData?.total_point)}원
+          </Typography>
           <Typography>인센티브액: {price(incentiveData?.total_incentive)}원</Typography>
         </Box>
       </Box>
