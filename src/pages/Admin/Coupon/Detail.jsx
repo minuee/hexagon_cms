@@ -100,7 +100,14 @@ export const CouponDetail = () => {
 
                   <Controller
                     render={({ ref, ...props }) => (
-                      <DatePicker {...props} inputRef={ref} format="YYYY.MM.DD" size="small" disabled={isTerminated} />
+                      <DatePicker
+                        {...props}
+                        inputRef={ref}
+                        format="YYYY.MM.DD"
+                        size="small"
+                        disabled={isTerminated}
+                        disablePast
+                      />
                     )}
                     control={control}
                     name="end_dt"

@@ -253,6 +253,8 @@ export const EventDetail = () => {
                     }}
                     size="small"
                     disabled={isTerminated}
+                    maxDate={watch("end_dt") || dayjs.unix(9999999999)}
+                    disablePast
                   />
                 )}
                 name={"start_dt"}
@@ -283,6 +285,7 @@ export const EventDetail = () => {
                         }}
                         size="small"
                         disabled={isTerminated}
+                        minDate={watch("start_dt") || dayjs.unix(0)}
                       />
                     )}
                     name={"end_dt"}

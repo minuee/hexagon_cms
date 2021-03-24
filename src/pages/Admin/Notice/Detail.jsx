@@ -101,6 +101,7 @@ export const NoticeDetail = () => {
                     ),
                   }}
                   error={!!errors?.start_dt}
+                  disablePast
                 />
               )}
               name={"start_dt"}
@@ -141,7 +142,7 @@ export const NoticeDetail = () => {
         <TableRow>
           <TableCell>이미지</TableCell>
           <TableCell>
-            <Dropzone mb={1} control={control} name="img_url" width="180px" ratio={1}  />
+            <Dropzone mb={1} control={control} name="img_url" width="180px" ratio={1} />
             <Typography>1:1비율의 이미지를 업로드하는 것이 권장됩니다</Typography>
           </TableCell>
         </TableRow>

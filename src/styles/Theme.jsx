@@ -25,6 +25,9 @@ export const theme = createMuiTheme({
     },
     MuiTextField: {
       variant: "outlined",
+      FormHelperTextProps: {
+        style: { display: "none" },
+      },
     },
     MuiSelect: {
       variant: "outlined",

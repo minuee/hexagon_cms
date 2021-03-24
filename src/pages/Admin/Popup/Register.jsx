@@ -220,6 +220,7 @@ export const PopupRegister = () => {
                   }}
                   size="small"
                   error={!!errors.start_dt}
+                  disablePast
                 />
               )}
               control={control}

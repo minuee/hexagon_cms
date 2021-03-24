@@ -277,6 +277,8 @@ export const PopupDetail = () => {
                   size="small"
                   error={!!errors.start_dt}
                   disabled={isTerminated}
+                  maxDate={watch("end_dt") || dayjs.unix(9999999999)}
+                  disablePast
                 />
               )}
               control={control}
@@ -308,6 +310,7 @@ export const PopupDetail = () => {
                       size="small"
                       error={!!errors.end_dt}
                       disabled={isTerminated}
+                      minDate={watch("start_dt") || dayjs.unix(0)}
                     />
                   )}
                   control={control}

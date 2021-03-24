@@ -144,7 +144,7 @@ export const CouponRegister = () => {
               </Box>
               <Controller
                 render={({ ref, ...props }) => (
-                  <DatePicker {...props} inputRef={ref} format="YYYY.MM.DD" size="small" />
+                  <DatePicker {...props} inputRef={ref} format="YYYY.MM.DD" size="small" disablePast />
                 )}
                 control={control}
                 name="end_dt"
