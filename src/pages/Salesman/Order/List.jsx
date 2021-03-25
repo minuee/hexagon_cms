@@ -103,8 +103,7 @@ export const MemberOrderList = ({ location }) => {
       </Box>
 
       <Grid container className={classes.table_footer}>
-        {/* <ExcelExportButton data={orderList} columns={excel_columns} path="Order" /> */}
-        <ExcelExportButton columns={excel_columns} path="Member_Order" params={{ special_code: member.special_code }} />
+        <ExcelExportButton path="order" params={{ special_code: member.special_code }} />
 
         <Pagination total={orderList?.[0]?.total} />
 

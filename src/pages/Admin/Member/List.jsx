@@ -72,23 +72,6 @@ const member_list_columns = [
     width: 160,
   },
 ];
-const excel_columns = [
-  { label: "이름", value: "name" },
-  { label: "코드값", value: "special_code" },
-  { label: "이메일", value: "email" },
-  { label: "휴대폰번호", value: "phone" },
-  { label: "가입일자", value: "reg_dt", render: ({ reg_dt }) => dayjs.unix(reg_dt).format("YYYY-MM-DD") },
-  { label: "구매총액", value: "total_amount" },
-  { label: "리워드총액", value: "total_reward" },
-  { label: "리워드잔액", value: "remain_reward" },
-  { label: "등급", value: "grade_name" },
-  { label: "사용여부", value: "use_yn", render: ({ use_yn }) => (use_yn ? "사용중" : "미사용") },
-  {
-    label: "비고",
-    value: "approval",
-    render: ({ approval, agent_code }) => (approval ? agent_code && `영업사원코드: ${agent_code}` : "회원가입 미승인"),
-  },
-];
 
 export const MemberList = ({ location }) => {
   const classes = useStyles();
@@ -165,8 +148,7 @@ export const MemberList = ({ location }) => {
       </Box>
 
       <Grid container className={classes.table_footer}>
-        {/* <ExcelExportButton data={memberList} columns={excel_columns} path="Member" /> */}
-        <ExcelExportButton columns={excel_columns} path="Member" />
+        <ExcelExportButton path="member" />
 
         <Pagination total={memberList?.[0]?.total} />
 

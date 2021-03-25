@@ -64,17 +64,6 @@ const header_button_list = [
     value: "incentive",
   },
 ];
-const excel_columns = [
-  { label: "이름", value: "name" },
-  { label: "아이디", value: "user_id" },
-  { label: "회원가입일", value: "reg_dt", render: ({ reg_dt }) => dayjs.unix(reg_dt).format("YYYY-MM-DD") },
-  { label: "코드값", value: "special_code" },
-  { label: "이메일", value: "email" },
-  { label: "휴대폰번호", value: "phone" },
-  { label: "구매대행액", value: "total_amount" },
-  { label: "인센티브액", value: "total_incentive" },
-  { label: "상태", value: "use_yn", render: ({ use_yn }) => (use_yn ? "이용중" : "퇴사") },
-];
 
 export const SalesmanList = ({ location }) => {
   const classes = useStyles();
@@ -117,8 +106,7 @@ export const SalesmanList = ({ location }) => {
       </Box>
 
       <Grid container className={classes.table_footer}>
-        {/* <ExcelExportButton data={salesmanList} columns={excel_columns} path="Salesman" /> */}
-        <ExcelExportButton columns={excel_columns} path="Salesman" />
+        <ExcelExportButton path="salesman" />
 
         <Pagination total={salesmanList?.[0]?.total} />
       </Grid>

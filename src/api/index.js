@@ -144,18 +144,16 @@ export const apiObject = {
       console.log({ e });
     }
   },
-  getExcelLink: async ({ list_type, search_word, sort_type, sort_item, term_start, term_end }) => {
+  getExcelLink: async ({ path, query, params }) => {
     try {
-      let response = await axios.post(`/v1/excel`, {
-        list_type,
-        search_word,
-        sort_type,
-        sort_item,
-        term_start,
-        term_end,
+      let response = await axios.get(`/cms/${path}/list`, {
+        params: {
+          is_excel: true,
+          ...query,
+          ...params,
+        },
       });
-      let ret = response;
-      console.log(ret);
+      let ret = response.data.url;
 
       return ret;
     } catch (e) {
@@ -208,7 +206,6 @@ export const apiObject = {
     sort_item,
     sort_type,
     is_approval,
-    is_excel,
   }) => {
     try {
       let data = await axios.get("/cms/member/list", {
@@ -221,7 +218,6 @@ export const apiObject = {
           sort_item,
           sort_type,
           is_approval,
-          is_excel,
         },
       });
       let ret = data.data.data.userList;
@@ -347,11 +343,10 @@ export const apiObject = {
     sort_item,
     sort_type,
     special_code,
-    is_excel,
   }) => {
     try {
       let data = await axios.get("/cms/order/list", {
-        params: { page, paginate, search_word, term_start, term_end, sort_item, sort_type, special_code, is_excel },
+        params: { page, paginate, search_word, term_start, term_end, sort_item, sort_type, special_code },
       });
       let ret = data.data.data.orderList;
 
@@ -434,10 +429,10 @@ export const apiObject = {
   },
 
   // Category
-  getCategoryList: async ({ search_word, is_excel }) => {
+  getCategoryList: async ({ search_word }) => {
     try {
       let data = await axios.get("/cms/category/list", {
-        params: { search_word, is_excel },
+        params: { search_word },
       });
       let ret = data.data.data;
 
@@ -591,10 +586,10 @@ export const apiObject = {
   },
 
   // Product
-  getProductList: async ({ category_pk, page, paginate = 10, search_word, is_excel }) => {
+  getProductList: async ({ category_pk, page, paginate = 10, search_word }) => {
     try {
       let data = await axios.get("/cms/product/list", {
-        params: { category_pk, page, paginate, search_word, is_excel },
+        params: { category_pk, page, paginate, search_word },
       });
 
       let ret = data.data.data.productList;
@@ -1520,16 +1515,7 @@ export const apiObject = {
   },
 
   // Salesman
-  getSalesmanList: async ({
-    page = 1,
-    paginate = 10,
-    search_word,
-    term_start,
-    term_end,
-    sort_item,
-    sort_type,
-    is_excel,
-  }) => {
+  getSalesmanList: async ({ page = 1, paginate = 10, search_word, term_start, term_end, sort_item, sort_type }) => {
     try {
       let data = await axios.get("/cms/salesman/list", {
         params: {
@@ -1540,7 +1526,6 @@ export const apiObject = {
           term_end,
           sort_item,
           sort_type,
-          is_excel,
         },
       });
       let ret = data.data.data.salesmanList;

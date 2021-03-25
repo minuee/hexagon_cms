@@ -65,26 +65,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const excel_columns = [
-  {
-    label: "카테고리구분",
-    value: "category_type",
-    render: ({ category_type }) => (category_type === "B" ? "브랜드" : "제품군"),
-  },
-  {
-    label: "카테고리명",
-    value: "category_name",
-    render: (props) =>
-      props.category_type === "N"
-        ? `${props.depth1name} > ${props.depth2name} > ${props.depth3name}`
-        : `${props.category_name}`,
-  },
-  {
-    label: "상품 수",
-    value: "product_count",
-  },
-];
-
 export const CategoryList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
@@ -228,7 +208,7 @@ export const CategoryList = ({ location }) => {
 
       {!isModify && (
         <Grid container className={classes.table_footer}>
-          <ExcelExportButton columns={excel_columns} path="Category" />
+          <ExcelExportButton path="category" />
 
           <Box className={classes.search_section}>
             <Box display="inline-block" mx={1} />
