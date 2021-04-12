@@ -4,7 +4,7 @@ import { apiObject } from "api";
 import { getFullImgURL } from "common";
 import { useQuery } from "hooks";
 
-import { Grid, Box, makeStyles, InputAdornment, Select, MenuItem } from "@material-ui/core";
+import { Grid, Box, makeStyles, InputAdornment, Select, MenuItem, FormControlLabel, Checkbox } from "@material-ui/core";
 import { Search } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, ImageBox, ExcelExportButton, DnDList } from "components";
@@ -73,6 +73,7 @@ export const CategoryList = ({ location }) => {
   const [categoryList, setCategoryList] = useState();
   const [selectedCategorys, setSelectedCategorys] = useState([]);
   const [isModify, setIsModify] = useState(false);
+  const [showRemoved, setShowRemoved] = useState(true);
 
   const category_list_columns = [
     {
@@ -85,14 +86,26 @@ export const CategoryList = ({ location }) => {
     { title: "카테고리구분", render: ({ category_type }) => (category_type === "B" ? "브랜드" : "제품군"), width: 120 },
     {
       title: "카테고리명 (상품 수)",
-      render: (props) =>
-        props.category_type === "N"
-          ? `${props.depth1name} > ${props.depth2name} > ${props.depth3name}  (${props.product_count})`
-          : `${props.category_name} (${props.product_count})`,
+      render: (props) => {
+        let name =
+          props.category_type === "N"
+            ? `${props.depth1name} > ${props.depth2name} > ${props.depth3name}  (${props.product_count})`
+            : `${props.category_name} (${props.product_count})`;
+
+        return `${name} ${!props.category_yn ? "( 사용중지 )" : ""}`;
+      },
       cellStyle: { textAlign: "N" === (query.category_type || "N") && "left" },
     },
     // { field: "exposure_priority", title: "노출순위" },
   ];
+
+  function getModifiedList(list, flag) {
+    if (!flag) {
+      return list?.filter((item) => item.category_yn);
+    } else {
+      return list;
+    }
+  }
 
   async function getCategoryList(query) {
     let data = await apiObject.getCategoryList({ ...query });
@@ -161,6 +174,16 @@ export const CategoryList = ({ location }) => {
               <MenuItem value={"B"}>브랜드</MenuItem>
               <MenuItem value={"N"}>제품군</MenuItem>
             </Select>
+
+            <Box ml={2}>
+              <FormControlLabel
+                control={<Checkbox color="primary" />}
+                checked={showRemoved}
+                onChange={() => setShowRemoved(!showRemoved)}
+                labelPlacement="start"
+                label="사용중지 포함"
+              />
+            </Box>
           </Box>
 
           <Box>
@@ -178,9 +201,10 @@ export const CategoryList = ({ location }) => {
       <Box mt={2} mb={3}>
         {isModify ? (
           <DnDList
-            data={
-              (query.category_type || "B") === "B" ? categoryList?.categoryBrandList : categoryList?.categoryNormalList
-            }
+            data={getModifiedList(
+              (query.category_type || "B") === "B" ? categoryList?.categoryBrandList : categoryList?.categoryNormalList,
+              true,
+            )}
             columns={category_list_columns}
             className={classes.dnd_container}
             onModifyFinish={modifyExposureSequence}
@@ -189,9 +213,10 @@ export const CategoryList = ({ location }) => {
         ) : (
           <ColumnTable
             columns={category_list_columns}
-            data={
-              (query.category_type || "B") === "B" ? categoryList?.categoryBrandList : categoryList?.categoryNormalList
-            }
+            data={getModifiedList(
+              (query.category_type || "B") === "B" ? categoryList?.categoryBrandList : categoryList?.categoryNormalList,
+              showRemoved,
+            )}
             onRowClick={(row) =>
               history.push({
                 pathname: `/product/category/${row.category_pk}`,

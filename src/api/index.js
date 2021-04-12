@@ -36,11 +36,13 @@ axios.interceptors.response.use(
       payload: false,
     });
 
-    if (response.data.code === "1024") {
+    if (response.data.code === "1024" || response.data.code === "1025") {
       alert("인증이 만료되어 로그인 페이지로 이동합니다");
-      store.dispatch({
-        type: "SIGN_OUT",
-      });
+
+      store.dispatch({ type: "SIGN_OUT" });
+      localStorage.removeItem("hexagon_cms_token");
+
+      return new Promise(() => {});
     }
 
     return response;
@@ -429,10 +431,10 @@ export const apiObject = {
   },
 
   // Category
-  getCategoryList: async ({ search_word }) => {
+  getCategoryList: async ({ search_word, is_cms = true }) => {
     try {
       let data = await axios.get("/cms/category/list", {
-        params: { search_word },
+        params: { search_word, is_cms },
       });
       let ret = data.data.data;
 
@@ -464,6 +466,8 @@ export const apiObject = {
       let data = await axios.get(`/cms/category/view/${category_pk}`, {
         params: { category_type },
       });
+
+      console.log(data);
 
       let ret = data.data.data.categoryDetail;
 
@@ -550,7 +554,7 @@ export const apiObject = {
     category_logo,
     category_seq = 1,
     category_type,
-    category_yn = true,
+    category_yn,
     normalcategory_pk,
   }) => {
     try {

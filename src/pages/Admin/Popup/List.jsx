@@ -128,7 +128,6 @@ export const PopupList = ({ location }) => {
 
   async function getPopupList(query) {
     let data;
-    console.log({ ...query });
 
     if (query.type === "event") {
       if (query.filter_item === "stop") {

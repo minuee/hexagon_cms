@@ -83,7 +83,18 @@ export const ProductList = ({ location }) => {
     },
     { title: "카테고리구분", render: ({ category_type }) => (category_type === "B" ? "브랜드" : "제품군"), width: 120 },
     { title: "카테고리명", field: "category_name", width: 160 },
-    { title: "상품명", field: "product_name", cellStyle: { textAlign: "left" } },
+    {
+      title: "상품명",
+      field: "product_name",
+
+      render: ({ product_name, category_yn }) => (
+        <p>
+          {!category_yn && <span style={{ color: "red" }}>(사용중지) </span>}
+          {product_name}
+        </p>
+      ),
+      cellStyle: { textAlign: "left" },
+    },
     {
       title: "가격",
       render: ({ each_price, box_price, carton_price }) => (

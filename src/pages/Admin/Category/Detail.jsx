@@ -4,7 +4,18 @@ import { useSelector } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
 import { apiObject } from "api";
 
-import { Box, makeStyles, TextField, Select, MenuItem, TableRow, TableCell } from "@material-ui/core";
+import {
+  Box,
+  makeStyles,
+  TextField,
+  Select,
+  MenuItem,
+  TableRow,
+  TableCell,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+} from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
 import { RowTable, Dropzone } from "components";
 
@@ -115,6 +126,22 @@ export const CategoryDetail = ({ location }) => {
       </Box>
 
       <RowTable>
+        <TableRow>
+          <TableCell>사용여부</TableCell>
+          <TableCell>
+            <Controller
+              render={({ onChange, ...props }) => (
+                <RadioGroup row {...props} onChange={(e) => onChange(e.target.value == "true")}>
+                  <FormControlLabel value={true} control={<Radio color="primary" />} label="사용" />
+                  <FormControlLabel value={false} control={<Radio color="primary" />} label="미사용" />
+                </RadioGroup>
+              )}
+              name="category_yn"
+              control={control}
+              defaultValue={true}
+            />
+          </TableCell>
+        </TableRow>
         <TableRow>
           <TableCell>카테고리구분</TableCell>
           <TableCell>
