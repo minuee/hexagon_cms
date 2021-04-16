@@ -9,6 +9,10 @@ const StyledModal = styled(Modal)({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+
+  "& .MuiCircularProgress-root": {
+    outline: "none",
+  },
 });
 
 const App = () => {
@@ -18,7 +22,7 @@ const App = () => {
       <Routes />
 
       <StyledModal open={reducer.isLoading}>
-        <CircularProgress color="primary" />
+        <CircularProgress size={80} />
       </StyledModal>
     </>
   );

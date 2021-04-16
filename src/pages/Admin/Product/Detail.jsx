@@ -479,14 +479,31 @@ export const ProductDetail = () => {
           </TableCell>
         </TableRow>
         <TableRow>
-          <TableCell>적립금 사용 가능 여부</TableCell>
+          <TableCell>적립금 사용가능여부</TableCell>
           <TableCell>
             <Controller
               render={({ onChange, ...props }) => (
                 <RadioGroup {...props} onChange={(e) => onChange(JSON.parse(e.target.value))} row>
-                  <FormControlLabel value={false} control={<Radio color="primary" />} label="적립금 사용 가능 상품" />
+                  <FormControlLabel value={true} control={<Radio color="primary" />} label="사용가능" />
                   <Box display="inline" ml={2} />
-                  <FormControlLabel value={true} control={<Radio color="primary" />} label="적립금 사용 불가 상품" />
+                  <FormControlLabel value={false} control={<Radio color="primary" />} label="사용불가" />
+                </RadioGroup>
+              )}
+              name="can_point"
+              control={control}
+              defaultValue={true}
+            />
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>적립제외 상품여부</TableCell>
+          <TableCell>
+            <Controller
+              render={({ onChange, ...props }) => (
+                <RadioGroup {...props} onChange={(e) => onChange(JSON.parse(e.target.value))} row>
+                  <FormControlLabel value={false} control={<Radio color="primary" />} label="적립대상" />
+                  <Box display="inline" ml={2} />
+                  <FormControlLabel value={true} control={<Radio color="primary" />} label="적립불가" />
                 </RadioGroup>
               )}
               name="is_nonpoint"
