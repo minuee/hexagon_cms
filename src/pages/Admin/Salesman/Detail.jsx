@@ -69,102 +69,143 @@ export const SalesmanDetail = () => {
 
   return (
     <Box>
-      <Typography variant="h5" fontWeight="500">
-        영업사원 정보
-      </Typography>
+      <Box>
+        <Typography variant="h5" fontWeight="500">
+          영업사원 정보
+        </Typography>
 
-      <Box mt={4} />
+        <Box my={2} />
 
-      <RowTable width={"70%"}>
-        <TableRow>
-          <TableCell>이름</TableCell>
-          <TableCell>
-            <TextField
-              size="small"
-              fullWidth
-              name="name"
-              placeholder="이름을 입력해주세요"
-              inputRef={register({ required: true })}
-              disabled={salesmanInfo?.is_retired}
-            />
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>아이디</TableCell>
-          <TableCell>{salesmanInfo?.user_id}</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>코드번호</TableCell>
-          <TableCell>{salesmanInfo?.special_code}</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>등록일자</TableCell>
-          <TableCell>{dayjs.unix(salesmanInfo?.reg_dt).format("YYYY-MM-DD")}</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>비밀번호</TableCell>
-          <TableCell>
-            <TextField
-              size="small"
-              type="password"
-              fullWidth
-              name="password"
-              placeholder="변경 시에만 입력해주세요"
-              inputRef={register}
-              disabled={salesmanInfo?.is_retired}
-            />
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>휴대폰번호</TableCell>
-          <TableCell>
-            <TextField
-              size="small"
-              fullWidth
-              name="phone"
-              placeholder="휴대폰 번호를 입력해주세요"
-              inputRef={register({ required: true })}
-              disabled={salesmanInfo?.is_retired}
-            />
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>이메일</TableCell>
-          <TableCell>
-            <TextField
-              size="small"
-              fullWidth
-              name="email"
-              placeholder="이메일을 입력해주세요"
-              inputRef={register({ required: true })}
-              disabled={salesmanInfo?.is_retired}
-            />
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>상태</TableCell>
-          <TableCell>
-            {salesmanInfo?.is_retired ? (
-              <Typography>퇴사</Typography>
-            ) : (
-              <Controller
-                render={({ onChange, ...props }) => (
-                  <RadioGroup {...props} onChange={(e) => onChange(JSON.parse(e.target.value))} row>
-                    <FormControlLabel value={false} control={<Radio color="primary" />} label="이용중" />
-                    <FormControlLabel value={true} control={<Radio color="primary" />} label="퇴사" />
-                  </RadioGroup>
-                )}
-                name="is_retired"
-                control={control}
-                defaultValue={false}
+        <RowTable width={"70%"}>
+          <TableRow>
+            <TableCell>이름</TableCell>
+            <TableCell>
+              <TextField
+                size="small"
+                fullWidth
+                name="name"
+                placeholder="이름을 입력해주세요"
+                inputRef={register({ required: true })}
                 disabled={salesmanInfo?.is_retired}
               />
-            )}
-          </TableCell>
-        </TableRow>
-      </RowTable>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>아이디</TableCell>
+            <TableCell>{salesmanInfo?.user_id}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>코드번호</TableCell>
+            <TableCell>{salesmanInfo?.special_code}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>등록일자</TableCell>
+            <TableCell>{dayjs.unix(salesmanInfo?.reg_dt).format("YYYY-MM-DD")}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>비밀번호</TableCell>
+            <TableCell>
+              <TextField
+                size="small"
+                type="password"
+                fullWidth
+                name="password"
+                placeholder="변경 시에만 입력해주세요"
+                inputRef={register}
+                disabled={salesmanInfo?.is_retired}
+              />
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>휴대폰번호</TableCell>
+            <TableCell>
+              <TextField
+                size="small"
+                fullWidth
+                name="phone"
+                placeholder="휴대폰 번호를 입력해주세요"
+                inputRef={register({ required: true })}
+                disabled={salesmanInfo?.is_retired}
+              />
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>이메일</TableCell>
+            <TableCell>
+              <TextField
+                size="small"
+                fullWidth
+                name="email"
+                placeholder="이메일을 입력해주세요"
+                inputRef={register({ required: true })}
+                disabled={salesmanInfo?.is_retired}
+              />
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>상태</TableCell>
+            <TableCell>
+              {salesmanInfo?.is_retired ? (
+                <Typography>퇴사</Typography>
+              ) : (
+                <Controller
+                  render={({ onChange, ...props }) => (
+                    <RadioGroup {...props} onChange={(e) => onChange(JSON.parse(e.target.value))} row>
+                      <FormControlLabel value={false} control={<Radio color="primary" />} label="이용중" />
+                      <FormControlLabel value={true} control={<Radio color="primary" />} label="퇴사" />
+                    </RadioGroup>
+                  )}
+                  name="is_retired"
+                  control={control}
+                  defaultValue={false}
+                  disabled={salesmanInfo?.is_retired}
+                />
+              )}
+            </TableCell>
+          </TableRow>
+        </RowTable>
+      </Box>
 
-      <Box py={2} display="flex">
+      <Box mt={4}>
+        <Typography variant="h5" fontWeight="500">
+          인센티브 비율
+        </Typography>
+
+        <Box my={2} />
+
+        <RowTable width={"70%"}>
+          <TableRow>
+            <TableCell>2천만원이상 (단위: %)</TableCell>
+            <TableCell>
+              <TextField
+                size="small"
+                fullWidth
+                name="incentive_2"
+                type="number"
+                placeholder="인센티브 비율을 입력해주세요"
+                inputRef={register({ required: true })}
+                disabled={salesmanInfo?.is_retired}
+              />
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>3천만원이상 (단위: %)</TableCell>
+            <TableCell>
+              <TextField
+                size="small"
+                fullWidth
+                name="incentive_3"
+                type="number"
+                placeholder="인센티브 비율을 입력해주세요"
+                inputRef={register({ required: true })}
+                disabled={salesmanInfo?.is_retired}
+              />
+            </TableCell>
+          </TableRow>
+        </RowTable>
+      </Box>
+
+      <Box pt={2} mb={4} display="flex">
         {!salesmanInfo?.is_retired && (
           <Button color="primary" onClick={handleSubmit(modifySalesman)}>
             수정
