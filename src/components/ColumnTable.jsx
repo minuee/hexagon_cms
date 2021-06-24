@@ -17,14 +17,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const ColumnTable = ({ columns, data = [], onRowClick = () => {}, selection, options, ...props }) => {
+export const ColumnTable = ({ columns, data = [], onRowClick, selection, options, ...props }) => {
   const classes = useStyles();
   return (
     <Box className={classes.table_wrapper}>
       <MaterialTable
         data={data}
         columns={columns}
-        onRowClick={(e, row) => onRowClick(row)}
+        onRowClick={onRowClick ? (e, row) => onRowClick(row) : undefined}
         localization={{
           body: {
             emptyDataSourceMessage: "검색 조건에 부합하는 데이터를 찾을 수 없습니다",

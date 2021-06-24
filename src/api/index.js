@@ -14,14 +14,14 @@ axios.defaults.headers.common.Authorization = localStorage.hexagon_cms_token;
 axios.defaults.baseURL = "https://b2e4ceh3wj.execute-api.ap-northeast-1.amazonaws.com/hax-prod-api-stage";
 
 axios.interceptors.request.use(
-  function (config) {
+  function(config) {
     store.dispatch({
       type: "SET_IS_LOADING",
       payload: true,
     });
     return config;
   },
-  function (error) {
+  function(error) {
     store.dispatch({
       type: "SET_IS_LOADING",
       payload: false,
@@ -30,7 +30,7 @@ axios.interceptors.request.use(
   },
 );
 axios.interceptors.response.use(
-  function (response) {
+  function(response) {
     store.dispatch({
       type: "SET_IS_LOADING",
       payload: false,
@@ -48,7 +48,7 @@ axios.interceptors.response.use(
     return response;
   },
 
-  function (error) {
+  function(error) {
     store.dispatch({
       type: "SET_IS_LOADING",
       payload: false,
@@ -780,6 +780,34 @@ export const apiObject = {
       });
 
       alert("상품 노출순서 수정을 완료했습니다");
+      return response;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+    }
+  },
+
+  // Recommend
+  getRecommendList: async () => {
+    try {
+      let data = await axios.get("/cms/product/mdlist");
+
+      let ret = data.data.data.productList;
+
+      return ret;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+      return [];
+    }
+  },
+  modifyRecommendSequence: async ({ product_array }) => {
+    try {
+      let response = await axios.put(`/cms/product/mdrecom`, {
+        product_array,
+      });
+
+      alert("추천상품 노출순서 수정을 완료했습니다");
       return response;
     } catch (e) {
       alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
@@ -1601,7 +1629,7 @@ export const apiObject = {
       return [];
     }
   },
-  modifySalesman: async ({ member_pk, name, email, password, phone, is_retired }) => {
+  modifySalesman: async ({ member_pk, name, email, password, phone, is_retired, incentive_2, incentive_3 }) => {
     try {
       let response = await axios.put(`/cms/salesman/modify/${member_pk}`, {
         name,
@@ -1609,6 +1637,8 @@ export const apiObject = {
         phone: encrypt(phone),
         is_retired,
         password: !!password ? password : undefined,
+        incentive_2,
+        incentive_3,
       });
 
       alert("영업사원 정보 수정을 완료했습니다");

@@ -154,6 +154,10 @@ export const CategoryList = ({ location }) => {
         <Button ml={2} color="primary" onClick={() => history.push("/product/item")}>
           상품 목록 관리
         </Button>
+
+        <Button ml={2} color="primary" onClick={() => history.push("/product/recommend")}>
+          MD추천 상품관리
+        </Button>
       </Box>
 
       {!isModify && (

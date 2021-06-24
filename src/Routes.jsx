@@ -13,6 +13,7 @@ import { SalesmanList, SalesmanDetail, SalesmanRegister, SalesmanIncentive } fro
 import { OrderList, OrderDetail } from "./pages/Admin/Order";
 import { ProductList, ProductDetail } from "./pages/Admin/Product";
 import { CategoryList, CategoryDetail } from "./pages/Admin/Category";
+import { RecommendList } from "./pages/Admin/Recommend";
 import { EventList, EventDetail } from "./pages/Admin/Event";
 import { PopupList, PopupRegister, PopupDetail } from "./pages/Admin/Popup";
 import { NoticeList, NoticeDetail } from "./pages/Admin/Notice";
@@ -74,6 +75,7 @@ const AdminRoutes = () => {
         <Route path="/product/category" component={CategoryList} />
         <Route exact path="/product/item/:product_pk" component={ProductDetail} />
         <Route path="/product/item" component={ProductList} />
+        <Route path="/product/recommend" component={RecommendList} />
         <Redirect from="/product" to="/product/category" />
 
         <Route path="/event/:event_pk" component={EventDetail} />
