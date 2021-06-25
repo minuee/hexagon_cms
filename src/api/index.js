@@ -345,10 +345,11 @@ export const apiObject = {
     sort_item,
     sort_type,
     special_code,
+    order_status,
   }) => {
     try {
       let data = await axios.get("/cms/order/list", {
-        params: { page, paginate, search_word, term_start, term_end, sort_item, sort_type, special_code },
+        params: { page, paginate, search_word, term_start, term_end, sort_item, sort_type, special_code, order_status },
       });
       let ret = data.data.data.orderList;
 
@@ -377,26 +378,94 @@ export const apiObject = {
           ret.settleInfo.card_number.substring(0, 4) + " **** **** " + ret.settleInfo.card_number.substring(12, 16);
       }
 
+      let order_status_no;
+      let next_status_list = [];
+
+      // ret.orderBase.order_status = "WAIT";
+      // ret.orderBase.order_status = "INCOME";
+      // ret.orderBase.order_status = "READY";
+      // ret.orderBase.order_status = "TRANSING";
+      // ret.orderBase.order_status = "TRANSOK";
+      // ret.orderBase.order_status = "CANCEL_A";
+      // ret.orderBase.order_status = "CANCEL_B";
+      // ret.orderBase.order_status = "RETURN";
+
       switch (ret.orderBase.order_status) {
         case "WAIT":
-          ret.orderBase.order_status_no = 1;
+          order_status_no = 1;
           break;
         case "INCOME":
-          ret.orderBase.order_status_no = 2;
+          order_status_no = 2;
+          break;
+        case "READY":
+          order_status_no = 3;
           break;
         case "TRANSING":
-          ret.orderBase.order_status_no = 3;
+          order_status_no = 4;
+          break;
+        case "TRANSOK":
+          order_status_no = 5;
           break;
         case "CANCEL_A":
-          ret.orderBase.order_status_no = 4;
+          order_status_no = 6;
           break;
         case "CANCEL_B":
-          ret.orderBase.order_status_no = 5;
+          order_status_no = 7;
           break;
         case "RETURN":
-          ret.orderBase.order_status_no = 6;
+          order_status_no = 8;
           break;
       }
+
+      const order_status_list = [
+        {
+          label: "입금대기",
+          code: "WAIT",
+        },
+        {
+          label: "입금완료",
+          code: "INCOME",
+        },
+        {
+          label: "배송준비중",
+          code: "READY",
+        },
+        {
+          label: "출고완료",
+          code: "TRANSING",
+        },
+        {
+          label: "배송완료",
+          code: "TRANSOK",
+        },
+        {
+          label: "주문취소",
+          code: "CANCEL_A",
+        },
+        {
+          label: "주문취소처리",
+          code: "CANCEL_B",
+        },
+        {
+          label: "교환요청",
+          code: "RETURN",
+        },
+      ];
+
+      next_status_list.push(order_status_list[order_status_no - 1]);
+      if (order_status_no <= 6 && order_status_no !== 5) {
+        next_status_list.push(order_status_list[order_status_no]);
+      }
+      if (order_status_no <= 3) {
+        next_status_list.push(order_status_list[6]);
+      }
+      if (order_status_no == 8) {
+        next_status_list.push(order_status_list[2]);
+      }
+
+      ret.orderBase.order_status_no = order_status_no;
+      ret.orderBase.order_status_text = order_status_list[order_status_no - 1].label;
+      ret.orderBase.next_status_list = next_status_list;
 
       // ret.product.product_info.child.forEach((item) => {
 

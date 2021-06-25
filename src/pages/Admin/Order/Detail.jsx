@@ -59,21 +59,31 @@ const order_status_list = [
   },
   {
     no: 3,
+    label: "배송준비중",
+    code: "READY",
+  },
+  {
+    no: 4,
     label: "출고완료",
     code: "TRANSING",
   },
   {
-    no: 4,
+    no: 5,
+    label: "배송완료",
+    code: "TRANSOK",
+  },
+  {
+    no: 6,
     label: "주문취소",
     code: "CANCEL_A",
   },
   {
-    no: 5,
+    no: 7,
     label: "주문취소처리",
     code: "CANCEL_B",
   },
   {
-    no: 6,
+    no: 8,
     label: "교환요청",
     code: "RETURN",
   },
@@ -82,7 +92,7 @@ const order_status_list = [
 export const OrderDetail = () => {
   const classes = useStyles();
   const { order_pk } = useParams();
-  const { control, reset, handleSubmit } = useForm();
+  const { control, reset, watch, handleSubmit } = useForm();
 
   const [orderDetail, setOrderDetail] = useState();
 
@@ -97,41 +107,16 @@ export const OrderDetail = () => {
   }
 
   async function modifyOrderStatus(form) {
-    let nowOrderStatus = orderDetail?.orderBase?.order_status;
-    let newOrderStatus = form.order_status;
-
-    if (nowOrderStatus === "WAIT") {
-      if (newOrderStatus !== "INCOME" && newOrderStatus !== "CANCEL_B") {
-        alert("입금처리 또는 주문취소처리로만 변경가능합니다.");
-        return;
-      }
-    } else if (nowOrderStatus === "INCOME" || nowOrderStatus === "RETURN") {
-      if (newOrderStatus !== "TRANSING") {
-        alert("출고완료처리만 가능합니다.");
-        return;
-      }
-    } else if (nowOrderStatus === "CANCEL_A") {
-      if (newOrderStatus !== "CANCEL_B") {
-        alert("주문취소처리로만 변경가능합니다.");
-        return;
-      }
-    } else {
-      alert("현재 주문상태에서는 상태수정을 할 수 없습니다");
-      return;
-    }
-
-    if (nowOrderStatus === newOrderStatus) {
-      alert("변경할 주문상태를 선택해주세요");
-      return;
-    }
     if (!window.confirm("선택한 항목으로 주문상태를 변경하시겠습니까?")) return;
 
     await apiObject.modifyOrderStatus({
       order_pk,
       member_pk: orderDetail.orderBase.member_pk,
-      nowOrderStatus,
-      newOrderStatus,
+      nowOrderStatus: orderDetail?.orderBase?.order_status,
+      newOrderStatus: form.order_status,
     });
+
+    getOrderDetail();
   }
 
   useEffect(() => {
@@ -167,7 +152,7 @@ export const OrderDetail = () => {
                 </Box>
               </Box>
             )}
-            {orderDetail?.orderBase.order_status_no === 5 && (
+            {orderDetail?.orderBase.order_status_no === 6 && (
               <Box>
                 <Box />
                 <Box px={2} py={1} mt={2} bgcolor="#003a7b" color="#fff">
@@ -175,7 +160,7 @@ export const OrderDetail = () => {
                 </Box>
               </Box>
             )}
-            {orderDetail?.orderBase.order_status_no === 6 && (
+            {orderDetail?.orderBase.order_status_no === 7 && (
               <Box>
                 <Box />
                 <Box px={2} py={1} mt={2} bgcolor="#003a7b" color="#fff">
@@ -192,12 +177,12 @@ export const OrderDetail = () => {
         <TableRow>
           <TableCell>주문상태</TableCell>
           <TableCell>
-            <Box display="flex" justifyContent="space-between">
-              <Box>
+            {orderDetail?.orderBase.next_status_list.length !== 1 ? (
+              <Box display="flex" justifyContent="space-between">
                 <Controller
                   as={
                     <Select margin="dense" displayEmpty>
-                      {order_status_list.map((item, index) => {
+                      {orderDetail?.orderBase.next_status_list.map((item, index) => {
                         return (
                           <MenuItem value={item.code} key={index}>
                             {item.label}
@@ -208,14 +193,19 @@ export const OrderDetail = () => {
                   }
                   control={control}
                   name="order_status"
-                  defaultValue="WAIT"
+                  defaultValue=""
                 />
+                <Button
+                  color="primary"
+                  onClick={handleSubmit(modifyOrderStatus)}
+                  disabled={watch("order_status") === orderDetail?.orderBase?.order_status}
+                >
+                  주문상태변경
+                </Button>
               </Box>
-
-              <Button color="primary" onClick={handleSubmit(modifyOrderStatus)}>
-                주문상태변경
-              </Button>
-            </Box>
+            ) : (
+              <Typography>{orderDetail?.orderBase.order_status_text}</Typography>
+            )}
           </TableCell>
         </TableRow>
       </RowTable>

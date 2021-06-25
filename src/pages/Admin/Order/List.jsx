@@ -51,12 +51,54 @@ const header_button_list = [
     label: "구매액순",
     value: "order",
   },
+  {
+    label: "주문상태순",
+    value: "ryuin",
+  },
+];
+const order_status_list = [
+  {
+    label: "주문상태",
+    value: "",
+  },
+  {
+    label: "입금대기",
+    value: "WAIT",
+  },
+  {
+    label: "입금완료",
+    value: "INCOME",
+  },
+  {
+    label: "배송준비중",
+    value: "READY",
+  },
+  {
+    label: "출고완료",
+    value: "TRANSING",
+  },
+  {
+    label: "배송완료",
+    value: "TRANSOK",
+  },
+  {
+    label: "주문취소",
+    value: "CANCEL_A",
+  },
+  {
+    label: "주문취소처리",
+    value: "CANCEL_B",
+  },
+  {
+    label: "교환요청",
+    value: "RETURN",
+  },
 ];
 
 export const OrderList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
-  const { getDataFunction, Pagination, SearchBox, FilterBox, TermSearchBox } = useQuery(location);
+  const { getDataFunction, Pagination, SearchBox, FilterBox, FilterBox2, TermSearchBox } = useQuery(location);
 
   const [orderList, setOrderList] = useState();
 
@@ -72,9 +114,13 @@ export const OrderList = ({ location }) => {
   return (
     <Box>
       <Grid container justify="space-between" alignItems="center">
-        <Typography display="inline" variant="h5" fontWeight="500">
-          주문내역
-        </Typography>
+        <Box>
+          <Typography display="inline" variant="h5" fontWeight="500">
+            주문내역
+          </Typography>
+
+          <FilterBox2 ml={2} item_list={order_status_list} filter_item="order_status" />
+        </Box>
 
         <Box>
           <FilterBox mr={3} type="sort" button_list={header_button_list} default_item="reg_dt" />

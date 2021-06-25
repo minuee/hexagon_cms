@@ -6,6 +6,7 @@ import {
   Pagination as SimplePagination,
   SearchBox as SimpleSearchBox,
   FilterBox as SimpleFilterBox,
+  FilterBox2 as SimpleFilterBox2,
   TermSearchBox as SimpleTermSearchBox,
 } from "components";
 
@@ -30,6 +31,7 @@ export const useQuery = (location) => {
   const Pagination = (props) => <SimplePagination page={query.page} setPage={updateQuery} {...props} />;
   const SearchBox = (props) => <SimpleSearchBox defaultValue={query.search_word} onSearch={updateQuery} {...props} />;
   const FilterBox = (props) => <SimpleFilterBox query={query} onQueryUpdate={updateQuery} {...props} />;
+  const FilterBox2 = (props) => <SimpleFilterBox2 search_params={query} onFilter={updateQuery} {...props} />;
   const TermSearchBox = (props) => (
     <SimpleTermSearchBox
       term_start={query.term_start}
@@ -54,8 +56,9 @@ export const useQuery = (location) => {
     query.category_pk,
     query.type,
     query.tab,
+    query.order_status,
     dataFunction,
   ]);
 
-  return { query, updateQuery, getDataFunction, Pagination, SearchBox, FilterBox, TermSearchBox };
+  return { query, updateQuery, getDataFunction, Pagination, SearchBox, FilterBox, FilterBox2, TermSearchBox };
 };

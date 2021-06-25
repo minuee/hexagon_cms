@@ -4,6 +4,7 @@ export { Pagination } from "./Pagination";
 export { ExcelExportButton } from "./ExcelExportButton";
 export { SearchBox } from "./SearchBox";
 export { FilterBox } from "./FilterBox";
+export { FilterBox2 } from "./FilterBox2";
 
 export { DnDList } from "./DnDList";
 export { TermSearchBox } from "./TermSearchBox";
