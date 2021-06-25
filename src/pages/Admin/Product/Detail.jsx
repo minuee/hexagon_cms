@@ -3,6 +3,7 @@ import { useHistory, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
 import { apiObject } from "api";
+import { price, getFullImgURL } from "common";
 
 import {
   Box,
@@ -16,9 +17,13 @@ import {
   FormControlLabel,
   RadioGroup,
   Radio,
+  Checkbox,
+  Dialog,
+  IconButton,
 } from "@material-ui/core";
+import { Close } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { RowTable, Dropzone } from "components";
+import { ColumnTable, RowTable, Dropzone, ImageBox } from "components";
 
 const useStyles = makeStyles((theme) => ({
   category_wrapper: {
@@ -48,6 +53,12 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  modal_close_icon: {
+    position: "absolute",
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500],
+  },
 }));
 
 export const ProductDetail = () => {
@@ -57,7 +68,11 @@ export const ProductDetail = () => {
   const { member } = useSelector((state) => state.reducer);
   const { control, reset, setValue, watch, handleSubmit } = useForm();
 
+  const [productData, setProductData] = useState();
   const [categoryList, setCategoryList] = useState();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [curSubstitute, setCurSubstitute] = useState();
 
   async function getCategoryList() {
     let data = await apiObject.getCategoryList({});
@@ -65,6 +80,7 @@ export const ProductDetail = () => {
   }
   async function getProductDetail() {
     let data = await apiObject.getProductDetail({ product_pk });
+    setProductData(data);
 
     reset({
       ...data,
@@ -75,6 +91,16 @@ export const ProductDetail = () => {
     setValue("category_pk", data.category_pk);
     setValue("thumb_img", data.thumb_img);
     setValue("detail_img", data.detail_img);
+
+    if (data.measure) {
+      setCurSubstitute({
+        category_pk: data.measure_category_pk,
+        each_price: data.measure_each_price,
+        event_each_price: data.measure_event_each_price,
+        product_name: data.measure_product_name,
+        thumb_img: data.measure_thumb_img,
+      });
+    }
   }
 
   async function registProduct(form) {
@@ -125,7 +151,17 @@ export const ProductDetail = () => {
       form[`detail_img${i + 1}`] = paths[i];
     }
 
-    await apiObject.modifyProduct({ ...form, product_pk });
+    await apiObject.modifyProduct({ ...form, product_pk, measure: curSubstitute?.product_pk });
+
+    if (productData.is_soldout && !form.is_soldout && window.confirm("재입고 알림메시지를 발송하시겠습니까?")) {
+      await apiObject.sendRestockMessage({
+        product_name: form.product_name,
+        product_pk,
+        thumb_img: form.thumb_img,
+      });
+    }
+
+    await getProductDetail();
   }
 
   useEffect(() => {
@@ -138,6 +174,10 @@ export const ProductDetail = () => {
       getProductDetail();
     }
   }, [product_pk]);
+
+  useEffect(() => {
+    console.log(curSubstitute);
+  }, [curSubstitute]);
 
   return (
     <Box>
@@ -478,6 +518,61 @@ export const ProductDetail = () => {
             />
           </TableCell>
         </TableRow>
+
+        {/* {productData?.is_soldout && !watch("is_soldout") && (
+          <TableRow>
+            <TableCell>재입고 알림 발송 여부</TableCell>
+            <TableCell>
+              <Controller
+                render={({ value, onChange }) => (
+                  <FormControlLabel
+                    control={<Checkbox color="primary" />}
+                    onChange={(e) => onChange(e.target.checked)}
+                    checked={value}
+                    label={<Typography variant="subtitle2">재입고 알림 발송</Typography>}
+                  />
+                )}
+                control={control}
+                name="is_newArrival_push"
+                defaultValue={false}
+              />
+            </TableCell>
+          </TableRow>
+        )} */}
+        {watch("is_soldout") && (
+          <TableRow>
+            <TableCell>대체상품</TableCell>
+            <TableCell>
+              <Box display="flex" justifyContent="space-between" alignItems="center">
+                {!curSubstitute ? (
+                  <Typography>대체상품을 선택해주세요</Typography>
+                ) : (
+                  <Box display="flex" alignItems="center">
+                    <ImageBox
+                      src={getFullImgURL(curSubstitute.thumb_img)}
+                      display="inline-block"
+                      width="60px"
+                      height="60px"
+                    />
+                    <Box ml={1} mr={3}>
+                      <Typography>{curSubstitute?.product_name}</Typography>
+                      <Typography color="textSecondary">{price(curSubstitute?.each_price)}원(낱개)</Typography>
+                    </Box>
+
+                    <IconButton onClick={() => setCurSubstitute(null)}>
+                      <Close />
+                    </IconButton>
+                  </Box>
+                )}
+
+                <Button size="large" onClick={() => setIsModalOpen(true)}>
+                  상품검색
+                </Button>
+              </Box>
+            </TableCell>
+          </TableRow>
+        )}
+
         <TableRow>
           <TableCell>적립금 사용가능여부</TableCell>
           <TableCell>
@@ -542,6 +637,134 @@ export const ProductDetail = () => {
           </Button>
         )}
       </Box>
+
+      <ProductModal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSelect={setCurSubstitute}
+        selectedDefault={curSubstitute}
+      />
     </Box>
+  );
+};
+
+const ProductModal = ({ open, onClose, onSelect, selectedDefault }) => {
+  const classes = useStyles();
+
+  const [selectedItem, setSelectedItem] = useState({});
+
+  const [productData, setProductData] = useState();
+  const [productList, setProductList] = useState();
+  const [curCategory, setCurCategory] = useState("");
+
+  const product_columns = [
+    {
+      title: "",
+      render: (item) => (
+        <Radio onClick={() => setSelectedItem(item)} checked={item.product_pk === selectedItem?.product_pk} />
+      ),
+      width: 80,
+    },
+    {
+      title: "상품 이미지",
+      render: ({ thumb_img }) => (
+        <ImageBox src={getFullImgURL(thumb_img)} display="inline-block" width="60px" height="60px" />
+      ),
+      width: 180,
+    },
+    { title: "상품명", field: "product_name", cellStyle: { textAlign: "left" } },
+    {
+      title: "낱개당 가격",
+      render: ({ each_price }) => price(each_price),
+    },
+    {
+      title: "낱개당 이벤트 가격",
+      render: ({ event_each_price }) => price(event_each_price),
+    },
+    {
+      title: "상품 정보",
+      render: ({ product_pk }) => (
+        <Button color="primary" onClick={() => window.open(`${window.location.origin}/product/item/${product_pk}`)}>
+          정보
+        </Button>
+      ),
+      width: 100,
+    },
+  ];
+
+  async function getProductList() {
+    let data = await apiObject.getEventProductData({});
+    setProductData(data);
+    setProductList(data.product_list);
+  }
+
+  function handleOnSelect() {
+    onSelect(selectedItem);
+    onClose();
+  }
+  function handleCategoryChange(category_pk) {
+    setCurCategory(category_pk);
+
+    if (!category_pk) {
+      setProductList(productData.product_list);
+    } else {
+      let tmp = productData.product_list.filter((item) => item.category_pk == category_pk);
+      setProductList(tmp);
+    }
+  }
+  function handleEnter() {
+    getProductList();
+    setCurCategory("");
+  }
+  function handleClose() {
+    onClose();
+    setSelectedItem(selectedDefault);
+  }
+
+  useEffect(() => {
+    setSelectedItem(selectedDefault);
+  }, [selectedDefault]);
+
+  return (
+    <Dialog
+      maxWidth="md"
+      fullWidth
+      open={open}
+      onClose={handleClose}
+      onBackdropClick={handleClose}
+      onEnter={handleEnter}
+    >
+      <IconButton className={classes.modal_close_icon} onClick={handleClose}>
+        <Close fontSize="large" />
+      </IconButton>
+
+      <Box p={3} height="800px" bgcolor="#fff">
+        <Box mb={2} display="flex" justifyContent="space-between">
+          <Typography variant="h6" fontWeight="700" display="inline">
+            대체 상품
+          </Typography>
+        </Box>
+        <Box mb={2} display="flex" justifyContent="space-between">
+          <Select
+            displayEmpty
+            margin="dense"
+            value={curCategory}
+            onChange={(e) => handleCategoryChange(e.target.value)}
+          >
+            {productData?.category_list?.map((item, index) => (
+              <MenuItem value={item.category_pk} key={index}>
+                {item.label}
+              </MenuItem>
+            ))}
+          </Select>
+
+          <Button color="primary" onClick={handleOnSelect}>
+            선택
+          </Button>
+        </Box>
+
+        <ColumnTable columns={product_columns} data={productList} />
+      </Box>
+    </Dialog>
   );
 };

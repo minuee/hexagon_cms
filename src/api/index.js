@@ -1,6 +1,6 @@
 import axios from "axios";
 import { store } from "redux/index";
-import { encrypt, decrypt, getListIndex } from "common";
+import { encrypt, decrypt, getListIndex, getFullImgURL } from "common";
 
 // let token = localStorage.hexagon_cms_token;
 axios.defaults.headers.common.Authorization = localStorage.hexagon_cms_token;
@@ -610,8 +610,6 @@ export const apiObject = {
       let data = await axios.get(`/cms/product/view/${product_pk}`, {});
       let ret = data.data.data.productDetail;
 
-      console.log(data);
-
       ret.thumb_img = [{ file: null, path: ret.thumb_img }];
       ret.detail_img = [];
       for (let i = 1; i <= 4; i++) {
@@ -733,6 +731,7 @@ export const apiObject = {
     event_carton_stock,
     use_yn,
     product_pk,
+    measure,
   }) => {
     try {
       let response = await axios.put(`/cms/product/modify/${product_pk}`, {
@@ -763,6 +762,7 @@ export const apiObject = {
         event_box_stock,
         event_carton_stock,
         use_yn,
+        measure,
       });
 
       alert("상품 수정을 완료했습니다");
@@ -780,6 +780,23 @@ export const apiObject = {
       });
 
       alert("상품 노출순서 수정을 완료했습니다");
+      return response;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+    }
+  },
+  sendRestockMessage: async ({ product_name, product_pk, thumb_img }) => {
+    try {
+      let response = await axios.post("cms/alarm/pushsend", {
+        title: "[슈퍼바인더]상품 재입고알림",
+        comment: `${product_name} 재입고 되었습니다.`,
+        routeName: "ProductDetailStack",
+        routeIdx: product_pk,
+        img_url: getFullImgURL(thumb_img),
+      });
+
+      alert("재입고 메시지 발송을 완료했습니다");
       return response;
     } catch (e) {
       alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
