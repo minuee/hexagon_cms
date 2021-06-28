@@ -92,7 +92,7 @@ export const ProductDetail = () => {
     setValue("thumb_img", data.thumb_img);
     setValue("detail_img", data.detail_img);
 
-    if (data.measure) {
+    if (data.measure && data.measure !== "0") {
       setCurSubstitute({
         category_pk: data.measure_category_pk,
         each_price: data.measure_each_price,
@@ -174,10 +174,6 @@ export const ProductDetail = () => {
       getProductDetail();
     }
   }, [product_pk]);
-
-  useEffect(() => {
-    console.log(curSubstitute);
-  }, [curSubstitute]);
 
   return (
     <Box>

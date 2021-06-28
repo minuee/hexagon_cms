@@ -103,7 +103,7 @@ export const RecommendList = ({ location }) => {
     setValue("recommend_product", data);
   }
   async function modifyRecommendSequence(data) {
-    if (!window.confirm("추천상품 노출순서를 수정하시겠습니까?")) return;
+    if (!window.confirm("추천상품 목록을 수정하시겠습니까?")) return;
 
     let product_array = [];
     data.forEach((item, index) => {
@@ -112,8 +112,6 @@ export const RecommendList = ({ location }) => {
         product_pk: item.product_pk,
       });
     });
-
-    console.log(product_array);
 
     await apiObject.modifyRecommendSequence({ product_array });
     getRecommendList();

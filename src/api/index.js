@@ -462,6 +462,9 @@ export const apiObject = {
       if (order_status_no == 8) {
         next_status_list.push(order_status_list[2]);
       }
+      if (order_status_no == 5) {
+        next_status_list.push(order_status_list[7]);
+      }
 
       ret.orderBase.order_status_no = order_status_no;
       ret.orderBase.order_status_text = order_status_list[order_status_no - 1].label;
