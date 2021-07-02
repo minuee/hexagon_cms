@@ -989,7 +989,7 @@ export const apiObject = {
       return [];
     }
   },
-  registEvent: async ({ event_gubun, start_dt, end_dt, title, product }) => {
+  registEvent: async ({ event_img, event_gubun, start_dt, end_dt, title, product }) => {
     try {
       let response = await axios.post(`/cms/event/regist`, {
         event_gubun,
@@ -997,6 +997,7 @@ export const apiObject = {
         end_dt,
         title,
         product,
+        event_img
       });
 
       alert("이벤트 등록을 완료했습니다");
@@ -1006,7 +1007,7 @@ export const apiObject = {
       console.log({ e });
     }
   },
-  modifyEvent: async ({ event_pk, event_gubun, start_dt, end_dt, title, product }) => {
+  modifyEvent: async ({ event_pk, event_img, event_gubun, start_dt, end_dt, title, product }) => {
     try {
       let response = await axios.put(`/cms/event/modify/${event_pk}`, {
         event_gubun,
@@ -1014,6 +1015,7 @@ export const apiObject = {
         end_dt,
         title,
         product,
+        event_img
       });
 
       alert("이벤트 수정을 완료했습니다");

@@ -24,7 +24,7 @@ import {
 import { EventNote, HighlightOff, Close } from "@material-ui/icons";
 import { DateTimePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, RowTable, ImageBox } from "components";
+import { ColumnTable, RowTable, ImageBox, Dropzone } from "components";
 
 const useStyles = makeStyles((theme) => ({
   datetimepicker_wrapper: {
@@ -95,6 +95,7 @@ export const EventDetail = () => {
       ...data,
       start_dt: dayjs.unix(data.start_dt),
       end_dt: data.end_dt ? dayjs.unix(data.end_dt) : null,
+      event_img: [],
       event_product: [],
     });
 
@@ -102,16 +103,23 @@ export const EventDetail = () => {
     data.product_array.forEach((item) => {
       tmp.push(item);
     });
-    setValue("event_product", tmp);
+    setValue("event_product", tmp);    
+    setValue("event_img", [{ file: null, path: data?.event_img }]);
   }
   async function registEvent(form) {
     if (!form.event_product) {
       alert("이벤트 상품을 선택해주세요");
       return;
+    }else if (!form.event_img) {
+      alert("이벤트 이미지를 추가해주세요");
+      return;
     } else if (!window.confirm("입력한 정보로 이벤트를 등록하시겠습니까?")) {
       return;
     }
 
+    let paths = await apiObject.uploadImageMultiple({ img_arr: form.event_img, page: "event" });
+    if (!paths.length) return;
+    form.event_img = paths?.[0];
     form.product = [];
     form.event_product.forEach((item) => {
       form.product.push({
@@ -129,10 +137,20 @@ export const EventDetail = () => {
     if (!form.event_product) {
       alert("이벤트 상품을 선택해주세요");
       return;
+    }else if (!form.event_img) {
+      alert("이벤트 이미지를 추가해주세요");
+      return;
     } else if (!window.confirm("입력한 정보로 이벤트를 수정하시겠습니까?")) {
       return;
     }
 
+    
+    let paths = await apiObject.uploadImageMultiple({ img_arr: form.event_img, page: "event" });
+    console.log('paths ',paths )
+    if (!paths.length) return;
+    form.event_img = paths?.[0];
+  
+    console.log('form.event_img ',form.event_img )
     form.product = [];
     form.event_product.forEach((item) => {
       form.product.push({
@@ -296,6 +314,13 @@ export const EventDetail = () => {
                 </>
               )}
             </Box>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>이벤트 이미지</TableCell>
+          <TableCell>
+            <Dropzone mb={1} control={control} name="event_img" width="120px" ratio={1} maxFiles={1} zoomable />
+            <Typography>이미지는 가로x세로(1024X450 pixel)비율을 권장드립니다.</Typography>
           </TableCell>
         </TableRow>
         <TableRow>
