@@ -1,0 +1,84 @@
+{
+  "name": "hexagon-cms",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@date-io/dayjs": "1.x",
+    "@material-ui/core": "4.11.2",
+    "@material-ui/icons": "4.11.2",
+    "@material-ui/lab": "4.0.0-alpha.57",
+    "@material-ui/pickers": "3.2.10",
+    "@material-ui/styles": "4.11.2",
+    "@material-ui/system": "4.11.2",
+    "axios": "0.21.1",
+    "core-js": "3.8.3",
+    "crypto-js": "4.0.0",
+    "dayjs": "1.10.1",
+    "js-cookie": "2.2.1",
+    "jsonwebtoken": "8.5.1",
+    "material-table": "1.68.0",
+    "query-string": "6.13.8",
+    "react": "^17.0.1",
+    "react-app-polyfill": "2.0.0",
+    "react-beautiful-dnd": "13.0.0",
+    "react-dom": "^17.0.1",
+    "react-dropzone": "11.2.4",
+    "react-hook-form": "6.13.1",
+    "react-image-crop": "8.6.6",
+    "react-redux": "7.2.2",
+    "react-router": "5.2.0",
+    "react-router-dom": "5.2.0",
+    "react-scripts": "4.0.1",
+    "redux": "4.0.5",
+    "regenerator-runtime": "0.13.7",
+    "swiper": "6.5.0",
+    "web-vitals": "^0.2.4"
+  },
+  "devDependencies": {
+    "react-app-rewired": "2.1.8",
+    "redux-devtools-extension": "2.13.8",
+    "source-map-explorer": "2.5.2"
+  },
+  "scripts": {
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build && open build",
+    "test": "react-app-rewired test",
+    "eject": "react-scripts eject",
+    "analyze": "source-map-explorer 'build/static/js/*.js'"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ],
+    "rules": {
+      "eqeqeq": "off",
+      "no-unused-vars": "off",
+      "default-case": "off",
+      "no-empty-pattern": "off",
+      "no-useless-escape": "off",
+      "react-hooks/exhaustive-deps": "off",
+      "import/no-anonymous-default-export": "off"
+    }
+  },
+  "prettier": {
+    "tabWidth": 2,
+    "semi": true,
+    "singleQuote": false,
+    "trailingComma": "all",
+    "printWidth": 120,
+    "arrowParens": "always"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
