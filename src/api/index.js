@@ -115,6 +115,55 @@ export const apiObject = {
       return [];
     }
   },
+
+  uploadFileMultiple: async ({ file_arr,page }) => {
+    try {
+      if (!file_arr.file) return [];
+
+      let ret = [];
+
+      let formData = new FormData();
+      formData.append("folder", page);
+      if (file_arr.file) {
+        formData.append("afile", file_arr.file);
+      }
+      let response = await axios.post("/v1/file/multiple", formData, {
+        headers: { "content-type": "multipart/form-data" },
+      });
+
+      for (let i = 0; i < response.data.data.length; i++) {
+        if (i % 2) {
+          ret.push(response.data.data[i]);
+        }
+      }
+      return ret;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+      return [];
+    }
+  },
+  uploadFileSingle: async ({ file_arr,page }) => {
+    try {
+      if (!file_arr.file) return [];
+     
+      let formData = new FormData();
+      formData.append("folder", page);
+      if (file_arr.file) {
+        formData.append("afile", file_arr.file);
+      }
+      let response = await axios.post("/v1/file/single", formData, {
+        headers: { "content-type": "multipart/form-data" },
+      });
+
+      let ret = response.data.data;
+      return ret;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+      return [];
+    }
+  },
   signIn: async ({ user_id = "superbinder", password = "hexagon12!@" }) => {
     try {
       let response = await axios.post("/v1/auth/signin", {
@@ -1379,6 +1428,94 @@ export const apiObject = {
   removeNotice: async ({ notice_pk }) => {
     try {
       let response = await axios.delete(`/cms/notice/remove/${notice_pk}`);
+
+      alert("공지 삭제를 완료했습니다");
+      return response;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+    }
+  },
+
+
+  // 홈페이지 Notice
+  getWebNoticeList: async ({ page = 1, paginate = 10, search_word }) => {
+    try {
+      let data = await axios.get("/cms/webnotice/list", {
+        params: {
+          page,
+          search_word,
+          paginate,
+        },
+      });
+      let ret = data.data.data.noticeList;
+
+      ret.forEach((item, index) => {
+        item.no = getListIndex(item.total, page, index);
+      });
+
+      return ret;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+      return [];
+    }
+  },
+  getWebNoticeDetail: async ({ notice_pk }) => {
+    try {
+      let data = await axios.get(`/cms/webnotice/view/${notice_pk}`);
+      let ret = data.data.data;
+
+      return ret;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+      return {};
+    }
+  },
+  registWebNotice: async ({ title,title_en, content,content_en, start_dt, img_url,file1, send_push }) => {
+    try {
+      let response = await axios.post("/cms/webnotice/regist", {
+        title,
+        content,
+        title_en,
+        content_en,
+        start_dt,
+        img_url,
+        file1,
+        send_push,
+      });
+
+      alert("공지 등록을 완료했습니다");
+      return response;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+    }
+  },
+  modifyWebNotice: async ({ notice_pk, title,title_en, content,content_en, start_dt, img_url,file1, send_push }) => {
+    try {
+      let response = await axios.put(`/cms/webnotice/modify/${notice_pk}`, {
+        title,
+        content,
+        title_en,
+        content_en,
+        start_dt,
+        img_url,
+        file1,
+        send_push,
+      });
+
+      alert("공지 수정을 완료했습니다");
+      return response;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+    }
+  },
+  removeWebNotice: async ({ notice_pk }) => {
+    try {
+      let response = await axios.delete(`/cms/webnotice/remove/${notice_pk}`);
 
       alert("공지 삭제를 완료했습니다");
       return response;

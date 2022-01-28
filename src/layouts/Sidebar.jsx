@@ -36,6 +36,10 @@ const admin_page = [
     path: `/notice`,
   },
   {
+    label: `홈페이지공지관리`,
+    path: `/webnotice`,
+  },
+  {
     label: `쿠폰관리`,
     path: `/coupon`,
   },

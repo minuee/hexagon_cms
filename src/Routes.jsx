@@ -17,6 +17,7 @@ import { RecommendList } from "./pages/Admin/Recommend";
 import { EventList, EventDetail } from "./pages/Admin/Event";
 import { PopupList, PopupRegister, PopupDetail } from "./pages/Admin/Popup";
 import { NoticeList, NoticeDetail } from "./pages/Admin/Notice";
+import { WebNoticeList, WebNoticeDetail } from "./pages/Admin/WebNotice";
 import { CouponList, CouponRegister, CouponDetail } from "./pages/Admin/Coupon";
 import { BannerList, BannerDetail } from "./pages/Admin/Banner";
 
@@ -87,6 +88,9 @@ const AdminRoutes = () => {
 
         <Route exact path="/notice/:notice_pk" component={NoticeDetail} />
         <Route path="/notice" component={NoticeList} />
+
+        <Route exact path="/webnotice/:notice_pk" component={WebNoticeDetail} />
+        <Route path="/webnotice" component={WebNoticeList} />
 
         <Route path="/coupon/regist" component={CouponRegister} />
         <Route path="/coupon/:coupon_pk" component={CouponDetail} />
