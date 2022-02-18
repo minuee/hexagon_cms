@@ -4,28 +4,32 @@ import { Controller, useForm } from "react-hook-form";
 import { apiObject } from "api";
 import dayjs from "dayjs";
 import styled, { css } from "styled-components";
-import { CircularProgress,Box, makeStyles, TextField, InputAdornment, TableRow, TableCell } from "@material-ui/core";
-import { Add,EventNote } from "@material-ui/icons";
+import { CircularProgress,Box, makeStyles, TextField, InputAdornment, TableRow, TableCell ,IconButton} from "@material-ui/core";
+import { Add,Close,EventNote } from "@material-ui/icons";
 import { DateTimePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
 import { RowTable, Dropzone,ImageBox } from "components";
 import { getFullImgURL } from "common";
 
-/* import { CKEditor } from '@ckeditor/ckeditor5-react';
+import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   editorContainer: {
     '& .ck.ck-content.ck-editor__editable': {
       maxHeight: '30vh',
       minHeight: '30vh',
     },
   },
+  clear_button: {
+    position: "relative",
+    cursor: "pointer",
+  },
 }));
- */
+
 export const WebNoticeDetail = () => {
   const history = useHistory();
   const fileInput = React.useRef();
-  //const classes = useStyles();
+  const classes = useStyles();
   const { notice_pk } = useParams();
   const { control, register, reset, setValue, handleSubmit, errors } = useForm();
   const [isLoading, setLoading] = useState(false);
@@ -37,6 +41,7 @@ export const WebNoticeDetail = () => {
     file: null,
   });
   const [content, setContent] = useState(null);
+  const [content_en, setContentEn] = useState(null);
   async function getNoticeDetail() {
     let ret = await apiObject.getWebNoticeDetail({ notice_pk });
     setPushHistory(ret?.pushLog);
@@ -49,10 +54,12 @@ export const WebNoticeDetail = () => {
       upload_file1 : []
     });
     setContent(data.content);
+    setContentEn(data.content_en);
     setValue("img_url", [{ file: null, path: data.img_url }]);
     setAddFile({
       isUploadFile1 : data.file1_url != null ? true : false,
       file_name: data.file1_url,
+      real_filename : data.file1_name,
       file: null,
     });
     //setLoading(false)
@@ -71,10 +78,13 @@ export const WebNoticeDetail = () => {
       let paths = await apiObject.uploadFileSingle({ file_arr: addFile, page : 'webnfile'});
       if (!paths.length) return;
       form.file1 = paths?.[0];
+      form.file1_name = addFile.real_filename || 'noname';
     }
 
     await apiObject.registWebNotice({
       ...form,
+      content,
+      content_en,
       start_dt: form.start_dt?.unix(),
     });
 
@@ -91,20 +101,23 @@ export const WebNoticeDetail = () => {
     }
 
     if (addFile.file != undefined) {
-      console.log('upload_file1')
       let paths = await apiObject.uploadFileSingle({ file_arr: addFile, page : 'webnotice'});
-      console.log('modifyNoticepathspaths',paths)
       if (!paths.length) return;
       form.file1 = paths;
+      form.file1_name = addFile.real_filename || 'noname';
     }else{
       form.file1 = addFile.file_name;
+      form.file1_name = addFile.real_filename; 
     }
-    console.log('modifyWebNotice',form)
+    //console.log('modifyWebNotice',form)
     await apiObject.modifyWebNotice({
       notice_pk,
+      content,
+      content_en,
       ...form,
       start_dt: form.start_dt?.unix(),
     });
+    history.push("/notice");
   }
   async function removeNotice() {
     if (!window.confirm("공지를 삭제하시겠습니까?")) return;
@@ -129,11 +142,24 @@ export const WebNoticeDetail = () => {
       setAddFile({
         isUploadFile1 : false,
         file_name: target.files[0].name,
+        real_filename: target.files[0].name,
         file: target.files[0],
       });
       fileInput.current.value = "";
     },
     [fileInput]
+  );
+
+  const handleRemoveAddFile = useCallback(
+    () => {
+      if (!window.confirm("첨부파일을 삭제하시겠습니까?")) return;
+      setAddFile({
+        isUploadFile1 : false,
+        file_name: null,
+        file: null,
+      });
+    },
+    []
   );
 
   return (
@@ -155,7 +181,7 @@ export const WebNoticeDetail = () => {
       ) : (
       <RowTable>
         <TableRow>
-          <TableCell>업로드 일시</TableCell>
+          <TableCell>공개 일시</TableCell>
           <TableCell>
             <Controller
               render={({ ref, ...props }) => (
@@ -212,7 +238,7 @@ export const WebNoticeDetail = () => {
         <TableRow>
           <TableCell>내용(국문)</TableCell>
           <TableCell>
-            <TextField
+           {/*  <TextField
               size="small"
               fullWidth
               multiline
@@ -221,15 +247,16 @@ export const WebNoticeDetail = () => {
               placeholder="공지 내용을 입력해주세요"
               inputRef={register({ required: true })}
               error={!!errors?.content}
-            />
+            /> */}
             
-           {/*  <Box mb={2.5} className={classes.editorContainer}>
+            <Box mb={2.5} className={classes.editorContainer}>
               <CKEditor
                 editor={ClassicEditor}
                 config={{
                   removePlugins: [
                     'Link',
                     'Image',
+                    'Table',
                     'ImageCaption',
                     'ImageStyle',
                     'ImageToolbar',
@@ -243,22 +270,34 @@ export const WebNoticeDetail = () => {
                 }}
                 
               />
-            </Box> */}
+            </Box>
           </TableCell>
         </TableRow>
         <TableRow>
         <TableCell>내용(영문)</TableCell>
         <TableCell>
-          <TextField
-            size="small"
-            fullWidth
-            multiline
-            rows={10}
-            name="content_en"
-            placeholder="공지 내용을 입력해주세요"
-            inputRef={register({ required: true })}
-            error={!!errors?.content_en}
-          />
+          <Box mb={2.5} className={classes.editorContainer}>
+              <CKEditor
+                editor={ClassicEditor}
+                config={{
+                  removePlugins: [
+                    'Link',
+                    'Image',
+                    'Table',
+                    'ImageCaption',
+                    'ImageStyle',
+                    'ImageToolbar',
+                    'ImageUpload',
+                    'MediaEmbed',
+                  ],
+                }}
+                data={content_en}
+                onChange={(event, editor) => {
+                  setContentEn(editor.getData());
+                }}
+                
+              />
+            </Box>
         </TableCell>
       </TableRow>
         <TableRow>
@@ -272,7 +311,7 @@ export const WebNoticeDetail = () => {
           <TableCell>
             <label htmlFor="add-pdf" style={{display:'flex',alignItems:'center'}}>
               <PdfUploadDiv>
-                {addFile === null ? "File Upload" : addFile?.file_name}
+                {addFile === null ? "File Upload" : addFile?.real_filename}
                 <input 
                   ref={fileInput} 
                   type="file" 
@@ -286,6 +325,13 @@ export const WebNoticeDetail = () => {
                   <a href={getFullImgURL(addFile.file_name)}>   
                   <ImageBox src={'/image/press_download_icon.png'} display="inline-block" width="16px" height="16px" />
                   </a>    
+                </FileDownloadDiv>
+              }
+              {addFile.file_name && 
+                <FileDownloadDiv >
+                  <IconButton className={classes.clear_button} onClick={() => handleRemoveAddFile()}>
+                    <Close />
+                  </IconButton>
                 </FileDownloadDiv>
               }
             </label>
@@ -335,7 +381,7 @@ const PdfUploadDiv = styled.div`
   cursor: pointer;
 `;
 const FileDownloadDiv = styled.div`
-  width: 19%;
+  width: 9%;
   height: 35px;
   font-size: 16px;
   display: flex;

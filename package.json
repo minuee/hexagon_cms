@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@ckeditor/ckeditor5-build-classic": "^31.1.0",
-    "@ckeditor/ckeditor5-react": "^3.0.3",
+    "@ckeditor/ckeditor5-build-classic": "^25.0.0",
+    "@ckeditor/ckeditor5-react": "^3.0.0",
     "@date-io/dayjs": "1.x",
     "@material-ui/core": "4.11.2",
     "@material-ui/icons": "4.11.2",

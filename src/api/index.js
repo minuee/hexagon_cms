@@ -1473,7 +1473,7 @@ export const apiObject = {
       return {};
     }
   },
-  registWebNotice: async ({ title,title_en, content,content_en, start_dt, img_url,file1, send_push }) => {
+  registWebNotice: async ({ title,title_en, content,content_en, start_dt, img_url,file1,file1_name, send_push }) => {
     try {
       let response = await axios.post("/cms/webnotice/regist", {
         title,
@@ -1483,6 +1483,7 @@ export const apiObject = {
         start_dt,
         img_url,
         file1,
+        file1_name,
         send_push,
       });
 
@@ -1493,7 +1494,7 @@ export const apiObject = {
       console.log({ e });
     }
   },
-  modifyWebNotice: async ({ notice_pk, title,title_en, content,content_en, start_dt, img_url,file1, send_push }) => {
+  modifyWebNotice: async ({ notice_pk, content,content_en, title,title_en,start_dt, img_url,file1,file1_name, send_push }) => {
     try {
       let response = await axios.put(`/cms/webnotice/modify/${notice_pk}`, {
         title,
@@ -1503,6 +1504,7 @@ export const apiObject = {
         start_dt,
         img_url,
         file1,
+        file1_name,
         send_push,
       });
 
