@@ -66,15 +66,13 @@ export const WebNoticeDetail = () => {
     fileInput.current.value = "";
   }
   async function registerNotice(form) {
-    if (!window.confirm("입력한 정보로 공지를 등록하시겠습니까?")) return;
-
+    if (!window.confirm("입력한 정보로 공지를 등록하시겠습니까??")) return;
     if (form.img_url) {
       let paths = await apiObject.uploadImageMultiple({ img_arr: form.img_url, page: "webimg" });
       if (!paths.length) return;
       form.img_url = paths?.[0];
     }
-
-    if (addFile) {
+    if (addFile.isUploadFile1) {
       let paths = await apiObject.uploadFileSingle({ file_arr: addFile, page : 'webnfile'});
       if (!paths.length) return;
       form.file1 = paths?.[0];
@@ -88,7 +86,7 @@ export const WebNoticeDetail = () => {
       start_dt: form.start_dt?.unix(),
     });
 
-    history.push("/notice");
+    history.push("/webnotice");
   }
   async function modifyNotice(form) {
     
@@ -117,7 +115,7 @@ export const WebNoticeDetail = () => {
       ...form,
       start_dt: form.start_dt?.unix(),
     });
-    history.push("/notice");
+    history.push("/webnotice");
   }
   async function removeNotice() {
     if (!window.confirm("공지를 삭제하시겠습니까?")) return;
