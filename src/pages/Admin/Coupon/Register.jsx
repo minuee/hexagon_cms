@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const CouponRegister = () => {
   const history = useHistory();
-  const { control, register, setValue, handleSubmit, errors } = useForm();
+  const { control, watch,register, setValue, handleSubmit, errors } = useForm();
   const { fields, remove } = useFieldArray({
     control,
     name: "selected_user",
@@ -42,7 +42,10 @@ export const CouponRegister = () => {
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
 
   async function registCoupon(form) {
-    if (!form.selected_user) {
+    if ( form.coupon_type === 9 && form.coupon_type_direct < 1  ) {
+      alert("직접입력시에는 쿠폰금액을 입려하셔야 합니다.");
+      return;
+    }else if (!form.selected_user) {
       alert("발행 대상 회원을 선택해주세요");
       return;
     } else if (!window.confirm("입력한 정보로 쿠폰을 발행하시겠습니까?")) {
@@ -56,7 +59,8 @@ export const CouponRegister = () => {
 
     await apiObject.registCoupon({
       ...form,
-      price: form.coupon_type,
+      price: form.coupon_type == 9 ? form.coupon_type_direct : form.coupon_type,
+      is_direct : form.coupon_type == 9 ? true : false,
       end_dt: form.end_dt.unix(),
       target_array,
     });
@@ -95,6 +99,7 @@ export const CouponRegister = () => {
                   <MenuItem value={10000}>10000원권</MenuItem>
                   <MenuItem value={50000}>50000원권</MenuItem>
                   <MenuItem value={100000}>100000원권</MenuItem>
+                  <MenuItem value={9}>직접입력</MenuItem>
                 </Select>
               }
               name="coupon_type"
@@ -102,6 +107,20 @@ export const CouponRegister = () => {
               defaultValue=""
               rules={{ required: true }}
             />
+            {
+              watch("coupon_type") === 9 && (
+                <Box mt={2}>
+                  <TextField
+                    size="small"
+                    name="coupon_type_direct"
+                    placeholder="직졉입력"
+                    defaultValue="0"
+                    inputRef={register({ required: false })}
+                    error={!!errors.coupon_type}
+                  />
+                </Box>
+              )
+            }
           </TableCell>
         </TableRow>
 

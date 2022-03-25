@@ -3,19 +3,7 @@ import { useHistory, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
 import { apiObject } from "api";
-
-import {
-  Box,
-  makeStyles,
-  TextField,
-  Select,
-  MenuItem,
-  TableRow,
-  TableCell,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-} from "@material-ui/core";
+import {Box,makeStyles,TextField,Select,MenuItem,TableRow,TableCell,RadioGroup,FormControlLabel,Radio,} from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
 import { RowTable, Dropzone } from "components";
 
@@ -51,16 +39,24 @@ export const CategoryDetail = ({ location }) => {
   }
 
   async function registCategory(form) {
-    if (!form.category_logo) {
-      alert("카테고리 이미지를 추가해주세요");
+    if (!form.category_type) {
+      alert("카테고리 구분을 선택해주세요");
       return;
+    }else if (form.category_type === 'B' && !form.category_name) {
+      alert("카테고리명을 선택해주세요");
+      return;
+    }else if (form.category_type === 'B' && !form.category_logo) {
+        alert("카테고리 이미지를 추가해주세요");
+        return;
     } else if (!window.confirm("입력한 정보로 카테고리를 추가하시겠습니까?")) {
       return;
     }
 
-    let paths = await apiObject.uploadImageMultiple({ img_arr: form.category_logo, page: "product" });
-    if (!paths.length) return;
-    form.category_logo = paths?.[0];
+    if ( form.category_type === 'B' ) {
+      let paths = await apiObject.uploadImageMultiple({ img_arr: form.category_logo, page: "product" });
+      if (!paths.length) return;
+      form.category_logo = paths?.[0];
+    }
 
     if (form.category_type === "N") {
       let d3_item = normalCategoryList.d3[form.d2].find((item) => item.code === form.d3);
@@ -76,17 +72,23 @@ export const CategoryDetail = ({ location }) => {
     history.push(`product/category`);
   }
   async function modifyCategory(form) {
-    if (!form.category_logo) {
-      alert("카테고리 이미지를 추가해주세요");
+    if (!form.category_type) {
+      alert("카테고리 구분을 선택해주세요");
       return;
+    }else if (form.category_type === 'B' && !form.category_name) {
+      alert("카테고리명을 선택해주세요");
+      return;
+    }else if (form.category_type === 'B' && !form.category_logo) {
+        alert("카테고리 이미지를 추가해주세요");
+        return;
     } else if (!window.confirm("입력한 정보로 카테고리를 수정하시겠습니까?")) {
       return;
     }
-
-    let paths = await apiObject.uploadImageMultiple({ img_arr: form.category_logo, page: "product" });
-    if (!paths.length) return;
-    form.category_logo = paths?.[0];
-
+    if ( form.category_type === 'B' ) {
+      let paths = await apiObject.uploadImageMultiple({ img_arr: form.category_logo, page: "product" });
+      if (!paths.length) return;
+      form.category_logo = paths?.[0];
+    }
     if (form.category_type === "N") {
       let d3_item = normalCategoryList.d3[form.d2].find((item) => item.code === form.d3);
 
@@ -255,7 +257,7 @@ export const CategoryDetail = ({ location }) => {
           <TableCell>로고 이미지</TableCell>
           <TableCell>
             <Dropzone mb={1} control={control} name="category_logo" width="180px" />
-            <Typography>1:1비율의 이미지를 업로드하는 것이 권장됩니다</Typography>
+            <Typography>1:1비율의 이미지를 업로드하는 것이 권장됩니다.(브랜드등록시 필수)</Typography>
           </TableCell>
         </TableRow>
       </RowTable>

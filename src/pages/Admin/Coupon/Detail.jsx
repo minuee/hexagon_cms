@@ -12,34 +12,43 @@ import { RowTable } from "components";
 export const CouponDetail = () => {
   const history = useHistory();
   const { coupon_pk } = useParams();
-  const { control, register, reset, handleSubmit, errors } = useForm();
+  const { control, register,watch, reset, setValue,handleSubmit, errors } = useForm();
 
   const [couponDetail, setCouponDetail] = useState();
   const [isTerminated, setIsTerminated] = useState(false);
 
   async function getCouponDetail() {
     let data = await apiObject.getCouponDetail({ coupon_pk });
+    console.log('dddd',data)
     setIsTerminated(!data.use_yn || data.end_dt < dayjs().unix());
-
+    
     setCouponDetail(data);
     reset({
       ...data,
       end_dt: dayjs.unix(data.end_dt),
-      update_reason: "",
     });
+    setValue("coupon_type", data.is_direct ? 9 : data.coupon_type);
+    setValue("coupon_type_direct", data.is_direct ?  data.coupon_type : 0);
+    setValue("update_reason", data.update_reason);
   }
   async function modifyCoupon(form) {
-    if (!window.confirm("입력한 정보로 쿠폰을 수정하시겠습니까?")) return;
+    if ( form.coupon_type === 9 && form.coupon_type_direct < 1  ) {
+      alert("직접입력시에는 쿠폰금액을 입력하셔야 합니다.");
+      return;
+    }else{
+      if (!window.confirm("입력한 정보로 쿠폰을 수정하시겠습니까?")) return;
 
-    await apiObject.modifyCoupon({
-      coupon_pk,
-      ...form,
-      price: form.coupon_type,
-      end_dt: form.end_dt?.unix(),
-      member_pk: couponDetail?.member_pk,
-    });
+      await apiObject.modifyCoupon({
+        coupon_pk,
+        ...form,
+        price: form.coupon_type == 9 ? form.coupon_type_direct : form.coupon_type,
+        is_direct : form.coupon_type == 9 ? true : false,
+        end_dt: form.end_dt?.unix(),
+        member_pk: couponDetail?.member_pk
+      });
 
-    getCouponDetail();
+      getCouponDetail();
+    }
   }
   async function removeCoupon() {
     if (!window.confirm("해당 쿠폰을 삭제하시겠습니까?")) return;
@@ -67,6 +76,7 @@ export const CouponDetail = () => {
             {isTerminated ? (
               <Typography>{couponDetail?.coupon_type}원권</Typography>
             ) : (
+              <>
               <Controller
                 as={
                   <Select displayEmpty error={!!errors?.coupon_type} disabled={isTerminated}>
@@ -75,6 +85,7 @@ export const CouponDetail = () => {
                     <MenuItem value={10000}>10000원권</MenuItem>
                     <MenuItem value={50000}>50000원권</MenuItem>
                     <MenuItem value={100000}>100000원권</MenuItem>
+                    <MenuItem value={9}>직접입력</MenuItem>
                   </Select>
                 }
                 name="coupon_type"
@@ -82,6 +93,20 @@ export const CouponDetail = () => {
                 defaultValue=""
                 rules={{ required: true }}
               />
+              {watch("coupon_type") === 9 && (
+                <Box mt={2}>
+                  <TextField
+                    size="small"
+                    name="coupon_type_direct"
+                    placeholder="직졉입력"
+                    defaultValue={couponDetail?.is_direct ? couponDetail?.coupon_type : 0}
+                    inputRef={register({ required: false })}
+                    error={!!errors.coupon_type}
+                  />
+                </Box>
+              )
+              }
+              </>
             )}
           </TableCell>
         </TableRow>

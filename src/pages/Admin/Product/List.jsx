@@ -81,15 +81,39 @@ export const ProductList = ({ location }) => {
       ),
       width: 180,
     },
-    { title: "카테고리구분", render: ({ category_type }) => (category_type === "B" ? "브랜드" : "제품군"), width: 120 },
-    { title: "카테고리명", field: "category_name", width: 160 },
+    /* { title: "카테고리구분", render: ({ category_type }) => (category_type === "B" ? "브랜드" : "제품군"), width: 120 },
+    { title: "카테고리명", field: "category_name", width: 160 }, */
+    {
+      title: "카테고리1",
+      field: "category_type",
+
+      render: ({ category_type, category_name, }) => (
+        <p>
+          <span style={{ color: "red" }}>{category_type === "B" ? "[브랜드] " : "[제품군] "}</span>
+          {category_name}
+        </p>
+      ),
+      cellStyle: { textAlign: "left" },
+    },
+    {
+      title: "카테고리2",
+      field: "category2_type",
+
+      render: ({ category2_type, category2_name, }) => (
+        <p>
+          <span style={{ color: "red" }}>{ category2_type === "B" ? "[브랜드] " : category2_type === "N" ? "[제품군] " : ""}</span>
+          {category2_name}
+        </p>
+      ),
+      cellStyle: { textAlign: "left" },
+    },
     {
       title: "상품명",
       field: "product_name",
 
-      render: ({ product_name, category_yn }) => (
+      render: ({ product_name, category_yn,product_yn }) => (
         <p>
-          {!category_yn && <span style={{ color: "red" }}>(사용중지) </span>}
+          {!product_yn && <span style={{ color: "red" }}>(사용중지) </span>}
           {product_name}
         </p>
       ),
@@ -111,6 +135,7 @@ export const ProductList = ({ location }) => {
     let data = await apiObject.getProductList({
       ...query,
     });
+    console.log('query',query)
     setProductList(data);
   }
   async function getCategoryList() {
@@ -171,11 +196,12 @@ export const ProductList = ({ location }) => {
               onChange={(e) =>
                 updateQuery({
                   category_type: e.target.value,
+                  use_type : query.use_type,
                   category_pk: "",
                 })
               }
             >
-              <MenuItem value="">카테고리 구분</MenuItem>
+              <MenuItem value="">카테고리1 구분</MenuItem>
               <MenuItem value="B">브랜드</MenuItem>
               <MenuItem value="N">제품군</MenuItem>
             </Select>
@@ -186,7 +212,7 @@ export const ProductList = ({ location }) => {
               value={query.category_pk || ""}
               onChange={(e) => updateQuery({ category_pk: e.target.value })}
             >
-              <MenuItem value="">카테고리 분류</MenuItem>
+              <MenuItem value="">카테고리1 분류</MenuItem>
               {(query.category_type || "") === "B" &&
                 categoryList?.categoryBrandList.map((item, index) => (
                   <MenuItem value={item.category_pk} key={index}>
@@ -199,6 +225,17 @@ export const ProductList = ({ location }) => {
                     {`${item.depth1name}  >  ${item.depth2name}  >  ${item.depth3name}`}
                   </MenuItem>
                 ))}
+            </Select>
+
+            <Select
+              displayEmpty
+              margin="dense"
+              value={query.use_type || ""}
+              onChange={(e) => updateQuery({ use_type: e.target.value })}
+            >
+              <MenuItem value="">공개여부</MenuItem>
+              <MenuItem value="Y">공개</MenuItem>
+              <MenuItem value="N">비공개</MenuItem>
             </Select>
 
             <Box ml={2}>

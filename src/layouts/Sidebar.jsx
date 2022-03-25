@@ -12,6 +12,10 @@ const admin_page = [
     path: `/`,
   },
   {
+    label: `환경설정`,
+    path: `/setup`,
+  },
+  {
     label: `회원관리`,
     path: `/member`,
   },

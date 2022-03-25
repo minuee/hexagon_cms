@@ -76,7 +76,7 @@ const order_status_list = [
   },
   {
     no: 5,
-    label: "주문취소처리",
+    label: "주문취소완료",
     code: "CANCEL_B",
   },
   {

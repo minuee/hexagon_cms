@@ -164,6 +164,29 @@ export const apiObject = {
       return [];
     }
   },
+  getSetupdata: async () => {
+    try {
+      let response = await axios.get(`/cms/baseinfo`);
+      let ret = response.data.data;
+      return ret;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+      return {};
+    }
+  },
+  updateSetup: async ({ cs_phone,cs_email }) => {
+    try {
+      let response = await axios.put(`/cms/baseinfo/modify`, {
+        cs_phone
+      });
+      alert("수정을 완료했습니다");
+      return response;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+    }
+  },
   signIn: async ({ user_id = "superbinder", password = "hexagon12!@" }) => {
     try {
       let response = await axios.post("/v1/auth/signin", {
@@ -417,7 +440,7 @@ export const apiObject = {
     try {
       let data = await axios.get(`/cms/order/view/${order_pk}`);
       let ret = data.data.data;
-
+      console.log('ret.orderBase',ret.orderBase)
       ret.orderBase.email = decrypt(ret.orderBase.email);
       ret.orderBase.phone = decrypt(ret.orderBase.phone);
       ret.orderBase.delivery_phone = decrypt(ret.orderBase.delivery_phone);
@@ -492,7 +515,7 @@ export const apiObject = {
           code: "CANCEL_A",
         },
         {
-          label: "주문취소처리",
+          label: "주문취소완료",
           code: "CANCEL_B",
         },
         {
@@ -535,12 +558,13 @@ export const apiObject = {
       return {};
     }
   },
-  modifyOrderStatus: async ({ order_pk, member_pk, nowOrderStatus, newOrderStatus }) => {
+  modifyOrderStatus: async ({ order_pk, member_pk, nowOrderStatus, newOrderStatus ,settle_type}) => {
     try {
       let response = await axios.put(`/cms/order/modify/${order_pk}`, {
         member_pk,
         nowOrderStatus,
         newOrderStatus,
+        settle_type
       });
 
       alert("주문상태 수정을 완료했습니다");
@@ -550,7 +574,23 @@ export const apiObject = {
       console.log({ e });
     }
   },
-
+  modifyPointRefund: async ({ order_pk,member_pk,refund_point}) => {
+    try {
+      let response = await axios.put(`/cms/order/pointrefund/${order_pk}`, {
+        member_pk,refund_point
+      });
+      if ( response.code === '0000' ) {
+        alert("정상적으로 환급처리되었습니다");
+        return response;
+      }else{
+        alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+        console.log({ response });
+      }
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+    }
+  },
   // Category
   getCategoryList: async ({ search_word, is_cms = true }) => {
     try {
@@ -660,9 +700,13 @@ export const apiObject = {
         normalcategory_pk,
         reg_member,
       });
-
-      alert("카테고리 등록을 완료했습니다");
-      return response;
+      if ( response.code == '0000') {
+        alert("카테고리 등록을 완료했습니다");
+        return response;
+      }else{
+        alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+        return "";
+      }
     } catch (e) {
       alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
@@ -711,10 +755,10 @@ export const apiObject = {
   },
 
   // Product
-  getProductList: async ({ category_pk, page, paginate = 10, search_word }) => {
+  getProductList: async ({ category_pk, use_type, page, paginate = 10, search_word }) => {
     try {
       let data = await axios.get("/cms/product/list", {
-        params: { category_pk, page, paginate, search_word },
+        params: { category_pk, use_type,page, paginate, search_word },
       });
 
       let ret = data.data.data.productList;
@@ -761,6 +805,7 @@ export const apiObject = {
   registProduct: async ({
     product_name,
     category_pk,
+    category2_pk,
     material,
     thumb_img,
     detail_img1,
@@ -790,6 +835,7 @@ export const apiObject = {
       let response = await axios.post("/cms/product/regist", {
         product_name,
         category_pk,
+        category2_pk,
         material,
         thumb_img,
         detail_img1,
@@ -826,6 +872,7 @@ export const apiObject = {
   modifyProduct: async ({
     product_name,
     category_pk,
+    category2_pk,
     material,
     thumb_img,
     detail_img1,
@@ -858,6 +905,7 @@ export const apiObject = {
       let response = await axios.put(`/cms/product/modify/${product_pk}`, {
         product_name,
         category_pk,
+        category2_pk,
         material,
         thumb_img,
         detail_img1,
@@ -1586,11 +1634,12 @@ export const apiObject = {
       return {};
     }
   },
-  registCoupon: async ({ coupon_type, price, end_dt, target_array, issue_reason, is_first }) => {
+  registCoupon: async ({ coupon_type,is_direct, price, end_dt, target_array, issue_reason, is_first }) => {
     try {
       let response = await axios.post("/cms/coupon/regist", {
         coupon_type,
         price,
+        is_direct,
         end_dt,
         target_array,
         issue_reason,
@@ -1604,10 +1653,11 @@ export const apiObject = {
       console.log({ e });
     }
   },
-  modifyCoupon: async ({ coupon_pk, coupon_type, price, end_dt, member_pk, update_reason, is_first }) => {
+  modifyCoupon: async ({ coupon_pk, coupon_type, is_direct, price, end_dt, member_pk, update_reason, is_first }) => {
     try {
       let response = await axios.put(`/cms/coupon/modify/${coupon_pk}`, {
         coupon_type,
+        is_direct,
         price,
         end_dt,
         member_pk,

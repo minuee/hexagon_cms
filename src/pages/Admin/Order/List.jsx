@@ -32,11 +32,29 @@ const order_list_columns = [
   },
   { title: "회원명", field: "member_name", width: 160 },
   {
+    title: "결제방식",
+    render: ({ settle_type,settle_type_name }) => settle_type_name,
+    width: 120,
+  },
+  {
     title: "구매액",
     render: ({ total_amount }) => `${price(total_amount)}원`,
     cellStyle: { textAlign: "right" },
   },
-  { title: "주문상태", field: "order_status_name", width: 100 },
+  {
+    title: "주문상태",
+    render: ({ order_status,order_status_name,settle_type,is_refund_point }) => (
+      <>
+        <p>{order_status_name}</p>
+        {(settle_type == 'vbank' && order_status == 'CANCEL_A' ) && <span style={{color:'red'}}>{`(환불요청중)`}</span>}
+        {(is_refund_point == true && order_status == 'CANCEL_B' ) && <span style={{color:'blue'}}>{`(미출고처리)`}</span>}
+      </>
+    ),
+    width: 150,
+    cellStyle: { textAlign: "center" },
+  },
+  
+  /* { title: "주문상태", field: "order_status_name", width: 150 }, */
 ];
 const header_button_list = [
   {
@@ -86,7 +104,7 @@ const order_status_list = [
     value: "CANCEL_A",
   },
   {
-    label: "주문취소처리",
+    label: "주문취소완료",
     value: "CANCEL_B",
   },
   {

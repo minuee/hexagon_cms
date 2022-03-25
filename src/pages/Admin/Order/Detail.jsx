@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import { Box, makeStyles, Select, MenuItem, TableRow, TableCell } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
 import { RowTable, ImageBox } from "components";
+import { async } from "regenerator-runtime";
 
 const useStyles = makeStyles((theme) => ({
   product_divider: {
@@ -79,7 +80,7 @@ const order_status_list = [
   },
   {
     no: 7,
-    label: "주문취소처리",
+    label: "주문취소완료",
     code: "CANCEL_B",
   },
   {
@@ -114,6 +115,20 @@ export const OrderDetail = () => {
       member_pk: orderDetail.orderBase.member_pk,
       nowOrderStatus: orderDetail?.orderBase?.order_status,
       newOrderStatus: form.order_status,
+      settle_type : orderDetail?.orderBase?.settle_type,
+      is_return_order : orderDetail?.orderBase?.isreturn,
+    });
+
+    getOrderDetail();
+  }
+ 
+  async function pointReturnAction(form) {
+    if (!window.confirm("미출고에 따른 포인트로 환급진행하시겠습니까?")) return;
+
+    await apiObject.modifyPointRefund({
+      order_pk,
+      member_pk: orderDetail.orderBase.member_pk,
+      refund_point : orderDetail?.orderBase?.total_amount + orderDetail?.orderBase?.coupon_amount + orderDetail?.orderBase?.point_amount
     });
 
     getOrderDetail();
@@ -133,7 +148,87 @@ export const OrderDetail = () => {
         <Typography fontWeight="500">주문 상태</Typography>
         <Box px={6} position="relative">
           <Box className={classes.order_status}>
-            {order_status_list.slice(0, 3).map((item) => {
+            {
+              orderDetail?.orderLog?.orderhistory?.map((item, index) => {
+                if ( item.history_type == 'ORDER' ) {
+                  return (
+                    <Box key={item.orderhistory_pk}>                    
+                      <ImageBox src={`/image/order_ORDER.png`} position="center bottom" />
+                      <Box px={2} py={1} mt={2} bgcolor={"#003a7b"} color={"#fff" }>
+                        주문완료
+                      </Box>
+                    </Box>
+                  );
+                }else if ( item.history_type == 'INCOME' ) {
+                  return (
+                    <Box key={item.orderhistory_pk}>                    
+                      <ImageBox src={`/image/order_INCOME.png`} position="center bottom" />
+                      <Box px={2} py={1} mt={2} bgcolor={"#003a7b"} color={"#fff" }>
+                        주문완료
+                      </Box>
+                    </Box>
+                  );
+                }else if ( item.history_type == 'CANCEL_A' ) {
+                  return (
+                    <Box key={item.orderhistory_pk}>                    
+                      <ImageBox src={`/image/order_CANCEL.png`} position="center bottom" />
+                      <Box px={2} py={1} mt={2} bgcolor={"#003a7b"} color={"#fff" }>
+                        주문취소
+                      </Box>
+                    </Box>
+                  );
+                }else if ( item.history_type == 'REFUND' ) {
+                  return (
+                    <Box key={item.orderhistory_pk}>                    
+                      <ImageBox src={`/image/order_CANCEL.png`} position="center bottom" />
+                      <Box px={2} py={1} mt={2} bgcolor={"#003a7b"} color={"#fff" }>
+                        미출고처리
+                      </Box>
+                    </Box>
+                  );
+                }else if ( item.history_type == 'READY' ) {
+                  return (
+                    <Box key={item.orderhistory_pk}>                    
+                      <ImageBox src={`/image/order_READY.png`} position="center bottom" />
+                      <Box px={2} py={1} mt={2} bgcolor={"#003a7b"} color={"#fff" }>
+                        배송준비중
+                      </Box>
+                    </Box>
+                  );
+                }else if ( item.history_type == 'TRANSING' ) {
+                  return (
+                    <Box key={item.orderhistory_pk}>                    
+                      <ImageBox src={`/image/order_TRANS.png`} position="center bottom" />
+                      <Box px={2} py={1} mt={2} bgcolor={"#003a7b"} color={"#fff" }>
+                        배송중
+                      </Box>
+                    </Box>
+                  );
+                }else if ( item.history_type == 'TRANSOK' ) {
+                  return (
+                    <Box key={item.orderhistory_pk}>                    
+                      <ImageBox src={`/image/order_TRANS.png`} position="center bottom" />
+                      <Box px={2} py={1} mt={2} bgcolor={"#003a7b"} color={"#fff" }>
+                        배송완료
+                      </Box>
+                    </Box>
+                  );
+                }else if ( item.history_type == 'RETURN' ) {
+                  return (
+                    <Box key={item.orderhistory_pk}>                    
+                      <ImageBox src={`/image/order_RETURN.png`} position="center bottom" />
+                      <Box px={2} py={1} mt={2} bgcolor={"#003a7b"} color={"#fff" }>
+                        교환요청
+                      </Box>
+                    </Box>
+                  );
+                }else{
+
+                }
+               
+              })
+            }
+            {/* {order_status_list.slice(0, 5).map((item) => {
               let isPassed = item.no <= orderDetail?.orderBase.order_status_no;
               return (
                 <Box key={item.no}>
@@ -143,8 +238,8 @@ export const OrderDetail = () => {
                   </Box>
                 </Box>
               );
-            })}
-            {orderDetail?.orderBase.order_status_no === 4 && (
+            })} */}
+            {/* {orderDetail?.orderBase.order_status_no === 4 && (
               <Box>
                 <ImageBox src={`/image/exchange_request.png`} position="center bottom" />
                 <Box px={2} py={1} mt={2} bgcolor="#003a7b" color="#fff">
@@ -167,7 +262,7 @@ export const OrderDetail = () => {
                   결제취소
                 </Box>
               </Box>
-            )}
+            )} */}
           </Box>
           <Box className={classes.order_indicator} />
         </Box>
@@ -364,7 +459,10 @@ export const OrderDetail = () => {
           <>
             <TableRow>
               <TableCell>입금계좌</TableCell>
-              <TableCell>{`${orderDetail?.settleInfo?.vbank_name} ${orderDetail?.settleInfo?.vbank_num} ${orderDetail?.settleInfo?.vbank_holder}`}</TableCell>
+              <TableCell>
+                  {`${orderDetail?.settleInfo?.vbank_name} ${orderDetail?.settleInfo?.vbank_num} ${orderDetail?.settleInfo?.vbank_holder}`}
+                  {"  "}입금자명 : {orderDetail?.orderBase?.vbank_accountname}
+                </TableCell>
             </TableRow>
             {orderDetail?.orderBase?.order_status === "WAIT" && (
               <TableRow>
@@ -374,6 +472,16 @@ export const OrderDetail = () => {
                 </TableCell>
               </TableRow>
             )}
+          </>
+        )}
+        {orderDetail?.orderBase?.settle_type === "vbank" && (
+          <>
+            <TableRow>
+              <TableCell>환불 계좌</TableCell>
+              <TableCell>
+                  {`${orderDetail?.orderBase?.refund_bankname} ${orderDetail?.orderBase?.refund_accountname} ${orderDetail?.orderBase?.refund_bankaccount}`}
+                </TableCell>
+            </TableRow>
           </>
         )}
         {orderDetail?.orderBase?.settle_type === "card" && (
@@ -386,7 +494,28 @@ export const OrderDetail = () => {
         <TableRow>
           <TableCell>미출고시 조치방법</TableCell>
           <TableCell>
-            {orderDetail?.orderBase?.refund_type === "Product" ? "상품 입고시 배송" : "포인트로 환급"}
+            <Box display="flex" justifyContent="space-between">
+              <Box>
+                <Box>{orderDetail?.orderBase?.refund_type === "Product" ? "상품 입고시 배송" : "포인트로 환급"}</Box>
+              { 
+                (orderDetail?.orderBase?.refund_type === "Cash"  && orderDetail?.orderBase?.reward_point > 0 ) &&
+                <Box>
+                  ({orderDetail?.orderBase?.content}   &nbsp;{price(orderDetail?.orderBase?.reward_point)}원
+                  &nbsp;&nbsp;&nbsp;{dayjs.unix(orderDetail?.orderBase?.refund_point_dt).format(`YYYY-MM-DD HH:mm`)})                 
+                  </Box>
+              }
+              </Box>
+              { 
+                orderDetail?.orderBase?.refund_type === "Cash" &&
+                <Button
+                  color="primary"
+                  onClick={handleSubmit(pointReturnAction)}
+                  disabled={orderDetail?.orderBase?.is_refund_point}
+                >
+                  포인트환급처리
+                </Button>
+              }
+            </Box>
           </TableCell>
         </TableRow>
       </RowTable>

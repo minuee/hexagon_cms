@@ -54,6 +54,7 @@ export const useQuery = (location) => {
     query.term_start,
     query.term_end,
     query.category_pk,
+    query.use_type,
     query.type,
     query.tab,
     query.order_status,

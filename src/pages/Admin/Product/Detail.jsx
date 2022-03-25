@@ -89,6 +89,7 @@ export const ProductDetail = () => {
       detail_img: [],
     });
     setValue("category_pk", data.category_pk);
+    setValue("category2_pk", data.category2_pk);
     setValue("thumb_img", data.thumb_img);
     setValue("detail_img", data.detail_img);
 
@@ -161,12 +162,17 @@ export const ProductDetail = () => {
       });
     }
 
-    await getProductDetail();
+    //await getProductDetail();
+    history.push("/product/item");
   }
 
   useEffect(() => {
     setValue("category_pk", "");
   }, [watch("category_type", "B")]);
+
+  useEffect(() => {
+    setValue("category2_pk", "");
+  }, [watch("category2_type", "B")]);
 
   useEffect(() => {
     getCategoryList();
@@ -185,7 +191,7 @@ export const ProductDetail = () => {
 
       <RowTable>
         <TableRow>
-          <TableCell>카테고리</TableCell>
+          <TableCell>카테고리1</TableCell>
           <TableCell>
             <Box className={classes.category_wrapper}>
               <Controller
@@ -231,6 +237,60 @@ export const ProductDetail = () => {
                     </Select>
                   }
                   name="category_pk"
+                  control={control}
+                  defaultValue={""}
+                />
+              )}
+            </Box>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>카테고리2</TableCell>
+          <TableCell>
+            <Box className={classes.category_wrapper}>
+              <Controller
+                as={
+                  <Select margin="dense" displayEmpty>
+                    <MenuItem value="">카테고리2선택</MenuItem>
+                    <MenuItem value="B">브랜드</MenuItem>
+                    <MenuItem value="N">제품군</MenuItem>
+                  </Select>
+                }
+                name="category2_type"
+                control={control}
+                defaultValue={""}
+              />
+
+              {watch("category2_type", "") === "B" && (
+                <Controller
+                  as={
+                    <Select margin="dense" displayEmpty>
+                      <MenuItem value="">브랜드 선택</MenuItem>
+                      {categoryList?.categoryBrandList.map((item, index) => (
+                        <MenuItem value={item.category_pk} key={index}>
+                          {item.category_name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  }
+                  name="category2_pk"
+                  control={control}
+                  defaultValue={""}
+                />
+              )}
+              {watch("category2_type", "") === "N" && (
+                <Controller
+                  as={
+                    <Select margin="dense" displayEmpty>
+                      <MenuItem value="">제품군 선택</MenuItem>
+                      {categoryList?.categoryNormalList.map((item, index) => (
+                        <MenuItem value={item.category_pk} key={index}>
+                          {item.category_name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  }
+                  name="category2_pk"
                   control={control}
                   defaultValue={""}
                 />
