@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   category_wrapper: {
     "& > *": {
       display: "inline-block",
-      width: theme.spacing(20),
+      //width: theme.spacing(40),
       marginRight: theme.spacing(2),
     },
   },
@@ -59,6 +59,12 @@ const useStyles = makeStyles((theme) => ({
     top: theme.spacing(1),
     color: theme.palette.grey[500],
   },
+  categoryInput1 : {
+    width : theme.spacing(20)
+  },
+  categoryInput2 : {
+    width : theme.spacing(50)
+  }
 }));
 
 export const ProductDetail = () => {
@@ -205,6 +211,7 @@ export const ProductDetail = () => {
                 name="category_type"
                 control={control}
                 defaultValue={""}
+                className={classes.categoryInput1}
               />
 
               {watch("category_type", "") === "B" && (
@@ -222,6 +229,7 @@ export const ProductDetail = () => {
                   name="category_pk"
                   control={control}
                   defaultValue={""}
+                  className={classes.categoryInput2}
                 />
               )}
               {watch("category_type", "") === "N" && (
@@ -231,7 +239,7 @@ export const ProductDetail = () => {
                       <MenuItem value="">제품군 선택</MenuItem>
                       {categoryList?.categoryNormalList.map((item, index) => (
                         <MenuItem value={item.category_pk} key={index}>
-                          {item.category_name}
+                          {item.depth1name} {">"} {item.depth2name} {">"} {item.depth3name}
                         </MenuItem>
                       ))}
                     </Select>
@@ -239,6 +247,7 @@ export const ProductDetail = () => {
                   name="category_pk"
                   control={control}
                   defaultValue={""}
+                  className={classes.categoryInput2}
                 />
               )}
             </Box>
@@ -259,6 +268,7 @@ export const ProductDetail = () => {
                 name="category2_type"
                 control={control}
                 defaultValue={""}
+                className={classes.categoryInput1}
               />
 
               {watch("category2_type", "") === "B" && (
@@ -276,6 +286,7 @@ export const ProductDetail = () => {
                   name="category2_pk"
                   control={control}
                   defaultValue={""}
+                  className={classes.categoryInput2}
                 />
               )}
               {watch("category2_type", "") === "N" && (
@@ -293,6 +304,7 @@ export const ProductDetail = () => {
                   name="category2_pk"
                   control={control}
                   defaultValue={""}
+                  className={classes.categoryInput2}
                 />
               )}
             </Box>
