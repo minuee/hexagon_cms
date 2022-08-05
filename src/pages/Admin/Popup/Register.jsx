@@ -20,10 +20,12 @@ import {
   IconButton,
   Dialog,
 } from "@material-ui/core";
-import { EventNote, Close } from "@material-ui/icons";
+import { EventNote, Close, ContactSupport } from "@material-ui/icons";
 import { DateTimePicker } from "@material-ui/pickers";
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, RowTable, Pagination, SearchBox, Dropzone, ImageBox } from "components";
+
+const UploadLimitSite = 10000000;
 
 const useStyles = makeStyles((theme) => ({
   datetimepicker: {
@@ -59,9 +61,17 @@ export const PopupRegister = () => {
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
 
   async function registPopup(form) {
+    console.log('form.popup_img',form.popup_img)
+    
     if (!form.popup_img) {
       alert("팝업 이미지를 선택해주세요");
       return;
+    }else {
+      console.log('form.popup_img 2',form.popup_img[0].file.size)
+      if ( form.popup_img[0].file.size > UploadLimitSite ) {
+        alert("파일은 10MB이하로 등록해주세요");
+        return;
+      }
     }
     if (form.popup_gubun === "Event" && !form.selected_target) {
       alert("이벤트 적용 대상을 선택해주세요");

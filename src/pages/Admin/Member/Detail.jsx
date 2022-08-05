@@ -79,13 +79,13 @@ const reward_history_column = [
   {
     title: "일자",
     render: ({ reg_dt }) => dayjs.unix(reg_dt).format("YYYY-MM-DD HH:mm"),
-    width: 240,
+    width: 200,
   },
   {
     title: "내용",
     render: ({ reward_gubun, order_pk, content }) =>
       reward_gubun === "m" && order_pk > 0 ? "주문포인트 사용" : content,
-    width: 160,
+    width: 300,
   },
   {
     title: "리워드액",

@@ -8,6 +8,10 @@ import { Grid, Box, makeStyles, Select, MenuItem } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, ImageBox, ExcelExportButton, DnDList } from "components";
 
+/* Page 관리 */
+import { useRecoilState } from "recoil";
+import { currentPage, currentPageName, } from "../../../redux/state";
+
 const useStyles = makeStyles((theme) => ({
   header: {
     display: "flex",
@@ -68,10 +72,21 @@ export const ProductList = ({ location }) => {
   const history = useHistory();
   const { query, updateQuery, getDataFunction, Pagination, SearchBox } = useQuery(location);
 
+
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [productList, setProductList] = useState();
   const [categoryList, setCategoryList] = useState();
+
   const [isModify, setIsModify] = useState(false);
+  const [page, setPage] = useRecoilState(currentPage);
+  const [pageName, setPageName] = useRecoilState(currentPageName);
+
+  if( location.pathname !== pageName ) {
+    setPage(1);
+    setPageName(location.pathname);
+  }
+
+  if ( page == undefined ) setPage(1)
 
   const product_list_columns = [
     {
@@ -133,11 +148,28 @@ export const ProductList = ({ location }) => {
 
   async function getProductList(query) {
     let data = await apiObject.getProductList({
-      ...query,
+      ...query,ismode : 'seq',
     });
     console.log('query',query)
     setProductList(data);
   }
+
+  async function getProductAllList(query) {
+    let data = await apiObject.getProductAllList({
+      ...query,isMode : 'all'
+    });
+    console.log('getProductAllList',query)
+    setProductList(data);
+  }
+
+  useEffect(() => {
+    if ( isModify === true ) {
+      getProductAllList(query)
+    }else{
+      getProductList(query)
+    }
+  }, [isModify]);
+
   async function getCategoryList() {
     let data = await apiObject.getCategoryList({});
     setCategoryList(data);
@@ -163,9 +195,10 @@ export const ProductList = ({ location }) => {
         display_seq: index + 1,
       });
     });
-
+    console.log('product_array',product_array.length)
     await apiObject.modifyProductSequence({ category_pk: query.category_pk || "B", product_array });
-    getProductList();
+
+    getProductList(query);
     setIsModify(false);
   }
 

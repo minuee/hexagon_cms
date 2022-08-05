@@ -382,6 +382,7 @@ export const apiObject = {
     company_phone,
     email,
     img_url,
+    use_yn,
     is_approval = true,
     new_approval = false,
   }) => {
@@ -395,11 +396,17 @@ export const apiObject = {
         company_phone: encrypt(company_phone),
         email: encrypt(email),
         img_url,
+        use_yn,
         is_approval,
         new_approval,
       });
-
-      alert("회원정보 수정을 완료했습니다");
+      console.log('response.code ',response )
+      if ( response?.data.code == '0000') {
+        alert("회원정보 수정을 완료했습니다");
+        console.log('response',response)
+      }else{
+        alert("회원정보 수정중 오류가 발생하였습니다. 관리자에게 문의하세요");
+      }
       return response;
     } catch (e) {
       alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
@@ -700,7 +707,8 @@ export const apiObject = {
         normalcategory_pk,
         reg_member,
       });
-      if ( response.code == '0000') {
+      //console.log('response',response)
+      if ( response.data.code == '0000') {
         alert("카테고리 등록을 완료했습니다");
         return response;
       }else{
@@ -708,7 +716,7 @@ export const apiObject = {
         return "";
       }
     } catch (e) {
-      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다.");
       console.log({ e });
       return "";
     }
@@ -731,7 +739,6 @@ export const apiObject = {
         category_yn,
         normalcategory_pk,
       });
-
       alert("카테고리 수정을 완료했습니다");
       return response;
     } catch (e) {
@@ -745,7 +752,6 @@ export const apiObject = {
         category_type,
         category_array,
       });
-
       alert("카테고리 노출순서 수정을 완료했습니다");
       return response;
     } catch (e) {
@@ -755,14 +761,27 @@ export const apiObject = {
   },
 
   // Product
-  getProductList: async ({ category_pk, use_type, page, paginate = 10, search_word }) => {
+  getProductList: async ({ category_pk, use_type, page, paginate = 10, search_word , ismode = null }) => {
     try {
       let data = await axios.get("/cms/product/list", {
+        params: { category_pk, use_type,page, paginate, search_word,ismode },
+      });
+      let ret = data.data.data.productList;
+      return ret;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+      return [];
+    }
+  },
+
+  // Product All
+  getProductAllList: async ({ category_pk, use_type, page, paginate = 10000, search_word }) => {
+    try {
+      let data = await axios.get("/cms/product/alllist", {
         params: { category_pk, use_type,page, paginate, search_word },
       });
-
       let ret = data.data.data.productList;
-
       return ret;
     } catch (e) {
       alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");

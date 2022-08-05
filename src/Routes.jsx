@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 import jwt from "jsonwebtoken";
-
+import { RecoilRoot } from "recoil";
 import { Dashboard } from "./layouts";
 
 import { SignIn, SignUp, FindUserInfo } from "./pages/Auth";
@@ -63,53 +63,55 @@ const AuthRoutes = () => {
 
 const AdminRoutes = () => {
   return (
-    <Dashboard>
-      <Switch>
-        <Route exact path="/" component={AdminHome} />
+    <RecoilRoot>
+      <Dashboard>
+        <Switch>
+          <Route exact path="/" component={AdminHome} />
 
-        <Route exact path="/member/:member_pk" component={MemberDetail} />
-        <Route path="/member" component={MemberList} />
+          <Route exact path="/member/:member_pk" component={MemberDetail} />
+          <Route path="/member" component={MemberList} />
 
-        <Route exact path="/setup" component={SetupPage} />
+          <Route exact path="/setup" component={SetupPage} />
 
-        <Route exact path="/order/:order_pk" component={OrderDetail} />
-        <Route path="/order" component={OrderList} />
+          <Route exact path="/order/:order_pk" component={OrderDetail} />
+          <Route path="/order" component={OrderList} />
 
-        <Route exact path="/product/category/:category_pk" component={CategoryDetail} />
-        <Route path="/product/category" component={CategoryList} />
-        <Route exact path="/product/item/:product_pk" component={ProductDetail} />
-        <Route path="/product/item" component={ProductList} />
-        <Route path="/product/recommend" component={RecommendList} />
-        <Redirect from="/product" to="/product/category" />
+          <Route exact path="/product/category/:category_pk" component={CategoryDetail} />
+          <Route path="/product/category" component={CategoryList} />
+          <Route exact path="/product/item/:product_pk" component={ProductDetail} />
+          <Route path="/product/item" component={ProductList} />
+          <Route path="/product/recommend" component={RecommendList} />
+          <Redirect from="/product" to="/product/category" />
 
-        <Route path="/event/:event_pk" component={EventDetail} />
-        <Route path="/event" component={EventList} />
+          <Route path="/event/:event_pk" component={EventDetail} />
+          <Route path="/event" component={EventList} />
 
-        <Route exact path="/popup/:popup_gubun/regist" component={PopupRegister} />
-        <Route exact path="/popup/:popup_gubun/:popup_pk" component={PopupDetail} />
-        <Route path="/popup" component={PopupList} />
+          <Route exact path="/popup/:popup_gubun/regist" component={PopupRegister} />
+          <Route exact path="/popup/:popup_gubun/:popup_pk" component={PopupDetail} />
+          <Route path="/popup" component={PopupList} />
 
-        <Route exact path="/notice/:notice_pk" component={NoticeDetail} />
-        <Route path="/notice" component={NoticeList} />
+          <Route exact path="/notice/:notice_pk" component={NoticeDetail} />
+          <Route path="/notice" component={NoticeList} />
 
-        <Route exact path="/webnotice/:notice_pk" component={WebNoticeDetail} />
-        <Route path="/webnotice" component={WebNoticeList} />
+          <Route exact path="/webnotice/:notice_pk" component={WebNoticeDetail} />
+          <Route path="/webnotice" component={WebNoticeList} />
 
-        <Route path="/coupon/regist" component={CouponRegister} />
-        <Route path="/coupon/:coupon_pk" component={CouponDetail} />
-        <Route path="/coupon" component={CouponList} />
+          <Route path="/coupon/regist" component={CouponRegister} />
+          <Route path="/coupon/:coupon_pk" component={CouponDetail} />
+          <Route path="/coupon" component={CouponList} />
 
-        <Route path="/banner/:banner_pk" component={BannerDetail} />
-        <Route path="/banner" component={BannerList} />
+          <Route path="/banner/:banner_pk" component={BannerDetail} />
+          <Route path="/banner" component={BannerList} />
 
-        <Route exact path="/salesman/regist" component={SalesmanRegister} />
-        <Route exact path="/salesman/incentive/:member_pk/:sales_month" component={SalesmanIncentive} />
-        <Route exact path="/salesman/:member_pk" component={SalesmanDetail} />
-        <Route path="/salesman" component={SalesmanList} />
+          <Route exact path="/salesman/regist" component={SalesmanRegister} />
+          <Route exact path="/salesman/incentive/:member_pk/:sales_month" component={SalesmanIncentive} />
+          <Route exact path="/salesman/:member_pk" component={SalesmanDetail} />
+          <Route path="/salesman" component={SalesmanList} />
 
-        <Redirect to="/" />
-      </Switch>
-    </Dashboard>
+          <Redirect to="/" />
+        </Switch>
+      </Dashboard>
+    </RecoilRoot>
   );
 };
 

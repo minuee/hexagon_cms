@@ -4,23 +4,11 @@ import { useSelector } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
 import { apiObject } from "api";
 import { price, getFullImgURL } from "common";
+/* Page 관리 */
+import { useRecoilState } from "recoil";
+import {currentPage,currentPageName,currentFilterCategoryType,currentFilterUseType,currentFilterCategoryPk  } from "../../../redux/state";
 
-import {
-  Box,
-  makeStyles,
-  TextField,
-  Select,
-  MenuItem,
-  InputAdornment,
-  TableRow,
-  TableCell,
-  FormControlLabel,
-  RadioGroup,
-  Radio,
-  Checkbox,
-  Dialog,
-  IconButton,
-} from "@material-ui/core";
+import {Box,makeStyles,TextField,Select,MenuItem,InputAdornment,TableRow,TableCell,FormControlLabel,RadioGroup,Radio,Checkbox,Dialog,IconButton} from "@material-ui/core";
 import { Close } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
 import { ColumnTable, RowTable, Dropzone, ImageBox } from "components";
@@ -74,6 +62,13 @@ export const ProductDetail = () => {
   const { member } = useSelector((state) => state.reducer);
   const { control, reset, setValue, watch, handleSubmit } = useForm();
 
+  const [wpage, setPage] = useRecoilState(currentPage);
+  const [wpageName, setPageName] = useRecoilState(currentPageName);  
+  const [use_type, setUseType] = useRecoilState(currentFilterUseType);
+  const [category_type, setCategoryType] = useRecoilState(currentFilterCategoryType);
+  const [category_pk, setCategoryPk] = useRecoilState(currentFilterCategoryPk);
+
+  console.log('dddddd 222 ',wpage,use_type,category_type,category_pk)
   const [productData, setProductData] = useState();
   const [categoryList, setCategoryList] = useState();
 
@@ -135,6 +130,7 @@ export const ProductDetail = () => {
       ...form,
       reg_member: member.member_pk,
     });
+    
     history.push("/product/item");
   }
   async function modifyProduct(form) {
@@ -169,7 +165,13 @@ export const ProductDetail = () => {
     }
 
     //await getProductDetail();
-    history.push("/product/item");
+    console.log('dddddd',wpage)
+    let qrString = "?";
+    if ( wpage ) qrString = qrString + "page=" + wpage;
+    if ( category_type ) qrString = qrString + "&category_type=" + category_type;
+    if ( category_pk ) qrString = qrString + "&category_pk=" + category_pk;
+    if ( use_type ) qrString = qrString + "&use_type=" + use_type;
+    history.push("/product/item" + qrString);
   }
 
   useEffect(() => {

@@ -577,8 +577,8 @@ const InlinkModal = ({ open, onClose, onSelect, inlinkType, selected_item }) => 
               onChange={(e) => handleContextChange("filter_item", e.target.value)}
             >
               <MenuItem value="">전체</MenuItem>
-              <MenuItem value="N">진행중</MenuItem>
-              <MenuItem value="Y">마감</MenuItem>
+              <MenuItem value="now">진행중</MenuItem>
+              <MenuItem value="stop">마감</MenuItem>
             </Select>
           )}
 
