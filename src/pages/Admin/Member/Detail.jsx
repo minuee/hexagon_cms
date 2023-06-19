@@ -79,13 +79,13 @@ const reward_history_column = [
   {
     title: "일자",
     render: ({ reg_dt }) => dayjs.unix(reg_dt).format("YYYY-MM-DD HH:mm"),
-    width: 240,
+    width: 200,
   },
   {
     title: "내용",
     render: ({ reward_gubun, order_pk, content }) =>
       reward_gubun === "m" && order_pk > 0 ? "주문포인트 사용" : content,
-    width: 160,
+    width: 300,
   },
   {
     title: "리워드액",
@@ -97,6 +97,7 @@ const reward_history_column = [
 
 export const MemberDetail = () => {
   const classes = useStyles();
+  const history = useHistory();
   const { member_pk } = useParams();
   const { control, register, reset, setValue, watch, handleSubmit } = useForm();
   const cur_grade = grade_benefits[watch("grade_code")];
@@ -112,17 +113,59 @@ export const MemberDetail = () => {
       grade_code: data.grade_code,
       member_type: data.member_type,
       lisence_img: [],
+      lisence2_img : [],
+      lisence3_img : []
     });
     setValue("lisence_img", [{ file: null, path: data.img_url }]);
+    setValue("lisence2_img", [{ file: null, path: data.img2_url }]);
+    setValue("lisence3_img", [{ file: null, path: data.img3_url }]);
   }
 
-  async function approveMember() {
+  async function approveMember(bool) {
+    
     if (!window.confirm("해당 회원을 회원가입 승인하시겠습니까?")) return;
-
     await apiObject.approveMembers({
       member_array: [{ member_pk }],
     });
     getMemberDetail();
+  }
+
+  async function rejectMember(form) {
+    
+    if ( form.approval_reject ) { // accept 
+      if (!window.confirm("해당 회원을 보류하시겠습니까?")) return;
+      const reuslt = await apiObject.rejectMembers({
+        member_array: [{ member_pk }],
+        approval_reject : form.approval_reject,
+        isnew_approval_reject :  form.approval_reject != memberInfo.approval_reject ? true : false,
+      });
+      if ( reuslt?.data?.code == '0000') {
+        alert("정상적으로 보류처리되었습니다.");
+        history.go(-1)
+      }else{
+        alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+        return false;
+      }
+    }else{
+      alert('보류사유를 입력해주세요');
+    }
+  }
+
+  async function removeMember() {
+    
+    if (!window.confirm("해당 회원을 삭제하시겠습니까?")) return;
+
+    const reuslt = await apiObject.removeMembers({
+      member_array: [{ member_pk }],
+    });
+    if ( reuslt?.data.code == '0000') {
+      alert("정상적으로 삭제되었습니다.");
+      history.go(-1)
+    }else{
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      return false;
+    }
+    
   }
   async function modifyMember(form) {
     if (!form.lisence_img) {
@@ -136,11 +179,19 @@ export const MemberDetail = () => {
     let paths = await apiObject.uploadImageMultiple({ img_arr: form.lisence_img, page: "member" });
     if (!paths.length) return;
 
+    let paths2 = await apiObject.uploadImageMultiple({ img_arr: form.lisence2_img, page: "member" });
+    if (!paths.length) return;
+
+    let paths3 = await apiObject.uploadImageMultiple({ img_arr: form.lisence3_img, page: "member" });
+    if (!paths.length) return;
+
     await apiObject.modifyMember({
       ...form,
       member_pk,
       company_phone: form.phone,
       img_url: paths?.[0],
+      img2_url: paths2?.[0],
+      img3_url: paths3?.[0],
     });
   }
 
@@ -249,6 +300,18 @@ export const MemberDetail = () => {
             <Dropzone control={control} name="lisence_img" width="180px" readOnly={!memberInfo?.approval_dt} zoomable />
           </TableCell>
         </TableRow>
+        <TableRow>
+          <TableCell>통장사본 첨부</TableCell>
+          <TableCell>
+            <Dropzone control={control} name="lisence2_img" width="180px" readOnly={!memberInfo?.approval_dt} zoomable />
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>신분증 첨부</TableCell>
+          <TableCell>
+            <Dropzone control={control} name="lisence3_img" width="180px" readOnly={!memberInfo?.approval_dt} zoomable />
+          </TableCell>
+        </TableRow>
       </RowTable>
 
       <Box mt={4} mb={1}>
@@ -305,8 +368,19 @@ export const MemberDetail = () => {
       </Box>
       <RowTable width={"70%"}>
         <TableRow>
-          <TableCell>관리코드</TableCell>
-          <TableCell>{memberInfo?.special_code}</TableCell>
+          <TableCell>관리인코드</TableCell>
+          <TableCell>
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+                <Typography>{memberInfo?.special_code}</Typography>
+                <Button color="primary" onClick={removeMember}>
+                  삭제
+                </Button>
+              </Box>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>추천인코드</TableCell>
+          <TableCell>{memberInfo?.recomm_name}{memberInfo?.recomm_name != null ? "("+ memberInfo?.recomm_code + ")" : ""}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>가입일자</TableCell>
@@ -336,13 +410,38 @@ export const MemberDetail = () => {
             ) : (
               <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Typography>회원가입 승인 대기</Typography>
-                <Button color="primary" onClick={approveMember}>
-                  회원가입 승인
-                </Button>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                  <Button color="primary" onClick={approveMember}>
+                    승인
+                  </Button>
+                  <span style={{width:10}}></span>
+                  <Button color="primary" onClick={handleSubmit(rejectMember)}>
+                    보류
+                  </Button>
+                </Box>
+                
               </Box>
             )}
           </TableCell>
         </TableRow>
+        {
+          !memberInfo?.approval  &&
+          (
+          <TableRow>
+            <TableCell>보류사유</TableCell>
+            <TableCell>
+              <TextField
+                size="small"
+                fullWidth
+                name="approval_reject"
+                placeholder="보류 사유를을 입력하세요(최대20자)"
+                inputRef={register({ required: false })}
+                disabled={memberInfo?.approval}
+              />
+            </TableCell>
+          </TableRow>
+          )
+        }
         {memberInfo?.approval_dt && (
           <>
             <TableRow>

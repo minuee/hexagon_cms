@@ -134,7 +134,7 @@ export const NoticeDetail = () => {
               rows={10}
               name="content"
               placeholder="공지 내용을 입력해주세요"
-              inputRef={register({ required: true })}
+              inputRef={register({ required: false })}
               error={!!errors?.content}
             />
           </TableCell>

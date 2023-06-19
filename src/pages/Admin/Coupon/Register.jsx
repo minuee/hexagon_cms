@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const CouponRegister = () => {
   const history = useHistory();
-  const { control, register, setValue, handleSubmit, errors } = useForm();
+  const { control, watch,register, setValue, handleSubmit, errors } = useForm();
   const { fields, remove } = useFieldArray({
     control,
     name: "selected_user",
@@ -42,7 +42,10 @@ export const CouponRegister = () => {
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
 
   async function registCoupon(form) {
-    if (!form.selected_user) {
+    if ( form.coupon_type === 9 && form.coupon_type_direct < 1  ) {
+      alert("직접입력시에는 쿠폰금액을 입려하셔야 합니다.");
+      return;
+    }else if (!form.selected_user) {
       alert("발행 대상 회원을 선택해주세요");
       return;
     } else if (!window.confirm("입력한 정보로 쿠폰을 발행하시겠습니까?")) {
@@ -56,7 +59,8 @@ export const CouponRegister = () => {
 
     await apiObject.registCoupon({
       ...form,
-      price: form.coupon_type,
+      price: form.coupon_type == 9 ? form.coupon_type_direct : form.coupon_type,
+      is_direct : form.coupon_type == 9 ? true : false,
       end_dt: form.end_dt.unix(),
       target_array,
     });
@@ -95,6 +99,7 @@ export const CouponRegister = () => {
                   <MenuItem value={10000}>10000원권</MenuItem>
                   <MenuItem value={50000}>50000원권</MenuItem>
                   <MenuItem value={100000}>100000원권</MenuItem>
+                  <MenuItem value={9}>직접입력</MenuItem>
                 </Select>
               }
               name="coupon_type"
@@ -102,6 +107,20 @@ export const CouponRegister = () => {
               defaultValue=""
               rules={{ required: true }}
             />
+            {
+              watch("coupon_type") === 9 && (
+                <Box mt={2}>
+                  <TextField
+                    size="small"
+                    name="coupon_type_direct"
+                    placeholder="직졉입력"
+                    defaultValue="0"
+                    inputRef={register({ required: false })}
+                    error={!!errors.coupon_type}
+                  />
+                </Box>
+              )
+            }
           </TableCell>
         </TableRow>
 
@@ -189,6 +208,8 @@ const MemberModal = ({ open, onClose, onSelect, selectedDefault }) => {
   const classes = useStyles();
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [memberList, setMemberList] = useState();
+  const [lastPage, setLastPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [listContext, setListContext] = useState({
     page: 1,
     search_word: "",
@@ -219,11 +240,18 @@ const MemberModal = ({ open, onClose, onSelect, selectedDefault }) => {
   ];
 
   async function getMemberList() {
-    let data = await apiObject.getMemberList({
+    console.log('noh 2', listContext)
+    let resultData = await apiObject.getPopMemberList({
       ...listContext,
       is_approval: true,
     });
-    setMemberList(data);
+    console.log('noh 1', resultData.data)
+    if ( resultData.data.code == '0000' ) {
+      setMemberList(resultData.data.data.userList);
+      setLastPage(resultData.data.lastPage)
+      setCurrentPage(resultData.data.currentPage)
+    }
+    
   }
 
   function handleSelectRow(row) {
@@ -235,6 +263,12 @@ const MemberModal = ({ open, onClose, onSelect, selectedDefault }) => {
     }
 
     setSelectedMembers(tmp);
+  }
+  function handleOnClear() {
+    setListContext({
+      page: 1,
+      search_word: "",
+    });
   }
   function handleOnSelect() {
     onSelect(selectedMembers);
@@ -251,20 +285,32 @@ const MemberModal = ({ open, onClose, onSelect, selectedDefault }) => {
     onClose();
     setSelectedMembers(selectedDefault || []);
   }
-  function handleContextChange(name, value) {
-    let tmp = {
-      ...listContext,
-      [name]: value,
-    };
-    if (name != "page") {
-      tmp.page = 1;
+  function handleContextChange(val) {
+    console.log('noh handleContextChange', val)
+    setListContext(
+      {
+        ...listContext,
+        search_word :  val.search_word.trim()
+      }
+    )
+  }
+  function handleContextChange2(val) {
+    if ( val.page <= lastPage ) {
+      setListContext(
+        {
+          ...listContext,
+          page :  val.page
+        }
+      )
     }
-
-    setListContext(tmp);
+    
+    //getMemberList();
+    //setListContext(tmp);
   }
 
   useEffect(() => {
     getMemberList();
+    console.log('useEffect', listContext)
   }, [listContext.page, listContext.search_word]);
 
   useEffect(() => {
@@ -290,11 +336,20 @@ const MemberModal = ({ open, onClose, onSelect, selectedDefault }) => {
         </Typography>
 
         <Box my={2} display="flex" justifyContent="space-between" alignItems="flex-end">
-          <SearchBox defaultValue="" placeholder="회원검색" onSearch={handleContextChange} />
-
-          <Button color="primary" onClick={handleOnSelect}>
-            선택
-          </Button>
+          <Box flex="5">
+            <SearchBox defaultValue="" placeholder="회원검색" onSearch={handleContextChange} />
+          </Box>
+          <Box flex="1" textAlign="right">
+            <Button color="secondary" onClick={handleOnClear}>
+              초기화
+            </Button>
+          </Box>
+          <Box flex="1" textAlign="right">
+            <Button color="primary" onClick={handleOnSelect}>
+              선택
+            </Button>
+          </Box>
+          
         </Box>
 
         <ColumnTable columns={member_columns} data={memberList} />
@@ -302,7 +357,7 @@ const MemberModal = ({ open, onClose, onSelect, selectedDefault }) => {
         <Box py={4} position="relative" display="flex" alignItems="center" justifyContent="flex-end">
           <Pagination
             page={listContext.page}
-            setPage={handleContextChange}
+            setPage={handleContextChange2}
             count={Math.ceil(memberList?.[0]?.total / 10)}
           />
         </Box>

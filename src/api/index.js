@@ -115,6 +115,86 @@ export const apiObject = {
       return [];
     }
   },
+
+  uploadFileMultiple: async ({ file_arr,page }) => {
+    try {
+      if (!file_arr.file) return [];
+
+      let ret = [];
+
+      let formData = new FormData();
+      formData.append("folder", page);
+      if (file_arr.file) {
+        formData.append("afile", file_arr.file);
+      }
+      let response = await axios.post("/v1/file/multiple", formData, {
+        headers: { "content-type": "multipart/form-data" },
+      });
+
+      for (let i = 0; i < response.data.data.length; i++) {
+        if (i % 2) {
+          ret.push(response.data.data[i]);
+        }
+      }
+      return ret;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+      return [];
+    }
+  },
+  uploadFileSingle: async ({ file_arr,page }) => {
+    try {
+      if (!file_arr.file) return [];
+     
+      let formData = new FormData();
+      formData.append("folder", page);
+      if (file_arr.file) {
+        formData.append("afile", file_arr.file);
+      }
+      let response = await axios.post("/v1/file/single", formData, {
+        headers: { "content-type": "multipart/form-data" },
+      });
+
+      let ret = response.data.data;
+      return ret;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+      return [];
+    }
+  },
+  getSetupdata: async () => {
+    try {
+      let response = await axios.get(`/cms/baseinfo`);
+      let ret = response.data.data;
+      return ret;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+      return {};
+    }
+  },
+  updateSetup: async () => {
+    try {
+      let response = await axios.get(`/v1/batch/order/exceed`, {
+      });
+    } catch (e) {
+      console.log({ e });
+    }
+  },
+  updateSetup222: async (formData) => {
+    try {
+      let response = await axios.put(`/cms/baseinfo/modify`, {
+        formData
+      });
+      alert("수정을 완료했습니다");
+      return response;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+    }
+  },
   signIn: async ({ user_id = "superbinder", password = "hexagon12!@" }) => {
     try {
       let response = await axios.post("/v1/auth/signin", {
@@ -236,6 +316,42 @@ export const apiObject = {
       return [];
     }
   },
+
+  // Member
+  getPopMemberList: async ({
+    page = 1,
+    paginate = 10,
+    search_word,
+    term_start,
+    term_end,
+    sort_item,
+    sort_type,
+    is_approval,
+  }) => {
+    try {
+      let data = await axios.get("/cms/member/list", {
+        params: {
+          page,
+          paginate,
+          search_word,
+          term_start,
+          term_end,
+          sort_item,
+          sort_type,
+          is_approval,
+        },
+      });
+      let ret = data;
+
+
+      return ret;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+      return [];
+    }
+  },
+
   approveMembers: async ({ member_array }) => {
     try {
       let response = await axios.put(`/cms/member/approval`, {
@@ -249,11 +365,43 @@ export const apiObject = {
       console.log({ e });
     }
   },
+
+  rejectMembers: async ({ member_array,approval_reject,isnew_approval_reject }) => {
+    try {
+      let response = await axios.put(`/cms/member/approval_reject`, {
+        member_array,
+        approval_reject,
+        isnew_approval_reject
+      });
+
+      return response;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+    }
+  },
+
+  removeMembers: async ({ member_array }) => {
+    try {
+      let response = await axios.put(`/cms/member/array_remove`, {
+        member_array,
+      });
+      if ( response?.data.code == '0000') {
+        return response;
+      }else{
+        alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+        return false;
+      }
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+    }
+  },
   getMemberDetail: async ({ member_pk }) => {
     try {
       let data = await axios.get(`/cms/member/view/${member_pk}`, {});
       let ret = data.data.data.userDetail;
-
+      console.log('ddd',ret)
       ret.email = decrypt(ret.email);
       ret.phone = decrypt(ret.phone);
 
@@ -310,6 +458,9 @@ export const apiObject = {
     company_phone,
     email,
     img_url,
+    img2_url,
+    img3_url,
+    use_yn,
     is_approval = true,
     new_approval = false,
   }) => {
@@ -323,11 +474,19 @@ export const apiObject = {
         company_phone: encrypt(company_phone),
         email: encrypt(email),
         img_url,
+        img2_url,
+        img3_url,
+        use_yn,
         is_approval,
         new_approval,
       });
-
-      alert("회원정보 수정을 완료했습니다");
+      console.log('response.code ',response )
+      if ( response?.data.code == '0000') {
+        alert("회원정보 수정을 완료했습니다");
+        console.log('response',response)
+      }else{
+        alert("회원정보 수정중 오류가 발생하였습니다. 관리자에게 문의하세요");
+      }
       return response;
     } catch (e) {
       alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
@@ -346,18 +505,77 @@ export const apiObject = {
     sort_type,
     special_code,
     order_status,
+    is_superman,
+    is_excel = false,
+    is_analysis = false
   }) => {
     try {
       let data = await axios.get("/cms/order/list", {
-        params: { page, paginate, search_word, term_start, term_end, sort_item, sort_type, special_code, order_status },
+        params: { page, paginate, search_word, term_start, term_end, sort_item, sort_type, special_code, order_status,is_excel,is_superman },
       });
       let ret = data.data.data.orderList;
-
-      ret.forEach((item, index) => {
-        item.no = getListIndex(item.total, page, index);
+      let ret2 = data.data.data.analysisList;
+      if ( ret.length > 0 ) {
+        ret.forEach((item, index) => {
+          item.total = getListIndex(item.total, page, index);
+          item.member_phone = decrypt(item.member_phone);
+          item.delivery_phone = decrypt(item.delivery_phone);
+          item.is_superman = item.is_superman ? '사용' : '안함'
+        });
+      }
+      if ( is_analysis ) {
+        return {
+          data : ret,
+          data2 : ret2
+        };
+      }else{
+        return ret;
+      }
+      
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+      return [];
+    }
+  },
+  // Order
+  getNewOrderList: async ({
+    page = 1,
+    paginate = 10,
+    search_word,
+    term_start,
+    term_end,
+    sort_item,
+    sort_type,
+    special_code,
+    order_status,
+    is_superman,
+    is_excel = false,
+    is_analysis = false
+  }) => {
+    try {
+      let data = await axios.get("/cms/order/new2list", {
+        params: { page, paginate, search_word, term_start, term_end, sort_item, sort_type, special_code, order_status,is_excel,is_superman },
       });
-
-      return ret;
+      let ret = data.data.data.orderList;
+      let ret2 = data.data.data.analysisList;
+      if ( ret.length > 0 ) {
+        ret.forEach((item, index) => {
+          item.total = getListIndex(item.total, page, index);
+          item.member_phone = decrypt(item.member_phone);
+          item.delivery_phone = decrypt(item.delivery_phone);
+          item.is_superman = item.is_superman ? '사용' : '안함'
+        });
+      }
+      if ( is_analysis ) {
+        return {
+          data : ret,
+          data2 : ret2
+        };
+      }else{
+        return ret;
+      }
+      
     } catch (e) {
       alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
@@ -368,7 +586,7 @@ export const apiObject = {
     try {
       let data = await axios.get(`/cms/order/view/${order_pk}`);
       let ret = data.data.data;
-
+      console.log('ret.orderBase',ret.orderBase)
       ret.orderBase.email = decrypt(ret.orderBase.email);
       ret.orderBase.phone = decrypt(ret.orderBase.phone);
       ret.orderBase.delivery_phone = decrypt(ret.orderBase.delivery_phone);
@@ -443,7 +661,7 @@ export const apiObject = {
           code: "CANCEL_A",
         },
         {
-          label: "주문취소처리",
+          label: "주문취소완료",
           code: "CANCEL_B",
         },
         {
@@ -457,7 +675,7 @@ export const apiObject = {
         next_status_list.push(order_status_list[order_status_no]);
       }
       if (order_status_no <= 3) {
-        next_status_list.push(order_status_list[6]);
+        next_status_list.push(order_status_list[5]);
       }
       if (order_status_no == 8) {
         next_status_list.push(order_status_list[2]);
@@ -486,12 +704,13 @@ export const apiObject = {
       return {};
     }
   },
-  modifyOrderStatus: async ({ order_pk, member_pk, nowOrderStatus, newOrderStatus }) => {
+  modifyOrderStatus: async ({ order_pk, member_pk, nowOrderStatus, newOrderStatus ,settle_type}) => {
     try {
       let response = await axios.put(`/cms/order/modify/${order_pk}`, {
         member_pk,
         nowOrderStatus,
         newOrderStatus,
+        settle_type
       });
 
       alert("주문상태 수정을 완료했습니다");
@@ -501,7 +720,23 @@ export const apiObject = {
       console.log({ e });
     }
   },
-
+  modifyPointRefund: async ({ order_pk,member_pk,refund_point}) => {
+    try {
+      let response = await axios.put(`/cms/order/pointrefund/${order_pk}`, {
+        member_pk,refund_point
+      });
+      if ( response.code == '0000' ) {
+        alert("정상적으로 환급처리되었습니다");
+        return response;
+      }else{
+        alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+        console.log({ response });
+      }
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+    }
+  },
   // Category
   getCategoryList: async ({ search_word, is_cms = true }) => {
     try {
@@ -599,8 +834,9 @@ export const apiObject = {
     category_logo,
     category_seq = 1,
     category_type,
+    category_yn,
     normalcategory_pk,
-    reg_member,
+    reg_member
   }) => {
     try {
       let response = await axios.post("/cms/category/regist", {
@@ -609,13 +845,64 @@ export const apiObject = {
         category_seq,
         category_type,
         normalcategory_pk,
-        reg_member,
+        category_yn,
+        reg_member
       });
-
-      alert("카테고리 등록을 완료했습니다");
-      return response;
+      //console.log('response',response)
+      if ( response.data.code == '0000') {
+        alert("카테고리 등록을 완료했습니다");
+        return response;
+      }else{
+        alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+        return "";
+      }
     } catch (e) {
-      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다.");
+      console.log({ e });
+      return "";
+    }
+  },
+  registNewCategory: async ({
+    category_name,
+    category_logo,
+    category_seq = 1,
+    category_type,
+    normalcategory_pk,
+    reg_member,
+    category_yn,
+    d1 = null,
+    d2 = null,
+    d3 = null,
+    direct_d1 = null,
+    direct_d2 = null,
+    direct_d3 = null
+  }) => {
+    try {
+      let response = await axios.post("/cms/category/newregist", {
+        category_name,
+        category_logo,
+        category_seq,
+        category_type,
+        normalcategory_pk,
+        reg_member,
+        category_yn,
+        d1,
+        d2,
+        d3,
+        direct_d1,
+        direct_d2,
+        direct_d3
+      });
+      //console.log('response',response)
+      if ( response.data.code == '0000') {
+        alert("카테고리 등록을 완료했습니다");
+        return response;
+      }else{
+        alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+        return "";
+      }
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다.");
       console.log({ e });
       return "";
     }
@@ -638,7 +925,6 @@ export const apiObject = {
         category_yn,
         normalcategory_pk,
       });
-
       alert("카테고리 수정을 완료했습니다");
       return response;
     } catch (e) {
@@ -652,7 +938,6 @@ export const apiObject = {
         category_type,
         category_array,
       });
-
       alert("카테고리 노출순서 수정을 완료했습니다");
       return response;
     } catch (e) {
@@ -662,18 +947,33 @@ export const apiObject = {
   },
 
   // Product
-  getProductList: async ({ category_pk, page, paginate = 10, search_word }) => {
+  getProductList: async ({ category_pk, use_type, page, paginate = 10, is_admin,search_word , ismode = null }) => {
+    console.log('query 444', category_pk, use_type, page, ismode)
     try {
-      let data = await axios.get("/cms/product/list", {
-        params: { category_pk, page, paginate, search_word },
+      let data = await axios.get("/cms/product/adminlist", {
+        params: { category_pk, use_type,page, paginate, search_word,ismode,is_admin },
       });
-
       let ret = data.data.data.productList;
-
       return ret;
     } catch (e) {
       alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });
+      return [];
+    }
+  },
+
+  // Product All
+  getProductAllList: async ({ category_pk, use_type, page = 1, paginate = 10000, search_word }) => {
+    try {
+      let data = await axios.get("/cms/product/alllist", {
+        params: { category_pk, use_type,page, paginate, search_word },
+      });
+      console.log('getProductAllList 2',data);
+      let ret = data.data.data.productList;
+      return ret;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다1");
+      console.log('getProductAllList 2',e);
       return [];
     }
   },
@@ -712,6 +1012,8 @@ export const apiObject = {
   registProduct: async ({
     product_name,
     category_pk,
+    category2_pk,
+    category3_pk,
     material,
     thumb_img,
     detail_img1,
@@ -741,6 +1043,8 @@ export const apiObject = {
       let response = await axios.post("/cms/product/regist", {
         product_name,
         category_pk,
+        category2_pk,
+        category3_pk,
         material,
         thumb_img,
         detail_img1,
@@ -777,6 +1081,8 @@ export const apiObject = {
   modifyProduct: async ({
     product_name,
     category_pk,
+    category2_pk,
+    category3_pk,
     material,
     thumb_img,
     detail_img1,
@@ -809,6 +1115,8 @@ export const apiObject = {
       let response = await axios.put(`/cms/product/modify/${product_pk}`, {
         product_name,
         category_pk,
+        category2_pk,
+        category3_pk,
         material,
         thumb_img,
         detail_img1,
@@ -951,6 +1259,48 @@ export const apiObject = {
   getEventProductData: async ({ page = 1, paginate = 10, category_pk }) => {
     try {
       let data = await axios.get("/cms/product/all", {
+        params: {
+          page,
+          paginate,
+          category_pk,
+        },
+      });
+      let ret = {
+        product_list: data.data.data.productList,
+        category_list: [
+          {
+            label: "전체",
+            category_pk: "",
+          },
+        ],
+      };
+
+      let category_set = new Set();
+
+      ret.product_list.forEach((item) => {
+        category_set.add(
+          JSON.stringify({
+            label: item.category_name,
+            category_pk: item.category_pk,
+          }),
+        );
+      });
+
+      category_set.forEach((item) => {
+        ret.category_list.push(JSON.parse(item));
+      });
+
+      return ret;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+      return [];
+    }
+  },
+
+  getEventProductData222: async ({ page = 1, paginate = 100000, category_pk }) => {
+    try {
+      let data = await axios.get("/cms/product/alllist", {
         params: {
           page,
           paginate,
@@ -1144,7 +1494,7 @@ export const apiObject = {
       return {};
     }
   },
-  registNoticePopup: async ({ popup_gubun, popup_type, title, start_dt, end_dt, img_url, send_push }) => {
+  registNoticePopup: async ({ popup_gubun, popup_type, title, start_dt, end_dt, img_url, send_push ,notice_link_type,notice_link_url}) => {
     try {
       let response = await axios.post("/cms/popup/regist", {
         popup_gubun,
@@ -1154,6 +1504,8 @@ export const apiObject = {
         end_dt,
         img_url,
         send_push,
+        notice_link_type,
+        notice_link_url
       });
 
       alert("공지팝업 등록을 완료했습니다");
@@ -1163,7 +1515,7 @@ export const apiObject = {
       console.log({ e });
     }
   },
-  registEventPopup: async ({ popup_gubun, start_dt, end_dt, img_url, title, popup_type, target_pk, inlink_type }) => {
+  registEventPopup: async ({ popup_gubun, start_dt, end_dt, img_url, title, popup_type, target_pk, inlink_type, category_type }) => {
     try {
       let response = await axios.post("/cms/popevent/regist", {
         popup_gubun,
@@ -1174,6 +1526,7 @@ export const apiObject = {
         popup_type,
         target_pk,
         inlink_type,
+        category_type
       });
 
       alert("이벤트팝업 등록을 완료했습니다");
@@ -1212,6 +1565,7 @@ export const apiObject = {
     popup_type,
     target_pk,
     inlink_type,
+    category_type
   }) => {
     try {
       let response = await axios.put(`/cms/popevent/modify/${popup_pk}`, {
@@ -1223,6 +1577,7 @@ export const apiObject = {
         popup_type,
         target_pk,
         inlink_type,
+        category_type
       });
 
       alert("이벤트팝업 수정을 완료했습니다");
@@ -1322,7 +1677,6 @@ export const apiObject = {
       ret.forEach((item, index) => {
         item.no = getListIndex(item.total, page, index);
       });
-
       return ret;
     } catch (e) {
       alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
@@ -1379,6 +1733,96 @@ export const apiObject = {
   removeNotice: async ({ notice_pk }) => {
     try {
       let response = await axios.delete(`/cms/notice/remove/${notice_pk}`);
+
+      alert("공지 삭제를 완료했습니다");
+      return response;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+    }
+  },
+
+
+  // 홈페이지 Notice
+  getWebNoticeList: async ({ page = 1, paginate = 10, search_word }) => {
+    try {
+      let data = await axios.get("/cms/webnotice/list", {
+        params: {
+          page,
+          search_word,
+          paginate,
+        },
+      });
+      let ret = data.data.data.noticeList;
+
+      ret.forEach((item, index) => {
+        item.no = getListIndex(item.total, page, index);
+      });
+
+      return ret;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+      return [];
+    }
+  },
+  getWebNoticeDetail: async ({ notice_pk }) => {
+    try {
+      let data = await axios.get(`/cms/webnotice/view/${notice_pk}`);
+      let ret = data.data.data;
+
+      return ret;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+      return {};
+    }
+  },
+  registWebNotice: async ({ title,title_en, content,content_en, start_dt, img_url,file1,file1_name, send_push }) => {
+    try {
+      let response = await axios.post("/cms/webnotice/regist", {
+        title,
+        content,
+        title_en,
+        content_en,
+        start_dt,
+        img_url,
+        file1,
+        file1_name,
+        send_push,
+      });
+
+      alert("공지 등록을 완료했습니다");
+      return response;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+    }
+  },
+  modifyWebNotice: async ({ notice_pk, content,content_en, title,title_en,start_dt, img_url,file1,file1_name, send_push }) => {
+    try {
+      let response = await axios.put(`/cms/webnotice/modify/${notice_pk}`, {
+        title,
+        content,
+        title_en,
+        content_en,
+        start_dt,
+        img_url,
+        file1,
+        file1_name,
+        send_push,
+      });
+
+      alert("공지 수정을 완료했습니다");
+      return response;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+    }
+  },
+  removeWebNotice: async ({ notice_pk }) => {
+    try {
+      let response = await axios.delete(`/cms/webnotice/remove/${notice_pk}`);
 
       alert("공지 삭제를 완료했습니다");
       return response;
@@ -1447,11 +1891,12 @@ export const apiObject = {
       return {};
     }
   },
-  registCoupon: async ({ coupon_type, price, end_dt, target_array, issue_reason, is_first }) => {
+  registCoupon: async ({ coupon_type,is_direct, price, end_dt, target_array, issue_reason, is_first }) => {
     try {
       let response = await axios.post("/cms/coupon/regist", {
         coupon_type,
         price,
+        is_direct,
         end_dt,
         target_array,
         issue_reason,
@@ -1465,10 +1910,11 @@ export const apiObject = {
       console.log({ e });
     }
   },
-  modifyCoupon: async ({ coupon_pk, coupon_type, price, end_dt, member_pk, update_reason, is_first }) => {
+  modifyCoupon: async ({ coupon_pk, coupon_type, is_direct, price, end_dt, member_pk, update_reason, is_first }) => {
     try {
       let response = await axios.put(`/cms/coupon/modify/${coupon_pk}`, {
         coupon_type,
+        is_direct,
         price,
         end_dt,
         member_pk,
@@ -1495,6 +1941,89 @@ export const apiObject = {
     }
   },
 
+  //point
+  getPointList: async ({ page = 1, paginate = 10 }) => {
+    try {
+      let data = await axios.get(`/cms/point/list`, {
+        params: {
+          page,
+          paginate,
+        },
+      });
+      let ret = data.data.data.pointList;
+
+      ret.forEach((item, index) => {
+        item.no = getListIndex(item.total, page, index);
+      });
+
+      return ret;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+      return [];
+    }
+  },
+
+  registPoint: async ({ reward_point, target_array, issue_reason }) => {
+    try {
+      let response = await axios.post("/cms/point/regist", {
+        reward_point:parseInt(reward_point),
+        target_array,
+        issue_reason
+      });
+      alert("포인트 등록을 완료했습니다");
+      return response;
+      
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+    }
+  },
+
+  modifyPoint : async ({ point_pk, reserve_pk, reward_point, use_enddate, member_pk,content, remain_point }) => {
+    console.log('minuee modifyPoint',{ point_pk, reserve_pk, reward_point, use_enddate, member_pk,content, remain_point  });
+    try {
+      let response = await axios.put(`/cms/point/modify/${point_pk}`, {
+        point_pk,
+        reserve_pk,
+        reward_point,
+        use_enddate,
+        member_pk,
+        content,
+        remain_point
+      });
+
+      alert("포인트 수정을 완료했습니다");
+      return response;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+    }
+  },
+  removePoint: async ({ point_pk }) => {
+    try {
+      let response = await axios.delete(`/cms/point/remove/${point_pk}`);
+
+      alert("포인트 삭제를 완료했습니다");
+      return response;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+    }
+  },
+
+  getPointDetail: async ({ point_pk }) => {
+    try {
+      let data = await axios.get(`/cms/point/view/${point_pk}`);
+      let ret = data.data.data.pointDetail;
+
+      return ret;
+    } catch (e) {
+      alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+      console.log({ e });
+      return {};
+    }
+  },
   // Banner
   getBannerList: async ({ page = 1, search_word, paginate = 10 }) => {
     try {
@@ -1585,9 +2114,13 @@ export const apiObject = {
         title,
         content,
       });
-
-      alert("배너 등록을 완료했습니다");
-      return response;
+      if ( response.code != '0000' ) {
+        alert("에러가 발생하였습니다");
+        return response;
+      }else{ 
+        alert("배너 등록을 완료했습니다");
+        return response;
+      }
     } catch (e) {
       alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
       console.log({ e });

@@ -10,15 +10,17 @@ import { RatioBox, ImageBox } from "components";
 
 import { DetailImageModal } from "./DetailImageModal";
 import { ImageCropModal } from "./ImageCropModal";
-
+import { ImageCropModalSagak } from "./ImageCropModalSagak";
+import { ImageCropModalOrigin } from "./ImageCropModalOrigin";
 const useStyles = makeStyles((theme) => ({
   clear_button: {
     position: "absolute",
     cursor: "pointer",
     bottom: theme.spacing(-1),
     right: theme.spacing(-1),
+    backgroundColor:'#ffffff'
   },
-}));
+}))
 
 export const Dropzone = ({
   control,
@@ -30,6 +32,7 @@ export const Dropzone = ({
   readOnly,
   zoomable,
   croppable,
+  isSagak = false,
   ...props
 }) => {
   const classes = useStyles();
@@ -38,7 +41,7 @@ export const Dropzone = ({
   const { fields, append, remove } = useFieldArray({
     control: control,
     name: name,
-  });
+  })
 
   const onDropAccepted = async (files) => {
     let count = Math.min(files.length, maxFiles - fields.length);
@@ -55,7 +58,7 @@ export const Dropzone = ({
     }
 
     append(tmp);
-  };
+  }
 
   function getFilePath(file) {
     return new Promise((resolve, reject) => {
@@ -127,7 +130,13 @@ export const Dropzone = ({
         <DetailImageModal data={fields} initialSlide={initialSlide} handleClose={() => setInitialSlide(null)} />
       )}
 
-      {croppable && <ImageCropModal target={crop} ratio={ratio} minWidth={croppable?.minWidth} setImage={append} onClose={() => setCrop(null)} />}
+      {croppable && 
+      isSagak 
+        ?
+        <ImageCropModalOrigin target={crop} ratio={ratio} minWidth={croppable?.minWidth} setImage={append} onClose={() => setCrop(null)} />
+        :
+        <ImageCropModal target={crop} ratio={ratio} minWidth={croppable?.minWidth} setImage={append} onClose={() => setCrop(null)} />
+      }
     </Box>
   );
 };

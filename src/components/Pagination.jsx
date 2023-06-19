@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Pagination = ({ page = 1, setPage = () => {}, total }) => {
   const classes = useStyles();
+  console.log("noh : ",total)
   return (
     <Box className={classes.container}>
       <MuiPagination

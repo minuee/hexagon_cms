@@ -1,6 +1,6 @@
 import CryptoJS from "crypto-js";
 import { IMAGE_BASE_URL } from "env";
-
+import dayjs from "dayjs";
 const appID = "hexagonadmin";
 const CommonSaltKey = "hexagonadmineda40baa4fHynnm4W1";
 
@@ -25,6 +25,13 @@ export function decrypt(str) {
     return str;
   }
 }
+export function convertUnixToDate(unix,reform=null) {
+  if ( reform != null ) {
+    return dayjs.unix(unix).format(reform);
+  }else{
+    return dayjs.unix(unix).format("YYYYMMDD");
+  }
+}
 
 export function price(num) {
   let tmp = parseInt(num);
@@ -47,4 +54,12 @@ export function getFullImgURL(relative_path) {
 export function getListIndex(total, page, idx) {
   let tmp = +total - (+page - 1) * 10 - +idx;
   return tmp;
+}
+
+export function renderPageData ( data ) {
+  let str = "";
+  JSON.parse(data).forEach((item, index) => {
+    str += item.code_name + ":("+item.order_status_cnt + ")"
+  });
+  return str+"\n\r";
 }

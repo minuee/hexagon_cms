@@ -221,7 +221,7 @@ const ProductModal = ({ open, onClose, onSelect, selectedDefault }) => {
   ];
 
   async function getProductList() {
-    let data = await apiObject.getEventProductData({});
+    let data = await apiObject.getEventProductData222({});
     setProductData(data);
     setProductList(data.product_list);
   }

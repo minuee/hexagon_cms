@@ -68,7 +68,7 @@ const order_status_list = [
   },
   {
     no: 5,
-    label: "주문취소처리",
+    label: "주문취소완료",
     code: "CANCEL_B",
   },
   {
@@ -326,7 +326,7 @@ export const MemberOrderDetail = () => {
         <TableRow>
           <TableCell>미출고시 조치방법</TableCell>
           <TableCell>
-            {orderDetail?.orderBase?.refund_type === "Product" ? "상품 입고시 배송" : "포인트로 환급"}
+            { orderDetail?.orderBase?.refund_type === "Product" ? "상품 입고시 배송(전체)" : orderDetail?.orderBase?.refund_type === "ProductPart" ? "출고가능상품 선 배송(부분)" : "적립금으로 환급 환급"}
           </TableCell>
         </TableRow>
       </RowTable>

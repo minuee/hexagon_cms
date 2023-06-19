@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 
 import { Grid, Box, makeStyles } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, Pagination } from "components";
+import { ColumnTable } from "components";
 
 const useStyles = makeStyles((theme) => ({
   header_buttons: {
@@ -58,7 +58,7 @@ const event_list_columns = [
 export const EventList = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
-  const { getDataFunction, SearchBox, FilterBox } = useQuery(location);
+  const { getDataFunction, Pagination, SearchBox, FilterBox } = useQuery(location);
 
   const [eventList, setEventList] = useState();
 

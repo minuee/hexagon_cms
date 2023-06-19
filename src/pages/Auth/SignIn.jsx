@@ -43,24 +43,29 @@ export const SignIn = ({}) => {
   const { control, register, setValue, errors, handleSubmit } = useForm();
 
   async function signIn(form) {
-    let resp = await apiObject.signIn(form);
-
-    if (resp.code === "1015") {
-      alert("로그인 정보가 잘못되었습니다");
+    if ( form.user_id != 'superbinder') {
+      alert("아이디가 잘못된 계정입니다.");
       return;
+    }else{
+      let resp = await apiObject.signIn(form);
+
+      if (resp.code === "1015") {
+        alert("로그인 정보가 잘못되었습니다");
+        return;
+      }
+
+      localStorage.setItem("hexagon_cms_token", resp.token);
+
+      if (form.store_id_yn) {
+        Cookies.set("id", encrypt(form.user_id), { expires: 36500 });
+      } else {
+        Cookies.remove("id");
+      }
+
+      dispatch({
+        type: "SIGN_IN",
+      });
     }
-
-    localStorage.setItem("hexagon_cms_token", resp.token);
-
-    if (form.store_id_yn) {
-      Cookies.set("id", encrypt(form.user_id), { expires: 36500 });
-    } else {
-      Cookies.remove("id");
-    }
-
-    dispatch({
-      type: "SIGN_IN",
-    });
   }
 
   useEffect(() => {
@@ -113,7 +118,7 @@ export const SignIn = ({}) => {
           />
         </Box>
         <TextField
-          defaultValue="hexagon12!@"
+          //defaultValue="hexagon12!@"
           // defaultValue="lenapark47##"
           className={classes.input}
           name="password"

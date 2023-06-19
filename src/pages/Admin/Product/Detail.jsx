@@ -4,32 +4,20 @@ import { useSelector } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
 import { apiObject } from "api";
 import { price, getFullImgURL } from "common";
+/* Page 관리 */
+import { useRecoilState } from "recoil";
+import {currentPage,currentPageName,currentFilterCategoryType,currentFilterUseType,currentFilterCategoryPk  } from "../../../redux/state";
 
-import {
-  Box,
-  makeStyles,
-  TextField,
-  Select,
-  MenuItem,
-  InputAdornment,
-  TableRow,
-  TableCell,
-  FormControlLabel,
-  RadioGroup,
-  Radio,
-  Checkbox,
-  Dialog,
-  IconButton,
-} from "@material-ui/core";
+import {Box,makeStyles,TextField,Select,MenuItem,InputAdornment,TableRow,TableCell,FormControlLabel,RadioGroup,Radio,Checkbox,Dialog,IconButton} from "@material-ui/core";
 import { Close } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, RowTable, Dropzone, ImageBox } from "components";
+import { ColumnTable, RowTable, Dropzone,SearchBox, ImageBox } from "components";
 
 const useStyles = makeStyles((theme) => ({
   category_wrapper: {
     "& > *": {
       display: "inline-block",
-      width: theme.spacing(20),
+      //width: theme.spacing(40),
       marginRight: theme.spacing(2),
     },
   },
@@ -59,6 +47,12 @@ const useStyles = makeStyles((theme) => ({
     top: theme.spacing(1),
     color: theme.palette.grey[500],
   },
+  categoryInput1 : {
+    width : theme.spacing(20)
+  },
+  categoryInput2 : {
+    width : theme.spacing(50)
+  }
 }));
 
 export const ProductDetail = () => {
@@ -67,6 +61,12 @@ export const ProductDetail = () => {
   const { product_pk } = useParams();
   const { member } = useSelector((state) => state.reducer);
   const { control, reset, setValue, watch, handleSubmit } = useForm();
+
+  const [wpage, setPage] = useRecoilState(currentPage);
+  const [wpageName, setPageName] = useRecoilState(currentPageName);  
+  const [use_type, setUseType] = useRecoilState(currentFilterUseType);
+  const [category_type, setCategoryType] = useRecoilState(currentFilterCategoryType);
+  const [category_pk, setCategoryPk] = useRecoilState(currentFilterCategoryPk);
 
   const [productData, setProductData] = useState();
   const [categoryList, setCategoryList] = useState();
@@ -89,6 +89,8 @@ export const ProductDetail = () => {
       detail_img: [],
     });
     setValue("category_pk", data.category_pk);
+    setValue("category2_pk", data.category2_pk);
+    setValue("category3_pk", data.category3_pk);
     setValue("thumb_img", data.thumb_img);
     setValue("detail_img", data.detail_img);
 
@@ -128,6 +130,7 @@ export const ProductDetail = () => {
       ...form,
       reg_member: member.member_pk,
     });
+    
     history.push("/product/item");
   }
   async function modifyProduct(form) {
@@ -161,12 +164,27 @@ export const ProductDetail = () => {
       });
     }
 
-    await getProductDetail();
+    //await getProductDetail();
+
+    let qrString = "?";
+    if ( wpage ) qrString = qrString + "page=" + wpage;
+    if ( category_type ) qrString = qrString + "&category_type=" + category_type;
+    if ( category_pk ) qrString = qrString + "&category_pk=" + category_pk;
+    if ( use_type ) qrString = qrString + "&use_type=" + use_type;
+    history.push("/product/item" + qrString);
   }
 
   useEffect(() => {
     setValue("category_pk", "");
   }, [watch("category_type", "B")]);
+
+  useEffect(() => {
+    setValue("category2_pk", "");
+  }, [watch("category2_type", "B")]);
+
+  useEffect(() => {
+    setValue("category3_pk", "");
+  }, [watch("category3_type", "B")]);
 
   useEffect(() => {
     getCategoryList();
@@ -185,7 +203,7 @@ export const ProductDetail = () => {
 
       <RowTable>
         <TableRow>
-          <TableCell>카테고리</TableCell>
+          <TableCell>카테고리1</TableCell>
           <TableCell>
             <Box className={classes.category_wrapper}>
               <Controller
@@ -199,6 +217,7 @@ export const ProductDetail = () => {
                 name="category_type"
                 control={control}
                 defaultValue={""}
+                className={classes.categoryInput1}
               />
 
               {watch("category_type", "") === "B" && (
@@ -216,9 +235,67 @@ export const ProductDetail = () => {
                   name="category_pk"
                   control={control}
                   defaultValue={""}
+                  className={classes.categoryInput2}
                 />
               )}
               {watch("category_type", "") === "N" && (
+                <Controller
+                  as={
+                    <Select margin="dense" displayEmpty>
+                      <MenuItem value="">제품군 선택</MenuItem>
+                      {categoryList?.categoryNormalList.map((item, index) => (
+                        <MenuItem value={item.category_pk} key={index}>
+                          {item.depth1name} {">"} {item.depth2name} {">"} {item.depth3name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  }
+                  name="category_pk"
+                  control={control}
+                  defaultValue={""}
+                  className={classes.categoryInput2}
+                />
+              )}
+            </Box>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>카테고리2</TableCell>
+          <TableCell>
+            <Box className={classes.category_wrapper}>
+              <Controller
+                as={
+                  <Select margin="dense" displayEmpty>
+                    <MenuItem value="">카테고리2선택</MenuItem>
+                    <MenuItem value="B">브랜드</MenuItem>
+                    <MenuItem value="N">제품군</MenuItem>
+                  </Select>
+                }
+                name="category2_type"
+                control={control}
+                defaultValue={""}
+                className={classes.categoryInput1}
+              />
+
+              {watch("category2_type", "") === "B" && (
+                <Controller
+                  as={
+                    <Select margin="dense" displayEmpty>
+                      <MenuItem value="">브랜드 선택</MenuItem>
+                      {categoryList?.categoryBrandList.map((item, index) => (
+                        <MenuItem value={item.category_pk} key={index}>
+                          {item.category_name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  }
+                  name="category2_pk"
+                  control={control}
+                  defaultValue={""}
+                  className={classes.categoryInput2}
+                />
+              )}
+              {watch("category2_type", "") === "N" && (
                 <Controller
                   as={
                     <Select margin="dense" displayEmpty>
@@ -230,9 +307,67 @@ export const ProductDetail = () => {
                       ))}
                     </Select>
                   }
-                  name="category_pk"
+                  name="category2_pk"
                   control={control}
                   defaultValue={""}
+                  className={classes.categoryInput2}
+                />
+              )}
+            </Box>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>카테고리3</TableCell>
+          <TableCell>
+            <Box className={classes.category_wrapper}>
+              <Controller
+                as={
+                  <Select margin="dense" displayEmpty>
+                    <MenuItem value="">카테고리3선택</MenuItem>
+                    <MenuItem value="B">브랜드</MenuItem>
+                    <MenuItem value="N">제품군</MenuItem>
+                  </Select>
+                }
+                name="category3_type"
+                control={control}
+                defaultValue={""}
+                className={classes.categoryInput1}
+              />
+
+              {watch("category3_type", "") === "B" && (
+                <Controller
+                  as={
+                    <Select margin="dense" displayEmpty>
+                      <MenuItem value="">브랜드 선택</MenuItem>
+                      {categoryList?.categoryBrandList.map((item, index) => (
+                        <MenuItem value={item.category_pk} key={index}>
+                          {item.category_name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  }
+                  name="category3_pk"
+                  control={control}
+                  defaultValue={""}
+                  className={classes.categoryInput2}
+                />
+              )}
+              {watch("category3_type", "") === "N" && (
+                <Controller
+                  as={
+                    <Select margin="dense" displayEmpty>
+                      <MenuItem value="">제품군 선택</MenuItem>
+                      {categoryList?.categoryNormalList.map((item, index) => (
+                        <MenuItem value={item.category_pk} key={index}>
+                          {item.category_name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  }
+                  name="category3_pk"
+                  control={control}
+                  defaultValue={""}
+                  className={classes.categoryInput2}
                 />
               )}
             </Box>
@@ -484,6 +619,7 @@ export const ProductDetail = () => {
               ratio={1}
               minFiles={1}
               croppable={{ minWidth: 600 }}
+              isSagak={true}
             />
             <Typography>이미지는 가로x세로(720X720 pixel)이상을 권장드립니다.</Typography>
           </TableCell>
@@ -689,7 +825,7 @@ const ProductModal = ({ open, onClose, onSelect, selectedDefault }) => {
   ];
 
   async function getProductList() {
-    let data = await apiObject.getEventProductData({});
+    let data = await apiObject.getEventProductData222({});
     setProductData(data);
     setProductList(data.product_list);
   }
@@ -698,13 +834,13 @@ const ProductModal = ({ open, onClose, onSelect, selectedDefault }) => {
     onSelect(selectedItem);
     onClose();
   }
-  function handleCategoryChange(category_pk) {
-    setCurCategory(category_pk);
+  function handleCategoryChange(item) {
+    setCurCategory(item.category_pk);
 
-    if (!category_pk) {
+    if (!item.category_pk) {
       setProductList(productData.product_list);
     } else {
-      let tmp = productData.product_list.filter((item) => item.category_pk == category_pk);
+      let tmp = productData.product_list.filter((item2) => item2.category_pk == item.category_pk);
       setProductList(tmp);
     }
   }
@@ -715,6 +851,18 @@ const ProductModal = ({ open, onClose, onSelect, selectedDefault }) => {
   function handleClose() {
     onClose();
     setSelectedItem(selectedDefault);
+  }
+
+  function handleContextChange(val) {
+    let search = new RegExp(val.search_word , 'i'); // prepare a regex object
+    console.log('query 2',val)
+    let tmp = productData.product_list.filter(item => search.test(item.product_name));
+    setProductList(tmp);
+
+  }
+
+  function handleContextClear() {
+    setProductList(productData.product_list);
   }
 
   useEffect(() => {
@@ -741,22 +889,29 @@ const ProductModal = ({ open, onClose, onSelect, selectedDefault }) => {
           </Typography>
         </Box>
         <Box mb={2} display="flex" justifyContent="space-between">
-          <Select
-            displayEmpty
-            margin="dense"
-            value={curCategory}
-            onChange={(e) => handleCategoryChange(e.target.value)}
-          >
-            {productData?.category_list?.map((item, index) => (
-              <MenuItem value={item.category_pk} key={index}>
-                {item.label}
-              </MenuItem>
-            ))}
-          </Select>
-
-          <Button color="primary" onClick={handleOnSelect}>
-            선택
-          </Button>
+          <Box display="flex" flex={1} >
+            <Select
+              displayEmpty
+              margin="dense"
+              value={curCategory}
+              //onChange={(e) => handleCategoryChange(e.target)}
+            >
+              {productData?.category_list?.map((item, index) => (
+                <MenuItem value={item.category_pk} key={index} onClick={() => handleCategoryChange(item)}>
+                  {item.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </Box>
+          <Box display="flex" flex={1} justifyContent="space-between">
+            <SearchBox placeholder="검색어를 입력해주세요" onSearch={handleContextChange} />
+            <Button color="primary" onClick={handleContextClear}>
+              검색초기화
+            </Button>
+            <Button color="primary" onClick={handleOnSelect}>
+              선택
+            </Button>
+          </Box>
         </Box>
 
         <ColumnTable columns={product_columns} data={productList} />

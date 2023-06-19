@@ -12,6 +12,10 @@ const admin_page = [
     path: `/`,
   },
   {
+    label: `환경설정`,
+    path: `/setup`,
+  },
+  {
     label: `회원관리`,
     path: `/member`,
   },
@@ -36,8 +40,16 @@ const admin_page = [
     path: `/notice`,
   },
   {
+    label: `홈피공지관리`,
+    path: `/webnotice`,
+  },
+  {
     label: `쿠폰관리`,
     path: `/coupon`,
+  },
+  {
+    label: `포인트관리`,
+    path: `/point`,
   },
   {
     label: `배너관리`,
@@ -74,7 +86,7 @@ const salesman_page = [
 const useStyles = makeStyles((theme) => ({
   container: {
     minHeight: "calc(100vh - 100px)",
-    width: "350px",
+    width: "250px",
     background: theme.palette.secondary.main,
 
     "& a": {
@@ -113,7 +125,7 @@ const Sidebar = () => {
         let isCur = nav.path.substring(1) === location.pathname.split("/")[1];
         return (
           <NavLink to={nav.path} activeClassName={classes.nav_selected} key={nav.label} isActive={checkIsActive}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" px={5} py={3}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" px={3} py={2}>
               <Typography variant="h6" display="inline">
                 {nav.label}
               </Typography>

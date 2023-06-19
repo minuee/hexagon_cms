@@ -129,14 +129,14 @@ export const PopupList = ({ location }) => {
   async function getPopupList(query) {
     let data;
 
-    if (query.type === "event") {
-      if (query.filter_item === "stop") {
+    if (query?.type === "event") {
+      if (query?.filter_item === "stop") {
         data = await apiObject.getPrevEventPopupList({ ...query });
       } else {
         data = await apiObject.getCurEventPopupList({ ...query });
       }
     } else {
-      if (query.filter_item === "stop") {
+      if (query?.filter_item === "stop") {
         data = await apiObject.getPrevNoticePopupList({ ...query });
       } else {
         data = await apiObject.getCurNoticePopupList({ ...query });

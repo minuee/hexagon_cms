@@ -146,11 +146,8 @@ export const EventDetail = () => {
 
     
     let paths = await apiObject.uploadImageMultiple({ img_arr: form.event_img, page: "event" });
-    console.log('paths ',paths )
     if (!paths.length) return;
     form.event_img = paths?.[0];
-  
-    console.log('form.event_img ',form.event_img )
     form.product = [];
     form.event_product.forEach((item) => {
       form.product.push({

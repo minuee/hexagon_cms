@@ -14,7 +14,6 @@ export const DnDList = ({ data, columns, className, onModifyFinish = () => {}, o
     const tmp = Array.from(list);
     const [removed] = tmp.splice(result.source.index, 1);
     tmp.splice(result.destination.index, 0, removed);
-
     setList(tmp);
   }
 
@@ -24,6 +23,14 @@ export const DnDList = ({ data, columns, className, onModifyFinish = () => {}, o
 
   return (
     <>
+      <Box mb={2}>
+        <Button color="primary" onClick={() => onModifyFinish(list)}>
+          수정 완료
+        </Button>
+        <Button ml={2} color="secondary" onClick={onCancel}>
+          수정 취소
+        </Button>
+      </Box>
       <Box className={className}>
         <Table>
           <TableHead>

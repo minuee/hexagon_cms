@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
       display: "flex",
       alignItems: "center",
       width: 800,
-      height: 800,
+      height: 1066,
       background: "#000",
     },
     "& img": {

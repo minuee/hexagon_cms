@@ -3,7 +3,6 @@ import { useHistory } from "react-router-dom";
 import { apiObject } from "api";
 import { price } from "common";
 import { useQuery } from "hooks";
-import dayjs from "dayjs";
 
 import { Grid, Box, makeStyles } from "@material-ui/core";
 import { Typography, Button } from "components/materialui";
@@ -89,7 +88,7 @@ export const MemberList = ({ location }) => {
     setMemberList(data);
   }
   async function approveSignIn() {
-    if (!window.confirm("선택한 회원들을 회원가입 승인하시겠습니까?")) return;
+    
 
     let member_array = [];
     selectedMembers.forEach((item) => {
@@ -99,9 +98,31 @@ export const MemberList = ({ location }) => {
         });
       }
     });
+    if ( member_array.length > 0 ) {
+      if (!window.confirm("선택한 회원들을 회원가입 승인하시겠습니까?")) return;
+      await apiObject.approveMembers({ member_array });
+      getMemberList();
+    }
+  }
 
-    await apiObject.approveMembers({ member_array });
-    getMemberList();
+  async function removeMembers() {
+    let member_array = [];
+    selectedMembers.forEach((item) => {
+      member_array.push({
+        member_pk: item.member_pk,
+      });
+    });
+    if ( member_array.length > 0 ) {
+      if (!window.confirm("선택한 회원들을 삭제하시겠습니까?")) return;
+      const reuslt = await apiObject.removeMembers({ member_array });
+      if ( reuslt?.data.code == '0000') {
+        alert("정상적으로 삭제되었습니다.");
+        getMemberList();
+      }else{
+        alert("오류가 발생하여 요청한 작업을 완료할 수 없습니다");
+        return false;
+      }
+    }
   }
 
   useEffect(() => {
@@ -127,6 +148,9 @@ export const MemberList = ({ location }) => {
           <Button color="primary" ml={3} onClick={approveSignIn} disabled={!selectedMembers?.length}>
             회원가입 승인
           </Button>
+          <Button color="primary" ml={3} onClick={removeMembers} disabled={!selectedMembers?.length}>
+            회원삭제
+          </Button>
         </Box>
       </Grid>
 
@@ -140,7 +164,7 @@ export const MemberList = ({ location }) => {
           options={{
             selectionProps: (props) => ({
               style: {
-                display: props.approval && "none",
+                display: props.approval ? "block" : "block",//"none"
               },
             }),
           }}

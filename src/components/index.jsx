@@ -11,3 +11,5 @@ export { TermSearchBox } from "./TermSearchBox";
 export { ImageBox } from "./ImageBox";
 export { RatioBox } from "./RatioBox";
 export { Dropzone } from "./Dropzone";
+export { Dropzone2 } from "./Dropzone2";
+export { DropzoneBanner } from "./DropzoneBanner";

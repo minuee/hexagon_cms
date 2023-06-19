@@ -21,7 +21,7 @@ import {
 } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
 import { Typography, Button } from "components/materialui";
-import { ColumnTable, RowTable, Pagination, SearchBox, Dropzone, ImageBox } from "components";
+import { ColumnTable, RowTable, Pagination, SearchBox, DropzoneBanner, ImageBox } from "components";
 
 const useStyles = makeStyles((theme) => ({
   modal_close_icon: {
@@ -223,7 +223,7 @@ export const BannerDetail = ({ location }) => {
               fullWidth
               name="title"
               placeholder="제목을 입력해주세요"
-              inputRef={register({ required: true })}
+              inputRef={register({ required: false })}
               error={!!errors?.title}
             />
           </TableCell>
@@ -238,7 +238,7 @@ export const BannerDetail = ({ location }) => {
               rows={10}
               name="content"
               placeholder="내용을 입력해주세요"
-              inputRef={register({ required: true })}
+              inputRef={register({ required: false })}
               error={!!errors?.content}
             />
           </TableCell>
@@ -246,7 +246,7 @@ export const BannerDetail = ({ location }) => {
         <TableRow>
           <TableCell>배너이미지</TableCell>
           <TableCell>
-            <Dropzone
+            <DropzoneBanner
               mb={1}
               control={control}
               name="banner_img"
@@ -577,8 +577,8 @@ const InlinkModal = ({ open, onClose, onSelect, inlinkType, selected_item }) => 
               onChange={(e) => handleContextChange("filter_item", e.target.value)}
             >
               <MenuItem value="">전체</MenuItem>
-              <MenuItem value="N">진행중</MenuItem>
-              <MenuItem value="Y">마감</MenuItem>
+              <MenuItem value="now">진행중</MenuItem>
+              <MenuItem value="stop">마감</MenuItem>
             </Select>
           )}
 
